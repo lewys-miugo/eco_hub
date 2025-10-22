@@ -100,6 +100,25 @@ export default function MarketplacePage() {
                   <span className="font-semibold">Availability:</span> Available
                 </p>
               </div>
+
+              {/* Button - positioned at x=241, y=377 (from card top) */}
+              <button 
+                className="hover:opacity-90 transition-opacity absolute"
+                style={{ 
+                  backgroundColor: '#D2AB17',
+                  borderRadius: '10px',
+                  width: '154px',
+                  height: '41px',
+                  fontFamily: 'Lexend Deca, sans-serif',
+                  fontSize: '18px',
+                  fontWeight: 'normal',
+                  color: '#000',
+                  left: '241px',
+                  top: '73px'
+                }}
+              >
+                Buy/Contact
+              </button>
             </div>
           </div>
         </div>
