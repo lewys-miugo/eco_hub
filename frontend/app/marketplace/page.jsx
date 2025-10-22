@@ -31,6 +31,33 @@ export default function MarketplacePage() {
           className="w-full h-full"
         ></iframe>
       </section>
+
+      {/* Marketplace Section */}
+      <section className="container mx-auto px-8" style={{ paddingTop: '24px' }}>
+        {/* Header */}
+        <div>
+          <h1 
+            className="text-[35px] font-normal"
+            style={{ 
+              color: '#163466', 
+              fontFamily: 'Lexend Deca, sans-serif',
+              marginBottom: '8px'
+            }}
+          >
+            Marketplace
+          </h1>
+          <p 
+            className="text-[24px] font-light"
+            style={{ 
+              color: '#163466', 
+              fontFamily: 'Lexend Deca, sans-serif',
+              marginBottom: '24px'
+            }}
+          >
+            Solar Energy closest to you for you at affordable price!
+          </p>
+        </div>
+      </section>
     </div>
   );
 }
