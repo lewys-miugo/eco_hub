@@ -6,6 +6,34 @@ import Image from 'next/image';
 export default function MarketplacePage() {
   const [searchQuery, setSearchQuery] = useState('');
 
+  // Sample marketplace data
+  const listings = [
+    {
+      id: 1,
+      image: '/images/unsplash_sWvDK3EO3eo.jpg',
+      energyType: 'Solar',
+      price: '0.14',
+      distance: '50',
+      availability: 'Available',
+    },
+    {
+      id: 2,
+      image: '/images/unsplash_Ja8t8nJN2I4.jpg',
+      energyType: 'Solar',
+      price: '0.14',
+      distance: '50',
+      availability: 'Available',
+    },
+    {
+      id: 3,
+      image: '/images/unsplash_U13RrgO6f7g.jpg',
+      energyType: 'Solar',
+      price: '0.14',
+      distance: '50',
+      availability: 'Available',
+    },
+  ];
+
   return (
     <div className="min-h-screen bg-white">
       {/* Map Section */}
@@ -61,66 +89,68 @@ export default function MarketplacePage() {
 
         {/* Cards Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 pb-16">
-          {/* Single Card */}
-          <div 
-            className="rounded-lg shadow-lg overflow-hidden"
-            style={{ 
-              width: '405px', 
-              height: '424px',
-              backgroundColor: '#EDF9FD'
-            }}
-          >
-            {/* Image */}
-            <div className="relative w-full h-[304px]">
-              <Image
-                src="/images/unsplash_sWvDK3EO3eo.jpg"
-                alt="Solar installation"
-                fill
-                className="object-cover"
-              />
-            </div>
-
-            {/* Details Section */}
-            <div className="relative" style={{ padding: '16px' }}>
-              {/* Two-column grid for details */}
-              <div 
-                className="grid grid-cols-2 gap-x-4 gap-y-2"
-                style={{ fontFamily: 'Lexend Deca, sans-serif' }}
-              >
-                <p className="text-sm text-gray-700">
-                  <span className="font-semibold">Energy Type:</span> Solar
-                </p>
-                <p className="text-sm text-gray-700">
-                  <span className="font-semibold">Distance:</span> 50 miles
-                </p>
-                <p className="text-sm text-gray-700">
-                  <span className="font-semibold">Price:</span> 0.14Ksh/kWh
-                </p>
-                <p className="text-sm text-gray-700">
-                  <span className="font-semibold">Availability:</span> Available
-                </p>
+          {listings.map((listing) => (
+            <div 
+              key={listing.id}
+              className="rounded-lg shadow-lg overflow-hidden"
+              style={{ 
+                width: '405px', 
+                height: '424px',
+                backgroundColor: '#EDF9FD'
+              }}
+            >
+              {/* Image */}
+              <div className="relative w-full h-[304px]">
+                <Image
+                  src={listing.image}
+                  alt="Solar installation"
+                  fill
+                  className="object-cover"
+                />
               </div>
 
-              {/* Button - positioned at x=241, y=377 (from card top) */}
-              <button 
-                className="hover:opacity-90 transition-opacity absolute"
-                style={{ 
-                  backgroundColor: '#D2AB17',
-                  borderRadius: '10px',
-                  width: '154px',
-                  height: '41px',
-                  fontFamily: 'Lexend Deca, sans-serif',
-                  fontSize: '18px',
-                  fontWeight: 'normal',
-                  color: '#000',
-                  left: '241px',
-                  top: '73px'
-                }}
-              >
-                Buy/Contact
-              </button>
+              {/* Details Section */}
+              <div className="relative" style={{ padding: '16px' }}>
+                {/* Two-column grid for details */}
+                <div 
+                  className="grid grid-cols-2 gap-x-4 gap-y-2"
+                  style={{ fontFamily: 'Lexend Deca, sans-serif' }}
+                >
+                  <p className="text-sm text-gray-700">
+                    <span className="font-semibold">Energy Type:</span> {listing.energyType}
+                  </p>
+                  <p className="text-sm text-gray-700">
+                    <span className="font-semibold">Distance:</span> {listing.distance} miles
+                  </p>
+                  <p className="text-sm text-gray-700">
+                    <span className="font-semibold">Price:</span> {listing.price}Ksh/kWh
+                  </p>
+                  <p className="text-sm text-gray-700">
+                    <span className="font-semibold">Availability:</span> {listing.availability}
+                  </p>
+                </div>
+
+                {/* Button - positioned at x=241, y=377 (from card top) */}
+                <button 
+                  className="hover:opacity-90 transition-opacity absolute"
+                  style={{ 
+                    backgroundColor: '#D2AB17',
+                    borderRadius: '10px',
+                    width: '154px',
+                    height: '41px',
+                    fontFamily: 'Lexend Deca, sans-serif',
+                    fontSize: '18px',
+                    fontWeight: 'normal',
+                    color: '#000',
+                    left: '241px',
+                    top: '73px'
+                  }}
+                >
+                  Buy/Contact
+                </button>
+              </div>
             </div>
-          </div>
+          ))}
         </div>
       </section>
     </div>
