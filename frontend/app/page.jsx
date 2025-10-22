@@ -2,18 +2,10 @@
 
 import { useEffect, useState } from 'react';
 
-interface HelloResponse {
-  message: string;
-  database: string;
-  timestamp?: string;
-  status: string;
-  error?: string;
-}
-
 export default function Home() {
-  const [data, setData] = useState<HelloResponse | null>(null);
+  const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -89,13 +81,15 @@ export default function Home() {
                     <h3 className="text-sm font-semibold text-gray-600 dark:text-gray-300 mb-1">
                       Status
                     </h3>
-                    <p className={`text-lg font-bold ${
-                      data.status === 'success'
-                        ? 'text-green-600 dark:text-green-400'
-                        : data.status === 'warning'
-                        ? 'text-yellow-600 dark:text-yellow-400'
-                        : 'text-red-600 dark:text-red-400'
-                    }`}>
+                    <p
+                      className={`text-lg font-bold ${
+                        data.status === 'success'
+                          ? 'text-green-600 dark:text-green-400'
+                          : data.status === 'warning'
+                          ? 'text-yellow-600 dark:text-yellow-400'
+                          : 'text-red-600 dark:text-red-400'
+                      }`}
+                    >
                       {data.status.charAt(0).toUpperCase() + data.status.slice(1)}
                     </p>
                   </div>
