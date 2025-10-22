@@ -27,14 +27,14 @@ export default function Home() {
   }, []);
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center p-24 bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800">
+    <main className="flex min-h-screen flex-col items-center justify-center p-24 bg-white">
       <div className="w-full max-w-2xl">
-        <div className="rounded-lg shadow-2xl bg-white dark:bg-gray-800 p-8">
-          <h1 className="text-4xl font-bold text-center mb-2 text-gray-900 dark:text-white">
-            🌍 Eco Hub
+        <div className="rounded-lg shadow-2xl bg-white p-8">
+          <h1 className="text-4xl font-bold text-center mb-2 text-[#163466]">
+            Eco Hub
           </h1>
-          <p className="text-center text-gray-600 dark:text-gray-300 mb-8">
-            Hello World Application with Flask, PostgreSQL, Next.js & Tailwind
+          <p className="text-center text-gray-600 dark:text-[#163466] mb-8">
+            Eco Hub Application with Flask, PostgreSQL, Next.js & Tailwind
           </p>
 
           <div className="space-y-6">
@@ -47,10 +47,10 @@ export default function Home() {
 
             {error && (
               <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4">
-                <p className="text-red-800 dark:text-red-200">
+                <p className="text-red-800 dark:text-red-500">
                   <span className="font-semibold">Error:</span> {error}
                 </p>
-                <p className="text-sm text-red-600 dark:text-red-300 mt-2">
+                <p className="text-sm text-red-700 dark:text-red-500 mt-2">
                   Make sure the Flask backend is running on http://localhost:5000
                 </p>
               </div>
@@ -110,14 +110,14 @@ export default function Home() {
           </div>
 
           <div className="mt-8 pt-8 border-t border-gray-200 dark:border-gray-700">
-            <h3 className="text-sm font-semibold text-gray-600 dark:text-gray-300 mb-4">
+            <h3 className="text-sm font-semibold text-gray-600 dark:text-[#163466] mb-4">
               Tech Stack
             </h3>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
               {['Flask', 'PostgreSQL', 'Next.js', 'Tailwind CSS'].map((tech) => (
                 <div
                   key={tech}
-                  className="bg-indigo-50 dark:bg-indigo-900/30 rounded px-3 py-2 text-center text-sm font-medium text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800"
+                  className="bg-indigo-50 dark:bg-[#163466] rounded px-3 py-2 text-center text-sm font-medium text-indigo-700 dark:text-white border border-indigo-200 dark:border-indigo-800"
                 >
                   {tech}
                 </div>
