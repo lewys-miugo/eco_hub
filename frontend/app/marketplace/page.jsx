@@ -57,6 +57,29 @@ export default function MarketplacePage() {
             Solar Energy closest to you for you at affordable price!
           </p>
         </div>
+
+        {/* Cards Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 pb-16">
+          {/* Single Card */}
+          <div 
+            className="rounded-lg shadow-lg overflow-hidden"
+            style={{ 
+              width: '405px', 
+              height: '424px',
+              backgroundColor: '#EDF9FD'
+            }}
+          >
+            {/* Image Placeholder */}
+            <div className="w-full h-[304px] bg-gray-300 flex items-center justify-center">
+              <span className="text-gray-500">Image</span>
+            </div>
+
+            {/* Details Section */}
+            <div className="p-4">
+              <p className="text-sm text-gray-700">Card content will go here</p>
+            </div>
+          </div>
+        </div>
       </section>
     </div>
   );
