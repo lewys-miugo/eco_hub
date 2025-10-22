@@ -81,8 +81,25 @@ export default function MarketplacePage() {
             </div>
 
             {/* Details Section */}
-            <div className="p-4">
-              <p className="text-sm text-gray-700">Card details will go here</p>
+            <div className="relative" style={{ padding: '16px' }}>
+              {/* Two-column grid for details */}
+              <div 
+                className="grid grid-cols-2 gap-x-4 gap-y-2"
+                style={{ fontFamily: 'Lexend Deca, sans-serif' }}
+              >
+                <p className="text-sm text-gray-700">
+                  <span className="font-semibold">Energy Type:</span> Solar
+                </p>
+                <p className="text-sm text-gray-700">
+                  <span className="font-semibold">Distance:</span> 50 miles
+                </p>
+                <p className="text-sm text-gray-700">
+                  <span className="font-semibold">Price:</span> 0.14Ksh/kWh
+                </p>
+                <p className="text-sm text-gray-700">
+                  <span className="font-semibold">Availability:</span> Available
+                </p>
+              </div>
             </div>
           </div>
         </div>
