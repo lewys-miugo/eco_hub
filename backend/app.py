@@ -74,6 +74,115 @@ def health_check():
     """Health check endpoint"""
     return jsonify({'status': 'healthy'}), 200
 
+# ==================== AUTHENTICATION ENDPOINTS ====================
+
+@app.route('/api/v1/auth/register', methods=['POST'])
+def register():
+    """Register a new user"""
+    try:
+        data = request.get_json()
+        
+        # Validate required fields
+        required_fields = ['name', 'email', 'password', 'role']
+        for field in required_fields:
+            if field not in data:
+                return jsonify({'error': f'Missing required field: {field}'}), 400
+        
+        # Check if user already exists
+        if User.query.filter_by(email=data['email']).first():
+            return jsonify({'error': 'User already exists'}), 400
+        
+        # Create new user
+        user = User(
+            name=data['name'],
+            email=data['email'],
+            role=data['role'],
+            latitude=data.get('latitude'),
+            longitude=data.get('longitude')
+        )
+        user.set_password(data['password'])
+        
+        db.session.add(user)
+        db.session.commit()
+        
+        # Create access token
+        access_token = create_access_token(identity=user.id)
+        
+        return jsonify({
+            'message': 'User created successfully',
+            'user': user.to_dict(),
+            'access_token': access_token
+        }), 201
+        
+    except Exception as e:
+        return jsonify({'error': f'Registration error: {str(e)}'}), 500
+
+@app.route('/api/v1/auth/login', methods=['POST'])
+def login():
+    """Login user and return JWT token"""
+    try:
+        data = request.get_json()
+        
+        if not data or not data.get('email') or not data.get('password'):
+            return jsonify({'error': 'Email and password required'}), 400
+        
+        # Find user
+        user = User.query.filter_by(email=data['email']).first()
+        
+        if not user or not user.check_password(data['password']):
+            return jsonify({'error': 'Invalid credentials'}), 401
+        
+        # Create access token
+        access_token = create_access_token(identity=user.id)
+        
+        return jsonify({
+            'message': 'Login successful',
+            'user': user.to_dict(),
+            'access_token': access_token
+        }), 200
+        
+    except Exception as e:
+        return jsonify({'error': f'Login error: {str(e)}'}), 500
+
+@app.route('/api/v1/users/<int:user_id>', methods=['GET', 'PUT'])
+@jwt_required()
+def user_profile(user_id):
+    """Get or update user profile"""
+    try:
+        current_user_id = get_jwt_identity()
+        
+        # Users can only access their own profile
+        if current_user_id != user_id:
+            return jsonify({'error': 'Access denied'}), 403
+        
+        user = User.query.get(user_id)
+        if not user:
+            return jsonify({'error': 'User not found'}), 404
+        
+        if request.method == 'GET':
+            return jsonify({'user': user.to_dict()}), 200
+        
+        elif request.method == 'PUT':
+            data = request.get_json()
+            
+            # Update allowed fields
+            if 'name' in data:
+                user.name = data['name']
+            if 'latitude' in data:
+                user.latitude = data['latitude']
+            if 'longitude' in data:
+                user.longitude = data['longitude']
+            
+            db.session.commit()
+            
+            return jsonify({
+                'message': 'Profile updated successfully',
+                'user': user.to_dict()
+            }), 200
+            
+    except Exception as e:
+        return jsonify({'error': f'Profile error: {str(e)}'}), 500
+
 # ==================== AI ENDPOINTS ====================
 
 @app.route('/api/v1/ai/advice', methods=['POST'])
