@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Image from 'next/image';
 
 export default function MarketplacePage() {
   const [searchQuery, setSearchQuery] = useState('');
@@ -69,14 +70,19 @@ export default function MarketplacePage() {
               backgroundColor: '#EDF9FD'
             }}
           >
-            {/* Image Placeholder */}
-            <div className="w-full h-[304px] bg-gray-300 flex items-center justify-center">
-              <span className="text-gray-500">Image</span>
+            {/* Image */}
+            <div className="relative w-full h-[304px]">
+              <Image
+                src="/images/unsplash_sWvDK3EO3eo.jpg"
+                alt="Solar installation"
+                fill
+                className="object-cover"
+              />
             </div>
 
             {/* Details Section */}
             <div className="p-4">
-              <p className="text-sm text-gray-700">Card content will go here</p>
+              <p className="text-sm text-gray-700">Card details will go here</p>
             </div>
           </div>
         </div>
