@@ -14,7 +14,14 @@ class AIService:
         
         # Initialize OpenAI client
         if self.openai_api_key:
-            openai.api_key = self.openai_api_key
+            try:
+                from openai import OpenAI
+                self.openai_client = OpenAI(api_key=self.openai_api_key)
+            except Exception as e:
+                print(f"Warning: OpenAI client initialization failed: {e}")
+                self.openai_client = None
+        else:
+            self.openai_client = None
     
     def get_renewable_energy_advice(self, user_input: Dict) -> Dict:
         """
@@ -31,7 +38,10 @@ class AIService:
             prompt = self._build_advice_prompt(user_input)
             
             # Call OpenAI API
-            response = openai.ChatCompletion.create(
+            if not self.openai_client:
+                raise Exception("OpenAI client not initialized")
+                
+            response = self.openai_client.chat.completions.create(
                 model="gpt-3.5-turbo",
                 messages=[
                     {"role": "system", "content": "You are an expert renewable energy advisor. Provide personalized, actionable advice for transitioning to clean energy."},
@@ -77,7 +87,10 @@ class AIService:
         try:
             prompt = self._build_listing_prompt(listing_data)
             
-            response = openai.ChatCompletion.create(
+            if not self.openai_client:
+                raise Exception("OpenAI client not initialized")
+                
+            response = self.openai_client.chat.completions.create(
                 model="gpt-3.5-turbo",
                 messages=[
                     {"role": "system", "content": "You are a marketing expert for renewable energy. Create compelling, clear listings that attract buyers."},

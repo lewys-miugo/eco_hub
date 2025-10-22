@@ -41,6 +41,17 @@ def register_test_user():
             data = response.json()
             print(f"✅ User registered: {data['user']['name']}")
             return data['access_token']
+        elif response.status_code == 400 and 'already exists' in str(response.json()):
+            # Try to login instead
+            login_data = {"email": "ai_test@example.com", "password": "testpassword123"}
+            login_response = requests.post(f"{BASE_URL}/api/v1/auth/login", json=login_data)
+            if login_response.status_code == 200:
+                data = login_response.json()
+                print(f"✅ User logged in: {data['user']['name']}")
+                return data['access_token']
+            else:
+                print(f"❌ Login failed: {login_response.status_code} - {login_response.json()}")
+                return None
         else:
             print(f"❌ Registration failed: {response.status_code} - {response.json()}")
             return None

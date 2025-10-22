@@ -106,7 +106,7 @@ def register():
         db.session.commit()
         
         # Create access token
-        access_token = create_access_token(identity=user.id)
+        access_token = create_access_token(identity=str(user.id))
         
         return jsonify({
             'message': 'User created successfully',
@@ -133,7 +133,7 @@ def login():
             return jsonify({'error': 'Invalid credentials'}), 401
         
         # Create access token
-        access_token = create_access_token(identity=user.id)
+        access_token = create_access_token(identity=str(user.id))
         
         return jsonify({
             'message': 'Login successful',
@@ -190,7 +190,7 @@ def user_profile(user_id):
 def get_ai_advice():
     """Get AI-powered renewable energy advice"""
     try:
-        user_id = get_jwt_identity()
+        user_id = int(get_jwt_identity())
         data = request.get_json()
         
         # Validate required fields
@@ -230,7 +230,7 @@ def get_ai_advice():
 def generate_listing_content():
     """Generate AI-powered listing content"""
     try:
-        user_id = get_jwt_identity()
+        user_id = int(get_jwt_identity())
         data = request.get_json()
         
         # Validate required fields
@@ -269,7 +269,7 @@ def generate_listing_content():
 def get_ai_ranked_sellers():
     """Get AI-ranked list of nearby energy sellers"""
     try:
-        user_id = get_jwt_identity()
+        user_id = int(get_jwt_identity())
         
         # Get user location
         user = User.query.get(user_id)
@@ -333,7 +333,7 @@ def get_ai_ranked_sellers():
 def get_user_ai_interactions():
     """Get user's AI interaction history"""
     try:
-        user_id = get_jwt_identity()
+        user_id = int(get_jwt_identity())
         page = int(request.args.get('page', 1))
         per_page = int(request.args.get('per_page', 10))
         

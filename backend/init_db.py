@@ -37,6 +37,7 @@ def init_database():
                 )
                 test_user.set_password('testpassword')
                 db.session.add(test_user)
+                db.session.commit()  # Commit user first to get ID
                 
                 # Create a test listing
                 test_listing = Listing(
