@@ -88,7 +88,7 @@ class AIInteraction(db.Model):
     prompt = db.Column(db.Text, nullable=False)
     response = db.Column(db.Text, nullable=False)
     carbon_savings_estimate = db.Column(db.Float, nullable=True)  # CO2 savings in kg
-    metadata = db.Column(db.JSON, nullable=True)  # Additional data like location, energy_type, etc.
+    ai_metadata = db.Column(db.JSON, nullable=True)  # Additional data like location, energy_type, etc.
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     
     def to_dict(self):
@@ -100,7 +100,7 @@ class AIInteraction(db.Model):
             'prompt': self.prompt,
             'response': self.response,
             'carbon_savings_estimate': self.carbon_savings_estimate,
-            'metadata': self.metadata,
+            'metadata': self.ai_metadata,
             'created_at': self.created_at.isoformat() if self.created_at else None
         }
 

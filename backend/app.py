@@ -209,7 +209,7 @@ def get_ai_advice():
             prompt=str(data),
             response=ai_response.get('advice', ''),
             carbon_savings_estimate=ai_response.get('carbon_savings_estimate', 0),
-            metadata=ai_response.get('metadata', {})
+            ai_metadata=ai_response.get('metadata', {})
         )
         
         db.session.add(interaction)
@@ -248,7 +248,7 @@ def generate_listing_content():
             interaction_type='listing_helper',
             prompt=str(data),
             response=str(ai_response),
-            metadata=data
+            ai_metadata=data
         )
         
         db.session.add(interaction)
@@ -308,7 +308,7 @@ def get_ai_ranked_sellers():
             interaction_type='match',
             prompt=f"energy_type={energy_type}, max_distance={max_distance}",
             response=f"Found {len(filtered_listings)} ranked listings",
-            metadata={
+            ai_metadata={
                 'energy_type': energy_type,
                 'max_distance': max_distance,
                 'results_count': len(filtered_listings)
