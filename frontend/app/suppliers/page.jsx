@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import Image from 'next/image';
 
 export default function SuppliersPage() {
@@ -52,10 +53,8 @@ export default function SuppliersPage() {
     },
   ];
 
-  // Placeholder delete function
   const handleDelete = (id) => {
     console.log('Delete listing:', id);
-    // TODO: Implement delete functionality
   };
 
   return (
@@ -84,7 +83,28 @@ export default function SuppliersPage() {
         </h1>
       </div>
 
-      {/* Sample listings data and delete handler are defined above */}
+      {/* New Listing Button */}
+      <div className="flex justify-end mb-6 px-8 mt-4">
+        <Link href="/suppliers/new">
+          <button
+            style={{
+              backgroundColor: '#D2AB17',
+              width: '139px',
+              height: '41px',
+              borderRadius: '10px',
+              fontFamily: 'Lexend Deca, sans-serif',
+              fontSize: '20px',
+              fontWeight: 'normal',
+              color: '#000',
+            }}
+            className="hover:opacity-90 transition-opacity"
+          >
+            New Listing
+          </button>
+        </Link>
+      </div>
+
+      {/* Placeholder for future table */}
     </div>
   );
 }
