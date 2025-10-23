@@ -3,21 +3,31 @@
 import Image from 'next/image';
 import { useState } from 'react';
 
-export default function EditListingPage() {
+export default function EditListingPage({ params }) {
   const [formData, setFormData] = useState({
     energyType: 'Solar',
     pricePerKwh: '0.12',
     amount: '500',
     sellerAccount: 'john.doe@email.com',
-    location: 'Ruaraka Royke Apartments',
+    location: 'Ruaraka Royke Apartments'
   });
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({
+    setFormData(prev => ({
       ...prev,
-      [name]: value,
+      [name]: value
     }));
+  };
+
+  const handleCancel = () => {
+    // Navigate back to suppliers page
+    window.history.back();
+  };
+
+  const handleUpdate = () => {
+    console.log('Updating listing:', formData);
+    // TODO: Implement update functionality
   };
 
   return (
@@ -30,68 +40,69 @@ export default function EditListingPage() {
         className="object-cover"
         priority
       />
-
+      
       {/* Dark Overlay Gradient */}
       <div className="absolute inset-0 bg-gradient-to-br from-black/60 to-black/40"></div>
-
+      
       {/* Main Content */}
       <div className="relative z-10 min-h-screen flex items-center justify-center p-8">
-        {/* Main Card Container */}
-        <div
+        {/* Main Content Card */}
+        <div 
           className="mx-auto"
           style={{
             width: '636px',
             height: '582px',
             backgroundColor: '#163466',
             borderRadius: '10px',
-            padding: '32px',
+            padding: '32px'
           }}
         >
-          {/* Header Section */}
+          {/* Card Header */}
           <div className="mb-4 text-center">
-            <h1
+            <h1 
               className="mb-1"
-              style={{
+              style={{ 
                 color: 'white',
                 fontFamily: 'Lexend Deca, sans-serif',
                 fontSize: '28px',
-                fontWeight: 'normal',
+                fontWeight: 'normal'
               }}
             >
-              Update Your Listing
+              Update You're Listing
             </h1>
-            <p
-              style={{
+            <p 
+              className=""
+              style={{ 
                 color: '#D2AB17',
                 fontFamily: 'Lexend Deca, sans-serif',
                 fontSize: '18px',
-                fontWeight: '300',
+                fontWeight: '300'
               }}
             >
-              Fill in the details below to edit your renewable energy listing
+              Fill in the details below to list your renewable energy supply
             </p>
           </div>
 
-          {/* White Bordered Form Container */}
-          <div
+          {/* White Frame Container */}
+          <div 
             className="mx-auto"
             style={{
               width: '544px',
               height: '446px',
               border: '2px solid white',
               borderRadius: '8px',
-              padding: '20px',
+              padding: '20px'
             }}
           >
             {/* Form Fields */}
             <div className="space-y-2 mb-2">
               {/* Energy Type */}
               <div>
-                <label
+                <label 
                   className="block text-sm font-medium mb-1"
-                  style={{
+                  style={{ 
                     color: 'white',
-                    fontFamily: 'Lexend Deca, sans-serif',
+                    fontFamily: 'Lexend Deca, sans-serif'
                   }}
                 >
                   Energy Type
@@ -106,18 +117,18 @@ export default function EditListingPage() {
                   style={{
                     backgroundColor: '#041532',
                     border: '1px solid #374151',
-                    fontFamily: 'Lexend Deca, sans-serif',
+                    fontFamily: 'Lexend Deca, sans-serif'
                   }}
                 />
               </div>
 
               {/* Price per kWh */}
               <div>
-                <label
+                <label 
                   className="block text-sm font-medium mb-1"
-                  style={{
+                  style={{ 
                     color: 'white',
-                    fontFamily: 'Lexend Deca, sans-serif',
+                    fontFamily: 'Lexend Deca, sans-serif'
                   }}
                 >
                   Price per kWh (KSH)
@@ -132,18 +143,18 @@ export default function EditListingPage() {
                   style={{
                     backgroundColor: '#041532',
                     border: '1px solid #374151',
-                    fontFamily: 'Lexend Deca, sans-serif',
+                    fontFamily: 'Lexend Deca, sans-serif'
                   }}
                 />
               </div>
 
               {/* Amount */}
               <div>
-                <label
+                <label 
                   className="block text-sm font-medium mb-1"
-                  style={{
+                  style={{ 
                     color: 'white',
-                    fontFamily: 'Lexend Deca, sans-serif',
+                    fontFamily: 'Lexend Deca, sans-serif'
                   }}
                 >
                   Amount (KWh)
@@ -158,18 +169,18 @@ export default function EditListingPage() {
                   style={{
                     backgroundColor: '#041532',
                     border: '1px solid #374151',
-                    fontFamily: 'Lexend Deca, sans-serif',
+                    fontFamily: 'Lexend Deca, sans-serif'
                   }}
                 />
               </div>
 
               {/* Seller Account */}
               <div>
-                <label
+                <label 
                   className="block text-sm font-medium mb-1"
-                  style={{
+                  style={{ 
                     color: 'white',
-                    fontFamily: 'Lexend Deca, sans-serif',
+                    fontFamily: 'Lexend Deca, sans-serif'
                   }}
                 >
                   Seller Account
@@ -184,18 +195,18 @@ export default function EditListingPage() {
                   style={{
                     backgroundColor: '#041532',
                     border: '1px solid #374151',
-                    fontFamily: 'Lexend Deca, sans-serif',
+                    fontFamily: 'Lexend Deca, sans-serif'
                   }}
                 />
               </div>
 
               {/* Location */}
               <div>
-                <label
+                <label 
                   className="block text-sm font-medium mb-1"
-                  style={{
+                  style={{ 
                     color: 'white',
-                    fontFamily: 'Lexend Deca, sans-serif',
+                    fontFamily: 'Lexend Deca, sans-serif'
                   }}
                 >
                   Location
@@ -210,9 +221,42 @@ export default function EditListingPage() {
                   style={{
                     backgroundColor: '#041532',
                     border: '1px solid #374151',
-                    fontFamily: 'Lexend Deca, sans-serif',
+                    fontFamily: 'Lexend Deca, sans-serif'
                   }}
                 />
+              </div>
+            </div>
+
+            {/* Action Buttons */}
+            <div className="space-y-3">
+              {/* Cancel Update Button */}
+              <button
+                onClick={handleCancel}
+                className="w-full py-1 rounded-md font-medium transition-colors"
+                style={{
+                  backgroundColor: 'rgba(47, 170, 91, 0.5)',
+                  color: 'white',
+                  fontFamily: 'Lexend Deca, sans-serif'
+                }}
+              >
+                Cancel Update
+              </button>
+
+              {/* Update Listing Button */}
+              <div className="flex justify-center">
+                <button
+                  onClick={handleUpdate}
+                  className="rounded-md font-medium transition-colors"
+                  style={{
+                    width: '150px',
+                    height: '35px',
+                    backgroundColor: '#2FAA5B',
+                    color: 'white',
+                    fontFamily: 'Lexend Deca, sans-serif'
+                  }}
+                >
+                  Update Listing
+                </button>
               </div>
             </div>
           </div>
