@@ -1,8 +1,25 @@
 'use client';
 
 import Image from 'next/image';
+import { useState } from 'react';
 
 export default function NewListingPage() {
+  const [formData, setFormData] = useState({
+    energyType: '',
+    pricePerKwh: '',
+    amount: '',
+    sellerAccount: '',
+    location: ''
+  });
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
   return (
     <div className="min-h-screen relative">
       {/* Background Image */}
@@ -34,12 +51,8 @@ export default function NewListingPage() {
           {/* Card Header */}
           <div className="mb-4 text-center">
             <h1
-              className="mb-1"
-              style={{
-                color: 'white',
-                fontSize: '28px',
-                fontWeight: 'normal'
-              }}
+              className="mb-1 text-white"
+              style={{ fontSize: '28px', fontWeight: 'normal' }}
             >
               Create New Listing
             </h1>
@@ -52,6 +65,51 @@ export default function NewListingPage() {
             >
               Fill in the details below to list your renewable energy supply
             </p>
+          </div>
+
+          {/* White Frame Container */}
+          <div
+            className="mx-auto"
+            style={{
+              width: '544px',
+              height: '446px',
+              border: '2px solid white',
+              borderRadius: '8px',
+              padding: '20px'
+            }}
+          >
+            {/* Form Fields */}
+            <div className="space-y-3">
+              {[
+                { label: 'Energy Type', name: 'energyType', placeholder: 'e.g., Solar' },
+                { label: 'Price per kWh (KSH)', name: 'pricePerKwh', placeholder: '0.12' },
+                { label: 'Amount (KWh)', name: 'amount', placeholder: '500' },
+                { label: 'Seller Account', name: 'sellerAccount', placeholder: 'john.doe@email.com' },
+                { label: 'Location', name: 'location', placeholder: 'e.g. Ruaraka Royke Apartments' }
+              ].map(({ label, name, placeholder }) => (
+                <div key={name}>
+                  <label
+                    className="block text-sm font-medium mb-1"
+                    style={{ color: 'white', fontFamily: 'Lexend Deca, sans-serif' }}
+                  >
+                    {label}
+                  </label>
+                  <input
+                    type="text"
+                    name={name}
+                    value={formData[name]}
+                    onChange={handleInputChange}
+                    placeholder={placeholder}
+                    className="w-full px-3 py-1 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    style={{
+                      backgroundColor: '#041532',
+                      border: '1px solid #374151',
+                      fontFamily: 'Lexend Deca, sans-serif'
+                    }}
+                  />
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </div>
