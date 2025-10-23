@@ -16,8 +16,8 @@ export default function DashboardPage() {
           AI Insights Dashboard
         </h1>
 
-                {/* Metrics Cards Grid */}
-                <div className="grid grid-cols-3 gap-6 mb-12">
+        {/* Metrics Cards Grid */}
+        <div className="grid grid-cols-3 gap-6 mb-12">
           {/* Row 1 */}
           <div 
             className="rounded-lg p-6"
@@ -186,6 +186,123 @@ export default function DashboardPage() {
             >
               ≈ to Planting 105 trees!
             </p>
+          </div>
+        </div>
+
+        {/* Performance Predictions Section */}
+        <div className="mt-12">
+          <h2 
+            className="text-3xl font-normal mb-6"
+            style={{ 
+              color: 'white',
+              fontFamily: 'Lexend Deca, sans-serif',
+              fontSize: '30px'
+            }}
+          >
+            Performance Predictions
+          </h2>
+
+          {/* Chart Container */}
+          <div 
+            className="rounded-lg p-8"
+            style={{ 
+              backgroundColor: '#041532',
+              color: 'white',
+              minHeight: '400px'
+            }}
+          >
+            {/* Chart Title */}
+            <div className="mb-6">
+              <h3 
+                className="text-2xl font-light"
+                style={{ fontFamily: 'Lexend Deca, sans-serif' }}
+              >
+                Energy Forecast vs. Generation
+              </h3>
+            </div>
+
+            {/* Legend */}
+            <div className="flex justify-end space-x-8 mb-6">
+              <div className="flex items-center space-x-2">
+                <div 
+                  className="w-4 h-4 rounded-full"
+                  style={{ backgroundColor: '#10b981' }}
+                ></div>
+                <span 
+                  className="font-light"
+                  style={{ fontFamily: 'Lexend Deca, sans-serif' }}
+                >
+                  Consumption Forecast
+                </span>
+              </div>
+              <div className="flex items-center space-x-2">
+                <div 
+                  className="w-4 h-4 rounded-full"
+                  style={{ backgroundColor: '#f59e0b' }}
+                ></div>
+                <span 
+                  className="font-light"
+                  style={{ fontFamily: 'Lexend Deca, sans-serif' }}
+                >
+                  Renewable Generation
+                </span>
+              </div>
+            </div>
+
+            {/* Chart Placeholder */}
+            <div className="flex items-center justify-center h-80 mb-6">
+              <div 
+                className="w-full h-full border-2 border-dashed border-gray-400 rounded-lg flex items-center justify-center"
+                style={{ borderColor: '#6b7280' }}
+              >
+                <p 
+                  className="text-xl"
+                  style={{ fontFamily: 'Lexend Deca, sans-serif' }}
+                >
+                  Line Graph Placeholder
+                </p>
+              </div>
+            </div>
+
+            {/* Axis Labels */}
+            <div className="mt-4 flex justify-between">
+              <span 
+                className="text-sm"
+                style={{ fontFamily: 'Lexend Deca, sans-serif' }}
+              >
+                Jan
+              </span>
+              <span 
+                className="text-sm"
+                style={{ fontFamily: 'Lexend Deca, sans-serif' }}
+              >
+                Feb
+              </span>
+              <span 
+                className="text-sm"
+                style={{ fontFamily: 'Lexend Deca, sans-serif' }}
+              >
+                Mar
+              </span>
+              <span 
+                className="text-sm"
+                style={{ fontFamily: 'Lexend Deca, sans-serif' }}
+              >
+                Apr
+              </span>
+              <span 
+                className="text-sm"
+                style={{ fontFamily: 'Lexend Deca, sans-serif' }}
+              >
+                May
+              </span>
+              <span 
+                className="text-sm"
+                style={{ fontFamily: 'Lexend Deca, sans-serif' }}
+              >
+                Jun
+              </span>
+            </div>
           </div>
         </div>
       </div>
