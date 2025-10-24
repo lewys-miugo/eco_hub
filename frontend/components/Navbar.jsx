@@ -37,7 +37,7 @@ export default function Navbar() {
         <div className="flex justify-between h-16 items-center">
           {/* Logo */}
           <div className="flex items-center">
-            <Link href="/" className="flex-shrink-0 flex items-center">
+            <Link href="/" className="shrink-0 flex items-center">
               <div className="h-8 w-8 relative mr-3">
                 {/* Sun and Leaf Logo */}
                 <div className="w-full h-full bg-yellow-400 rounded-full flex items-center justify-center">

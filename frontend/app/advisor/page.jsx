@@ -35,8 +35,8 @@ export default function AdvisorPage() {
                   onClick={() => setActiveCard(card.id)}
                   className={`px-6 py-4 rounded-lg font-medium transition-colors ${
                     card.isActive
-                      ? 'bg-[#D4AF37] text-[#1A202C]'
-                      : 'bg-white text-gray-800 hover:bg-gray-50'
+                      ? 'bg-[#D4AF37] text-[#1A202C] shadow-md'
+                      : 'bg-white text-gray-800 hover:bg-gray-50 shadow-sm'
                   }`}
                 >
                   {card.name}
@@ -45,14 +45,14 @@ export default function AdvisorPage() {
             </div>
 
             {/* Search/Input Bar */}
-            <div className="flex items-center bg-white rounded-lg p-4 shadow-sm">
-              <div className="w-6 h-6 bg-black rounded-full mr-4"></div>
+            <div className="flex items-center bg-white rounded-lg p-4 shadow-sm border border-gray-200">
+              <div className="w-6 h-6 bg-black rounded-full mr-4 flex-shrink-0"></div>
               <input
                 type="text"
                 placeholder="Ask me anything about renewable energy..."
-                className="flex-1 text-gray-600 placeholder-gray-400 focus:outline-none"
+                className="flex-1 text-gray-600 placeholder-gray-400 focus:outline-none bg-transparent"
               />
-              <div className="w-6 h-6 bg-pink-500 rounded-full ml-4"></div>
+              <div className="w-6 h-6 bg-pink-500 rounded-full ml-4 flex-shrink-0"></div>
             </div>
           </div>
         </div>
