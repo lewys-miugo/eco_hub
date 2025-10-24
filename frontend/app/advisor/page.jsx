@@ -3,6 +3,10 @@
 import { useState } from 'react';
 import Navbar from '../../components/Navbar';
 import Footer from '../../components/Footer';
+import AIAdvisorContent from '../../components/AIAdvisorContent';
+import SmartMatchmakerContent from '../../components/SmartMatchmakerContent';
+import EnergyInsightContent from '../../components/EnergyInsightContent';
+import ListGeneratorContent from '../../components/ListGeneratorContent';
 
 export default function AdvisorPage() {
   const [activeCard, setActiveCard] = useState('ai-advisor');
@@ -55,45 +59,10 @@ export default function AdvisorPage() {
 
         {/* Content Area - This will change based on active card */}
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          {activeCard === 'ai-advisor' && (
-            <div className="space-y-6">
-              {/* AI Advisor Content will go here */}
-              <div className="text-center py-12">
-                <h2 className="text-2xl font-bold text-gray-800 mb-4">AI Advisor Content</h2>
-                <p className="text-gray-600">This is where the AI Advisor content will be displayed based on the first image.</p>
-              </div>
-            </div>
-          )}
-
-          {activeCard === 'smart-matchmaker' && (
-            <div className="space-y-6">
-              {/* Smart Matchmaker Content will go here */}
-              <div className="text-center py-12">
-                <h2 className="text-2xl font-bold text-gray-800 mb-4">Smart Matchmaker Content</h2>
-                <p className="text-gray-600">This is where the Smart Matchmaker content will be displayed based on the second image.</p>
-              </div>
-            </div>
-          )}
-
-          {activeCard === 'energy-insight' && (
-            <div className="space-y-6">
-              {/* Energy Insight Content will go here */}
-              <div className="text-center py-12">
-                <h2 className="text-2xl font-bold text-gray-800 mb-4">Energy Insight Content</h2>
-                <p className="text-gray-600">This is where the Energy Insight content will be displayed based on the third image.</p>
-              </div>
-            </div>
-          )}
-
-          {activeCard === 'list-generator' && (
-            <div className="space-y-6">
-              {/* List Generator Content will go here */}
-              <div className="text-center py-12">
-                <h2 className="text-2xl font-bold text-gray-800 mb-4">List Generator Content</h2>
-                <p className="text-gray-600">This is where the List Generator content will be displayed based on the fourth image.</p>
-              </div>
-            </div>
-          )}
+          {activeCard === 'ai-advisor' && <AIAdvisorContent />}
+          {activeCard === 'smart-matchmaker' && <SmartMatchmakerContent />}
+          {activeCard === 'energy-insight' && <EnergyInsightContent />}
+          {activeCard === 'list-generator' && <ListGeneratorContent />}
         </div>
       </main>
 
