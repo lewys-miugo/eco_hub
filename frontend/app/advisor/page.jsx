@@ -1,0 +1,103 @@
+"use client";
+
+import { useState } from 'react';
+import Navbar from '../../components/Navbar';
+import Footer from '../../components/Footer';
+
+export default function AdvisorPage() {
+  const [activeCard, setActiveCard] = useState('ai-advisor');
+
+  const advisorCards = [
+    { id: 'ai-advisor', name: 'AI Advisor', isActive: activeCard === 'ai-advisor' },
+    { id: 'smart-matchmaker', name: 'Smart Matchmaker', isActive: activeCard === 'smart-matchmaker' },
+    { id: 'energy-insight', name: 'Energy Insight', isActive: activeCard === 'energy-insight' },
+    { id: 'list-generator', name: 'List generator', isActive: activeCard === 'list-generator' },
+  ];
+
+  return (
+    <div className="min-h-screen bg-white">
+      <Navbar />
+      
+      {/* Main Content */}
+      <main className="pt-16">
+        {/* Top Section with Cards */}
+        <div className="bg-gray-100 py-8">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            {/* Advisor Cards */}
+            <div className="flex flex-wrap gap-4 mb-8">
+              {advisorCards.map((card) => (
+                <button
+                  key={card.id}
+                  onClick={() => setActiveCard(card.id)}
+                  className={`px-6 py-4 rounded-lg font-medium transition-colors ${
+                    card.isActive
+                      ? 'bg-[#D4AF37] text-[#1A202C]'
+                      : 'bg-white text-gray-800 hover:bg-gray-50'
+                  }`}
+                >
+                  {card.name}
+                </button>
+              ))}
+            </div>
+
+            {/* Search/Input Bar */}
+            <div className="flex items-center bg-white rounded-lg p-4 shadow-sm">
+              <div className="w-6 h-6 bg-black rounded-full mr-4"></div>
+              <input
+                type="text"
+                placeholder="Ask me anything about renewable energy..."
+                className="flex-1 text-gray-600 placeholder-gray-400 focus:outline-none"
+              />
+              <div className="w-6 h-6 bg-pink-500 rounded-full ml-4"></div>
+            </div>
+          </div>
+        </div>
+
+        {/* Content Area - This will change based on active card */}
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          {activeCard === 'ai-advisor' && (
+            <div className="space-y-6">
+              {/* AI Advisor Content will go here */}
+              <div className="text-center py-12">
+                <h2 className="text-2xl font-bold text-gray-800 mb-4">AI Advisor Content</h2>
+                <p className="text-gray-600">This is where the AI Advisor content will be displayed based on the first image.</p>
+              </div>
+            </div>
+          )}
+
+          {activeCard === 'smart-matchmaker' && (
+            <div className="space-y-6">
+              {/* Smart Matchmaker Content will go here */}
+              <div className="text-center py-12">
+                <h2 className="text-2xl font-bold text-gray-800 mb-4">Smart Matchmaker Content</h2>
+                <p className="text-gray-600">This is where the Smart Matchmaker content will be displayed based on the second image.</p>
+              </div>
+            </div>
+          )}
+
+          {activeCard === 'energy-insight' && (
+            <div className="space-y-6">
+              {/* Energy Insight Content will go here */}
+              <div className="text-center py-12">
+                <h2 className="text-2xl font-bold text-gray-800 mb-4">Energy Insight Content</h2>
+                <p className="text-gray-600">This is where the Energy Insight content will be displayed based on the third image.</p>
+              </div>
+            </div>
+          )}
+
+          {activeCard === 'list-generator' && (
+            <div className="space-y-6">
+              {/* List Generator Content will go here */}
+              <div className="text-center py-12">
+                <h2 className="text-2xl font-bold text-gray-800 mb-4">List Generator Content</h2>
+                <p className="text-gray-600">This is where the List Generator content will be displayed based on the fourth image.</p>
+              </div>
+            </div>
+          )}
+        </div>
+      </main>
+
+      <Footer />
+    </div>
+  );
+}
