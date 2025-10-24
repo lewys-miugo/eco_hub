@@ -1,8 +1,6 @@
 "use client";
 
 import { useState } from 'react';
-import Navbar from '../../components/Navbar';
-import Footer from '../../components/Footer';
 import AIAdvisorContent from '../../components/AIAdvisorContent';
 import SmartMatchmakerContent from '../../components/SmartMatchmakerContent';
 import EnergyInsightContent from '../../components/EnergyInsightContent';
@@ -20,8 +18,6 @@ export default function AdvisorPage() {
 
   return (
     <div className="min-h-screen bg-white">
-      <Navbar />
-      
       {/* Main Content */}
       <main className="pt-16">
         {/* Top Section with Cards */}
@@ -65,8 +61,6 @@ export default function AdvisorPage() {
           {activeCard === 'list-generator' && <ListGeneratorContent />}
         </div>
       </main>
-
-      <Footer />
     </div>
   );
 }
