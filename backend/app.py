@@ -13,7 +13,7 @@ from config import config
 
 # Load environment variables
 load_dotenv()
-
+DATABASE_URL = os.getenv("DATABASE_URL")
 app = Flask(__name__)
 
 # Configuration
