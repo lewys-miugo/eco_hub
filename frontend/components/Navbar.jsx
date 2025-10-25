@@ -8,30 +8,33 @@ export default function Navbar() {
   return (
     <nav className="sticky top-0 bg-[#163466] shadow-lg border-b border-gray-200 dark:border-gray-700">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between h-16">
+        <div className="flex justify-between h-18">
           {/* Logo and brand */}
           <div className="flex items-center">
-            <div className="flex-shrink-0 flex items-center">
-              <span className="text-2xl font-bold text-white">Eco Hub</span>
+            <div className="flex-shrink-0 flex items-center p-1">
+              {/* <span className="text-2xl font-bold text-white">Eco Hub</span> */}
+              <a href="/">
+              <img src="./eco_hub_logo.png" />
+              </a>
             </div>
           </div>
 
           {/* Desktop menu */}
           <div className="hidden md:flex items-center space-x-8">
             <a
-              href="#"
+              href="/"
               className="text-white hover:text-indigo-600 dark:hover:text-indigo-400 px-3 py-2 text-sm font-medium transition-colors"
             >
               Home
             </a>
             <a
-              href="#"
+              href="/dashboard"
               className="text-white hover:text-indigo-600 dark:hover:text-indigo-400 px-3 py-2 text-sm font-medium transition-colors"
             >
               Dashboard
             </a>
             <a
-              href="#"
+              href="/marketplace"
               className="text-white hover:text-indigo-600 dark:hover:text-indigo-400 px-3 py-2 text-sm font-medium transition-colors"
             >
               Marketplace
@@ -43,10 +46,13 @@ export default function Navbar() {
               Advisor
             </a>
             <a
-              href="#"
+              href="suppliers"
               className="text-white hover:text-indigo-600 dark:hover:text-indigo-400 px-3 py-2 text-sm font-medium transition-colors"
             >
               Listings
+            </a>
+            <a href="/auth" className="bg-[#D2AB17] text-black hover:bg-yellow-400 px-4 py-2 rounded-md text-sm font-bold transition-colors">
+              Login
             </a>
           </div>
 
@@ -109,6 +115,12 @@ export default function Navbar() {
                 className="text-gray-200 hover:text-indigo-400 block px-3 py-2 text-base font-medium transition-colors"
               >
                 Contact
+              </a>
+              <a
+                href="/auth"
+                className="text-gray-200 hover:text-indigo-400 block px-3 py-2 text-base font-medium transition-colors"
+              >
+                Login
               </a>
             </div>
           </div>
