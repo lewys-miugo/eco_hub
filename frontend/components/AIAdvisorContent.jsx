@@ -10,23 +10,15 @@ export default function AIAdvisorContent() {
         </div>
 
         {/* Energy Generated Card */}
-        <div className="bg-blue-100 rounded-lg p-6 text-center relative">
+        <div className="bg-blue-100 rounded-lg p-6 text-center">
           <h3 className="text-lg font-bold text-gray-800 mb-2">Energy Generated</h3>
           <p className="text-3xl font-bold text-gray-800">2,847Kg</p>
-          {/* Pink B icon */}
-          <div className="absolute -bottom-2 -right-2 w-6 h-6 bg-pink-500 rounded-full flex items-center justify-center">
-            <span className="text-white text-xs font-bold">B</span>
-          </div>
         </div>
 
         {/* Cost Saving Card */}
-        <div className="bg-blue-100 rounded-lg p-6 text-center relative">
+        <div className="bg-blue-100 rounded-lg p-6 text-center">
           <h3 className="text-lg font-bold text-gray-800 mb-2">Cost saving</h3>
           <p className="text-3xl font-bold text-gray-800">2,847Kg</p>
-          {/* Pink B icon with cursor */}
-          <div className="absolute -bottom-2 -right-2 w-6 h-6 bg-pink-500 rounded-full flex items-center justify-center cursor-pointer">
-            <span className="text-white text-xs font-bold">B</span>
-          </div>
         </div>
       </div>
 

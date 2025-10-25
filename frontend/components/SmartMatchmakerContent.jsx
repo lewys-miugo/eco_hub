@@ -33,13 +33,8 @@ export default function SmartMatchmakerContent() {
         <div key={provider.id} className="bg-blue-100 rounded-lg p-6 flex items-center justify-between">
           {/* Left Side - Icon */}
           <div className="flex items-center">
-            <div className="w-16 h-16 bg-white rounded-lg flex items-center justify-center text-2xl mr-4 relative">
+            <div className="w-16 h-16 bg-white rounded-lg flex items-center justify-center text-2xl mr-4">
               {provider.icon}
-              {provider.hasSpecialIcon && (
-                <div className="absolute -top-1 -right-1 w-4 h-4 bg-pink-500 rounded-full flex items-center justify-center">
-                  <span className="text-white text-xs font-bold">B</span>
-                </div>
-              )}
             </div>
             
             {/* Company Info */}

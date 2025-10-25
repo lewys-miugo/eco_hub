@@ -48,12 +48,6 @@ export default function ListGeneratorContent() {
             More
           </button>
 
-          {/* Pink B icon for first listing */}
-          {index === 0 && (
-            <div className="absolute -bottom-2 -left-2 w-6 h-6 bg-pink-500 rounded-full flex items-center justify-center">
-              <span className="text-white text-xs font-bold">B</span>
-            </div>
-          )}
         </div>
       ))}
     </div>
