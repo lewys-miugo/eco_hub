@@ -36,12 +36,12 @@ export default function AdvisorPage() {
       {/* Main Content */}
       <main className="pt-16">
         {/* Top Section with Cards */}
-        <div className="bg-gray-100 py-8">
+        <div className="py-8">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <h1 className="text-2xl font-bold text-gray-800 mb-6">Advisor</h1>
             
             {/* Advisor Cards Container */}
-            <div className="bg-gray-200 rounded-lg p-4 shadow-sm mb-8">
+            <div className="bg-white rounded-lg p-4 shadow-sm mb-8 border border-gray-200">
               <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                 {advisorCards.map((card) => (
                   <button
