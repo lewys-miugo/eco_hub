@@ -40,25 +40,27 @@ export default function AdvisorPage() {
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <h1 className="text-2xl font-bold text-gray-800 mb-6">Advisor</h1>
             
-            {/* Advisor Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
-              {advisorCards.map((card) => (
-                <button
-                  key={card.id}
-                  onClick={() => setActiveCard(card.id)}
-                  className={`p-4 rounded-lg text-left transition-all duration-200 ${
-                    card.isActive
-                      ? 'bg-white shadow-md border-2 border-blue-500'
-                      : 'bg-gray-200 hover:bg-gray-300'
-                  }`}
-                >
-                  <h3 className={`font-semibold ${
-                    card.isActive ? 'text-blue-600' : 'text-gray-700'
-                  }`}>
-                    {card.name}
-                  </h3>
-                </button>
-              ))}
+            {/* Advisor Cards Container */}
+            <div className="bg-gray-200 rounded-lg p-4 shadow-sm mb-8">
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                {advisorCards.map((card) => (
+                  <button
+                    key={card.id}
+                    onClick={() => setActiveCard(card.id)}
+                    className={`p-4 rounded-lg text-center transition-all duration-200 ${
+                      card.isActive
+                        ? 'bg-[#D4AF37] shadow-md'
+                        : 'bg-white border border-gray-300 hover:bg-gray-50'
+                    }`}
+                  >
+                    <h3 className={`font-semibold text-sm ${
+                      card.isActive ? 'text-black' : 'text-black'
+                    }`}>
+                      {card.name}
+                    </h3>
+                  </button>
+                ))}
+              </div>
             </div>
 
             {/* Search/Input Bar */}
