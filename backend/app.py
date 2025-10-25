@@ -328,6 +328,59 @@ def get_ai_ranked_sellers():
     except Exception as e:
         return jsonify({'error': f'AI matching error: {str(e)}'}), 500
 
+@app.route('/api/v1/ai/chat', methods=['POST'])
+@jwt_required()
+def ai_chat():
+    """Simple AI chat for renewable energy questions"""
+    try:
+        user_id = int(get_jwt_identity())
+        data = request.get_json()
+        
+        if not data or not data.get('message'):
+            return jsonify({'error': 'Message is required'}), 400
+        
+        message = data['message']
+        
+        # Get AI response using OpenAI
+        if not ai_service.openai_client:
+            return jsonify({'error': 'AI service not available'}), 503
+        
+        response = ai_service.openai_client.chat.completions.create(
+            model="gpt-3.5-turbo",
+            messages=[
+                {"role": "system", "content": "You are an expert renewable energy advisor for EcoPower Hub. Answer questions about renewable energy, climate action, and sustainable living. Always include relevant emojis and focus on SDG 13 (Climate Action). Keep responses helpful, engaging, and practical."},
+                {"role": "user", "content": message}
+            ],
+            max_tokens=500,
+            temperature=0.7
+        )
+        
+        ai_response = response.choices[0].message.content
+        
+        # Extract emojis
+        emojis = ai_service._extract_emojis(ai_response)
+        
+        # Save interaction to database
+        interaction = AIInteraction(
+            user_id=user_id,
+            interaction_type='chat',
+            prompt=message,
+            response=ai_response,
+            ai_metadata={'emojis': emojis}
+        )
+        
+        db.session.add(interaction)
+        db.session.commit()
+        
+        return jsonify({
+            'response': ai_response,
+            'emojis': emojis,
+            'interaction_id': interaction.id
+        }), 200
+        
+    except Exception as e:
+        return jsonify({'error': f'Chat error: {str(e)}'}), 500
+
 @app.route('/api/v1/ai/interactions', methods=['GET'])
 @jwt_required()
 def get_user_ai_interactions():

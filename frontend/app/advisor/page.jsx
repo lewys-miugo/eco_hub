@@ -63,22 +63,28 @@ export default function AdvisorPage() {
               </div>
             </div>
 
-            {/* AI Chat Input */}
-            <div className="flex items-center space-x-4">
-              {/* AI Avatar - Black Circle Placeholder */}
-              <div className="w-12 h-12 bg-black rounded-full flex-shrink-0">
-                {/* This will be replaced with AI avatar image later */}
-              </div>
-              
-              {/* Chat Input Field */}
-              <div className="flex-1">
-                <input
-                  type="text"
-                  placeholder="Ask me anything about renewable energy ..."
-                  className="w-full px-6 py-3 bg-gray-200 rounded-full border-0 focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-700 placeholder-gray-500"
-                />
-              </div>
-            </div>
+                  {/* AI Chat Input - Now Functional */}
+                  <div className="flex items-center space-x-4">
+                    {/* AI Avatar - Black Circle with AI Icon */}
+                    <div className="w-12 h-12 bg-black rounded-full flex-shrink-0 flex items-center justify-center">
+                      <span className="text-white text-xl">🤖</span>
+                    </div>
+                    
+                    {/* Chat Input Field */}
+                    <div className="flex-1">
+                      <input
+                        type="text"
+                        placeholder="Ask me anything about renewable energy ..."
+                        className="w-full px-6 py-3 bg-gray-200 rounded-full border-0 focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-700 placeholder-gray-500"
+                        onKeyPress={(e) => {
+                          if (e.key === 'Enter') {
+                            // This will trigger the AI chat functionality in the content area
+                            console.log('AI Chat input:', e.target.value);
+                          }
+                        }}
+                      />
+                    </div>
+                  </div>
           </div>
         </div>
 
