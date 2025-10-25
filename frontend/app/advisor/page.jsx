@@ -41,7 +41,7 @@ export default function AdvisorPage() {
             <h1 className="text-2xl font-bold text-gray-800 mb-6">Advisor</h1>
             
             {/* Advisor Cards Container */}
-            <div className="bg-white rounded-lg p-4 shadow-sm mb-8 border border-gray-200">
+            <div className="bg-gray-200 rounded-lg p-4 shadow-sm mb-8">
               <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                 {advisorCards.map((card) => (
                   <button
