@@ -17,21 +17,23 @@ class AIService:
             try:
                 from openai import OpenAI
                 self.openai_client = OpenAI(api_key=self.openai_api_key)
+                print("✅ OpenAI client initialized successfully")
             except Exception as e:
                 print(f"Warning: OpenAI client initialization failed: {e}")
                 self.openai_client = None
         else:
+            print("Warning: OpenAI API key not found")
             self.openai_client = None
     
     def get_renewable_energy_advice(self, user_input: Dict) -> Dict:
         """
-        Get personalized renewable energy advice using OpenAI
+        Get personalized renewable energy advice using OpenAI with emojis and climate action focus
         
         Args:
             user_input: Dictionary containing user details like location, roof_size, energy_usage, etc.
         
         Returns:
-            Dictionary with AI advice and carbon savings estimate
+            Dictionary with AI advice, carbon savings estimate, and emojis
         """
         try:
             # Construct the prompt for OpenAI
@@ -44,10 +46,10 @@ class AIService:
             response = self.openai_client.chat.completions.create(
                 model="gpt-3.5-turbo",
                 messages=[
-                    {"role": "system", "content": "You are an expert renewable energy advisor. Provide personalized, actionable advice for transitioning to clean energy."},
+                    {"role": "system", "content": "You are an expert renewable energy advisor for EcoPower Hub, an AI-powered renewable energy platform. Provide personalized, actionable advice for transitioning to clean energy. Always include relevant emojis to make the advice engaging and climate-focused. Focus on SDG 13 (Climate Action) and emphasize environmental impact."},
                     {"role": "user", "content": prompt}
                 ],
-                max_tokens=500,
+                max_tokens=600,
                 temperature=0.7
             )
             
@@ -56,9 +58,13 @@ class AIService:
             # Get carbon savings estimate
             carbon_savings = self._estimate_carbon_savings(user_input)
             
+            # Extract emojis from response
+            emojis = self._extract_emojis(ai_response)
+            
             return {
                 'advice': ai_response,
                 'carbon_savings_estimate': carbon_savings,
+                'emojis': emojis,
                 'metadata': {
                     'location': user_input.get('location'),
                     'roof_size': user_input.get('roof_size'),
@@ -68,21 +74,38 @@ class AIService:
             }
             
         except Exception as e:
-            return {
-                'error': f"AI service error: {str(e)}",
-                'advice': "I'm sorry, I'm having trouble providing advice right now. Please try again later.",
-                'carbon_savings_estimate': 0
-            }
+            error_msg = str(e)
+            if "quota" in error_msg.lower() or "insufficient_quota" in error_msg.lower():
+                print("OpenAI quota exceeded - using fallback response")
+                return {
+                    'advice': "I'm currently experiencing high demand. Here's some general renewable energy advice: Consider solar panels for your roof, they can reduce your electricity bill by 50-90%. Wind energy is great for open areas. Check our marketplace for local suppliers!",
+                    'carbon_savings_estimate': 500,
+                    'emojis': ['☀️', '💡', '🌱'],
+                    'metadata': {
+                        'location': user_input.get('location'),
+                        'roof_size': user_input.get('roof_size'),
+                        'energy_usage': user_input.get('energy_usage'),
+                        'budget': user_input.get('budget'),
+                        'fallback': True
+                    }
+                }
+            else:
+                return {
+                    'error': f"AI service error: {str(e)}",
+                    'advice': "I'm sorry, I'm having trouble providing advice right now. Please try again later. 🌱",
+                    'carbon_savings_estimate': 0,
+                    'emojis': ['🌱']
+                }
     
     def generate_listing_content(self, listing_data: Dict) -> Dict:
         """
-        Generate attractive listing content using OpenAI
+        Generate attractive listing content using OpenAI with emojis
         
         Args:
             listing_data: Dictionary containing energy_type, price, location, etc.
         
         Returns:
-            Dictionary with generated title and description
+            Dictionary with generated title, description, and emojis
         """
         try:
             prompt = self._build_listing_prompt(listing_data)
@@ -93,10 +116,10 @@ class AIService:
             response = self.openai_client.chat.completions.create(
                 model="gpt-3.5-turbo",
                 messages=[
-                    {"role": "system", "content": "You are a marketing expert for renewable energy. Create compelling, clear listings that attract buyers."},
+                    {"role": "system", "content": "You are a marketing expert for EcoPower Hub renewable energy marketplace. Create compelling, clear listings that attract buyers. Always include relevant emojis to make listings engaging and climate-focused. Focus on environmental benefits and community impact."},
                     {"role": "user", "content": prompt}
                 ],
-                max_tokens=300,
+                max_tokens=400,
                 temperature=0.8
             )
             
@@ -105,19 +128,35 @@ class AIService:
             # Parse the response to extract title and description
             title, description = self._parse_listing_response(ai_response)
             
+            # Extract emojis from the generated content
+            emojis = self._extract_emojis(ai_response)
+            
             return {
                 'title': title,
                 'description': description,
                 'suggested_price': listing_data.get('price_per_kwh'),
+                'emojis': emojis,
                 'metadata': listing_data
             }
             
         except Exception as e:
-            return {
-                'error': f"AI service error: {str(e)}",
-                'title': f"{listing_data.get('energy_type', 'Renewable')} Energy Available",
-                'description': f"Clean {listing_data.get('energy_type', 'renewable')} energy available for purchase."
-            }
+            error_msg = str(e)
+            if "quota" in error_msg.lower() or "insufficient_quota" in error_msg.lower():
+                print("OpenAI quota exceeded - using fallback listing content")
+                energy_type = listing_data.get('energy_type', 'Renewable')
+                return {
+                    'title': f"Premium {energy_type} Energy - Clean & Reliable",
+                    'description': f"High-quality {energy_type.lower()} energy available for purchase. Reduce your carbon footprint and save money!",
+                    'emojis': ['☀️', '🌱', '💡'],
+                    'fallback': True
+                }
+            else:
+                return {
+                    'error': f"AI service error: {str(e)}",
+                    'title': f"🌱 {listing_data.get('energy_type', 'Renewable')} Energy Available",
+                    'description': f"Clean {listing_data.get('energy_type', 'renewable')} energy available for purchase. 🌍",
+                    'emojis': ['🌱', '🌍']
+                }
     
     def rank_nearby_sellers(self, user_location: Tuple[float, float], listings: List[Dict]) -> List[Dict]:
         """
@@ -204,46 +243,57 @@ class AIService:
             return {'error': f'Carbon Interface service error: {str(e)}'}
     
     def _build_advice_prompt(self, user_input: Dict) -> str:
-        """Build the prompt for renewable energy advice"""
+        """Build the prompt for renewable energy advice with climate action focus"""
         location = user_input.get('location', 'your area')
         roof_size = user_input.get('roof_size', 'unknown')
         energy_usage = user_input.get('energy_usage', 'unknown')
         budget = user_input.get('budget', 'flexible')
         
         return f"""
-        I'm looking for renewable energy advice for my home. Here are my details:
+        I'm looking for renewable energy advice for my home through EcoPower Hub. Here are my details:
         - Location: {location}
         - Roof size: {roof_size}
-        - Current energy usage: {energy_usage}
+        - Current energy usage: {energy_usage} kWh/month
         - Budget: {budget}
         
         Please provide personalized recommendations for:
-        1. Best renewable energy options for my situation
-        2. Estimated costs and savings
-        3. Timeline for implementation
-        4. Any specific considerations for my location
+        1. Best renewable energy options for my situation (solar, wind, etc.)
+        2. Estimated costs and savings with ROI timeline
+        3. Environmental impact and CO2 reduction potential
+        4. Timeline for implementation
+        5. Any specific considerations for my location
+        6. How to connect with local energy suppliers through our marketplace
         
-        Keep the advice practical and actionable.
+        Focus on climate action (SDG 13) and make the advice engaging with relevant emojis. 
+        Emphasize the environmental benefits and community impact of renewable energy adoption.
+        Keep the advice practical, actionable, and inspiring for climate action.
         """
     
     def _build_listing_prompt(self, listing_data: Dict) -> str:
-        """Build the prompt for listing generation"""
+        """Build the prompt for listing generation with climate focus"""
         energy_type = listing_data.get('energy_type', 'renewable')
         price = listing_data.get('price_per_kwh', 'competitive')
         location = listing_data.get('location', 'our location')
         available_kwh = listing_data.get('available_kwh', 'various amounts')
         
         return f"""
-        Create an attractive listing for selling {energy_type} energy:
+        Create an attractive listing for selling {energy_type} energy on EcoPower Hub marketplace:
         - Energy type: {energy_type}
         - Price per kWh: ${price}
         - Location: {location}
         - Available amount: {available_kwh} kWh
         
         Generate:
-        1. A compelling title (max 50 characters)
-        2. A clear description (max 200 characters)
+        1. A compelling title (max 60 characters) with relevant emojis
+        2. A clear description (max 250 characters) emphasizing environmental benefits
         
+        Focus on:
+        - Climate action and environmental impact
+        - Community benefits of renewable energy
+        - Clean, sustainable energy for neighbors
+        - SDG 13 (Climate Action) alignment
+        
+        Include relevant emojis like 🌱, 🌍, ⚡, 🌞, 💚, etc.
         Format as: TITLE: [title] | DESCRIPTION: [description]
         """
     
@@ -328,6 +378,23 @@ class AIService:
             'biomass': 0.7
         }
         return energy_scores.get(energy_type.lower(), 0.5)
+    
+    def _extract_emojis(self, text: str) -> List[str]:
+        """Extract emojis from text"""
+        import re
+        # Unicode ranges for emojis
+        emoji_pattern = re.compile(
+            "["
+            "\U0001F600-\U0001F64F"  # emoticons
+            "\U0001F300-\U0001F5FF"  # symbols & pictographs
+            "\U0001F680-\U0001F6FF"  # transport & map symbols
+            "\U0001F1E0-\U0001F1FF"  # flags (iOS)
+            "\U00002702-\U000027B0"  # dingbats
+            "\U000024C2-\U0001F251"  # enclosed characters
+            "]+", flags=re.UNICODE)
+        
+        emojis = emoji_pattern.findall(text)
+        return list(set(emojis))  # Remove duplicates
     
     def _fallback_distance_ranking(self, user_location: Tuple[float, float], listings: List[Dict]) -> List[Dict]:
         """Fallback to simple distance-based ranking"""
