@@ -17,10 +17,12 @@ class AIService:
             try:
                 from openai import OpenAI
                 self.openai_client = OpenAI(api_key=self.openai_api_key)
+                print("✅ OpenAI client initialized successfully")
             except Exception as e:
                 print(f"Warning: OpenAI client initialization failed: {e}")
                 self.openai_client = None
         else:
+            print("Warning: OpenAI API key not found")
             self.openai_client = None
     
     def get_renewable_energy_advice(self, user_input: Dict) -> Dict:
@@ -72,12 +74,28 @@ class AIService:
             }
             
         except Exception as e:
-            return {
-                'error': f"AI service error: {str(e)}",
-                'advice': "I'm sorry, I'm having trouble providing advice right now. Please try again later. 🌱",
-                'carbon_savings_estimate': 0,
-                'emojis': ['🌱']
-            }
+            error_msg = str(e)
+            if "quota" in error_msg.lower() or "insufficient_quota" in error_msg.lower():
+                print("OpenAI quota exceeded - using fallback response")
+                return {
+                    'advice': "I'm currently experiencing high demand. Here's some general renewable energy advice: Consider solar panels for your roof, they can reduce your electricity bill by 50-90%. Wind energy is great for open areas. Check our marketplace for local suppliers!",
+                    'carbon_savings_estimate': 500,
+                    'emojis': ['☀️', '💡', '🌱'],
+                    'metadata': {
+                        'location': user_input.get('location'),
+                        'roof_size': user_input.get('roof_size'),
+                        'energy_usage': user_input.get('energy_usage'),
+                        'budget': user_input.get('budget'),
+                        'fallback': True
+                    }
+                }
+            else:
+                return {
+                    'error': f"AI service error: {str(e)}",
+                    'advice': "I'm sorry, I'm having trouble providing advice right now. Please try again later. 🌱",
+                    'carbon_savings_estimate': 0,
+                    'emojis': ['🌱']
+                }
     
     def generate_listing_content(self, listing_data: Dict) -> Dict:
         """
@@ -122,12 +140,23 @@ class AIService:
             }
             
         except Exception as e:
-            return {
-                'error': f"AI service error: {str(e)}",
-                'title': f"🌱 {listing_data.get('energy_type', 'Renewable')} Energy Available",
-                'description': f"Clean {listing_data.get('energy_type', 'renewable')} energy available for purchase. 🌍",
-                'emojis': ['🌱', '🌍']
-            }
+            error_msg = str(e)
+            if "quota" in error_msg.lower() or "insufficient_quota" in error_msg.lower():
+                print("OpenAI quota exceeded - using fallback listing content")
+                energy_type = listing_data.get('energy_type', 'Renewable')
+                return {
+                    'title': f"Premium {energy_type} Energy - Clean & Reliable",
+                    'description': f"High-quality {energy_type.lower()} energy available for purchase. Reduce your carbon footprint and save money!",
+                    'emojis': ['☀️', '🌱', '💡'],
+                    'fallback': True
+                }
+            else:
+                return {
+                    'error': f"AI service error: {str(e)}",
+                    'title': f"🌱 {listing_data.get('energy_type', 'Renewable')} Energy Available",
+                    'description': f"Clean {listing_data.get('energy_type', 'renewable')} energy available for purchase. 🌍",
+                    'emojis': ['🌱', '🌍']
+                }
     
     def rank_nearby_sellers(self, user_location: Tuple[float, float], listings: List[Dict]) -> List[Dict]:
         """
