@@ -63,19 +63,20 @@ export default function AdvisorPage() {
               </div>
             </div>
 
-            {/* Search/Input Bar */}
-            <div className="bg-white rounded-lg p-4 shadow-sm border">
-              <div className="flex items-center space-x-4">
-                <div className="flex-1">
-                  <input
-                    type="text"
-                    placeholder="Ask me anything about renewable energy..."
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  />
-                </div>
-                <button className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
-                  Ask
-                </button>
+            {/* AI Chat Input */}
+            <div className="flex items-center space-x-4">
+              {/* AI Avatar - Black Circle Placeholder */}
+              <div className="w-12 h-12 bg-black rounded-full flex-shrink-0">
+                {/* This will be replaced with AI avatar image later */}
+              </div>
+              
+              {/* Chat Input Field */}
+              <div className="flex-1">
+                <input
+                  type="text"
+                  placeholder="Ask me anything about renewable energy ..."
+                  className="w-full px-6 py-3 bg-gray-200 rounded-full border-0 focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-700 placeholder-gray-500"
+                />
               </div>
             </div>
           </div>
