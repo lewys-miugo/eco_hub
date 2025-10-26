@@ -2,14 +2,18 @@
 
 import Image from 'next/image';
 import { useState } from 'react';
+import { createListing } from '../../../lib/api';
+import { useRouter } from 'next/navigation';
 
 export default function NewListingPage() {
+  const router = useRouter();
   const [formData, setFormData] = useState({
     energyType: '',
     pricePerKwh: '',
     amount: '',
     sellerAccount: '',
-    location: ''
+    location: '',
+    status: 'active'
   });
 
   const handleInputChange = (e) => {
@@ -22,12 +26,37 @@ export default function NewListingPage() {
 
   const handleCancel = () => {
     // Navigate back to suppliers page
-    window.history.back();
+    router.push('/suppliers');
   };
 
-  const handleCreate = () => {
-    console.log('Creating new listing:', formData);
-    // TODO: Implement create functionality
+  const handleCreate = async () => {
+    try {
+      // Validate required fields
+      if (!formData.energyType || !formData.pricePerKwh || !formData.amount || 
+          !formData.sellerAccount || !formData.location) {
+        alert('Please fill in all fields');
+        return;
+      }
+
+      // Create the listing with proper title
+      const title = `${formData.energyType} Energy - ${formData.amount} kWh`;
+      
+      await createListing({
+        title: title,
+        energyType: formData.energyType,
+        quantity: formData.amount,
+        price: formData.pricePerKwh,
+        sellerAccount: formData.sellerAccount,
+        location: formData.location,
+        status: formData.status
+      });
+      
+      alert('Listing created successfully!');
+      router.push('/suppliers');
+    } catch (error) {
+      alert('Failed to create listing: ' + error.message);
+      console.error('Error creating listing:', error);
+    }
   };
 
   return (
@@ -51,7 +80,7 @@ export default function NewListingPage() {
           className="mx-auto"
           style={{
             width: '636px',
-            height: '582px',
+            height: '650px',
             backgroundColor: '#163466',
             borderRadius: '10px',
             padding: '32px'
@@ -88,7 +117,7 @@ export default function NewListingPage() {
             className="mx-auto"
             style={{
               width: '544px',
-              height: '446px',
+              height: '520px',
               border: '2px solid white',
               borderRadius: '8px',
               padding: '20px'
@@ -225,10 +254,39 @@ export default function NewListingPage() {
                   }}
                 />
               </div>
+
+              {/* Status */}
+              <div>
+                <label 
+                  className="block text-sm font-medium mb-1"
+                  style={{ 
+                    color: 'white',
+                    fontFamily: 'Lexend Deca, sans-serif'
+                  }}
+                >
+                  Status
+                </label>
+                <select
+                  name="status"
+                  value={formData.status}
+                  onChange={handleInputChange}
+                  className="w-full px-3 py-1 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  style={{
+                    backgroundColor: '#041532',
+                    border: '1px solid #374151',
+                    fontFamily: 'Lexend Deca, sans-serif',
+                    color: 'white',
+                    minHeight: '32px'
+                  }}
+                >
+                  <option value="active" style={{ backgroundColor: '#041532' }}>Active (Available)</option>
+                  <option value="inactive" style={{ backgroundColor: '#041532' }}>Inactive (Not Available)</option>
+                </select>
+              </div>
             </div>
 
             {/* Action Buttons */}
-            <div className="space-y-3">
+            <div className="space-y-3 mt-4">
               {/* Auto-fill with AI Button */}
               <button
                 onClick={handleCancel}
@@ -248,8 +306,26 @@ export default function NewListingPage() {
                 Auto-fill with AI
               </button>
 
-              {/* Create Listing Button */}
-              <div className="flex justify-center">
+              {/* Cancel and Create Buttons */}
+              <div className="flex gap-4 justify-center">
+                {/* Cancel Button */}
+                <button
+                  onClick={handleCancel}
+                  className="rounded-md font-medium transition-colors"
+                  style={{
+                    width: '150px',
+                    height: '35px',
+                    backgroundColor: '#2FAA5B',
+                    color: 'white',
+                    fontFamily: 'Lexend Deca, sans-serif'
+                  }}
+                  onMouseEnter={(e) => e.target.style.backgroundColor = '#15803d'}
+                  onMouseLeave={(e) => e.target.style.backgroundColor = '#2FAA5B'}
+                >
+                  Cancel
+                </button>
+
+                {/* Create Listing Button */}
                 <button
                   onClick={handleCreate}
                   className="rounded-md font-medium transition-colors"
@@ -260,6 +336,8 @@ export default function NewListingPage() {
                     color: 'white',
                     fontFamily: 'Lexend Deca, sans-serif'
                   }}
+                  onMouseEnter={(e) => e.target.style.backgroundColor = '#15803d'}
+                  onMouseLeave={(e) => e.target.style.backgroundColor = '#2FAA5B'}
                 >
                   Create Listing
                 </button>

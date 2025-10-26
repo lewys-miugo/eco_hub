@@ -11,10 +11,34 @@ from models import User, Listing, AIInteraction, Transaction, db
 from ai_service import AIService
 from config import config
 
-# Load environment variables
+# Import API blueprints
+from api.listings import listings_bp
+from api.dashboard import dashboard_bp
+from api.ai import ai_bp
+
 load_dotenv()
 DATABASE_URL = os.getenv("DATABASE_URL")
 app = Flask(__name__)
+CORS(app, resources={
+    r"/api/*": {
+        "origins": ["http://localhost:3000", "http://127.0.0.1:3000"],
+        "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+        "allow_headers": ["Content-Type", "Authorization"],
+        "supports_credentials": True
+    }
+})
+
+@app.after_request
+def after_request(response):
+    response.headers.add('Access-Control-Allow-Origin', 'http://localhost:3000')
+    response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
+    response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS')
+    return response
+
+# Register blueprints
+app.register_blueprint(listings_bp)
+app.register_blueprint(dashboard_bp)
+app.register_blueprint(ai_bp)
 
 # Configuration
 config_name = os.getenv('FLASK_ENV', 'development')
@@ -74,6 +98,19 @@ def health_check():
     """Health check endpoint"""
     return jsonify({'status': 'healthy'}), 200
 
+@app.route('/api', methods=['GET'])
+def api_info():
+    """API information endpoint"""
+    return jsonify({
+        'name': 'Eco Hub API',
+        'version': '1.0.0',
+        'description': 'Renewable Energy Marketplace API',
+        'endpoints': {
+            'listings': '/api/listings',
+            'dashboard': '/api/dashboard',
+            'ai': '/api/ai'
+        }
+    }), 200
 # ==================== AUTHENTICATION ENDPOINTS ====================
 
 @app.route('/api/v1/auth/register', methods=['POST'])
