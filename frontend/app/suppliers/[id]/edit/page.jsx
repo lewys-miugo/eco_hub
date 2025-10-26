@@ -275,36 +275,40 @@ export default function EditListingPage({ params }) {
             </div>
 
             {/* Action Buttons */}
-            <div className="space-y-3">
+            <div className="flex gap-4 justify-center">
               {/* Cancel Update Button */}
               <button
                 onClick={handleCancel}
-                className="w-full py-1 rounded-md font-medium transition-colors"
+                className="rounded-md font-medium transition-colors"
                 style={{
-                  backgroundColor: 'rgba(47, 170, 91, 0.5)',
+                  width: '150px',
+                  height: '35px',
+                  backgroundColor: '#2FAA5B',
                   color: 'white',
                   fontFamily: 'Lexend Deca, sans-serif'
                 }}
+                onMouseEnter={(e) => e.target.style.backgroundColor = '#D2AB17'}
+                onMouseLeave={(e) => e.target.style.backgroundColor = '#2FAA5B'}
               >
                 Cancel Update
               </button>
 
               {/* Update Listing Button */}
-              <div className="flex justify-center">
-                <button
-                  onClick={handleUpdate}
-                  className="rounded-md font-medium transition-colors"
-                  style={{
-                    width: '150px',
-                    height: '35px',
-                    backgroundColor: '#2FAA5B',
-                    color: 'white',
-                    fontFamily: 'Lexend Deca, sans-serif'
-                  }}
-                >
-                  Update Listing
-                </button>
-              </div>
+              <button
+                onClick={handleUpdate}
+                className="rounded-md font-medium transition-colors"
+                style={{
+                  width: '150px',
+                  height: '35px',
+                  backgroundColor: '#2FAA5B',
+                  color: 'white',
+                  fontFamily: 'Lexend Deca, sans-serif'
+                }}
+                onMouseEnter={(e) => e.target.style.backgroundColor = '#D2AB17'}
+                onMouseLeave={(e) => e.target.style.backgroundColor = '#2FAA5B'}
+              >
+                Update Listing
+              </button>
             </div>
           </div>
         </div>
