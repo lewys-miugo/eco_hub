@@ -1,16 +1,46 @@
 'use client';
 
 import Image from 'next/image';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { fetchListingById, updateListing } from '../../../lib/api.js';
+import { useRouter } from 'next/navigation';
 
 export default function EditListingPage({ params }) {
+  const router = useRouter();
+  const [loading, setLoading] = useState(true);
   const [formData, setFormData] = useState({
-    energyType: 'Solar',
-    pricePerKwh: '0.12',
-    amount: '500',
-    sellerAccount: 'john.doe@email.com',
-    location: 'Ruaraka Royke Apartments'
+    energyType: '',
+    pricePerKwh: '',
+    amount: '',
+    sellerAccount: '',
+    location: ''
   });
+
+  // Fetch listing data when page loads
+  useEffect(() => {
+    async function loadListing() {
+      try {
+        const listing = await fetchListingById(params.id);
+        if (listing) {
+          setFormData({
+            energyType: listing.energyType || '',
+            pricePerKwh: listing.price || '',
+            amount: listing.quantity || '',
+            sellerAccount: listing.sellerAccount || '',
+            location: listing.location || ''
+          });
+        }
+      } catch (error) {
+        console.error('Error loading listing:', error);
+      } finally {
+        setLoading(false);
+      }
+    }
+    
+    if (params.id) {
+      loadListing();
+    }
+  }, [params.id]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -25,9 +55,20 @@ export default function EditListingPage({ params }) {
     window.history.back();
   };
 
-  const handleUpdate = () => {
-    console.log('Updating listing:', formData);
-    // TODO: Implement update functionality
+  const handleUpdate = async () => {
+    try {
+      await updateListing(params.id, {
+        energyType: formData.energyType,
+        quantity: formData.amount,
+        price: formData.pricePerKwh,
+        sellerAccount: formData.sellerAccount,
+        location: formData.location
+      });
+      alert('Listing updated successfully!');
+      router.push('/suppliers');
+    } catch (error) {
+      alert('Failed to update listing: ' + error.message);
+    }
   };
 
   return (
@@ -46,17 +87,23 @@ export default function EditListingPage({ params }) {
       
       {/* Main Content */}
       <div className="relative z-10 min-h-screen flex items-center justify-center p-8">
-        {/* Main Content Card */}
-        <div 
-          className="mx-auto"
-          style={{
-            width: '636px',
-            height: '582px',
-            backgroundColor: '#163466',
-            borderRadius: '10px',
-            padding: '32px'
-          }}
-        >
+        {loading ? (
+          <div className="text-center text-white">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white mx-auto mb-4"></div>
+            <p>Loading listing data...</p>
+          </div>
+        ) : (
+          /* Main Content Card */
+          <div 
+            className="mx-auto"
+            style={{
+              width: '636px',
+              height: '582px',
+              backgroundColor: '#163466',
+              borderRadius: '10px',
+              padding: '32px'
+            }}
+          >
           {/* Card Header */}
           <div className="mb-4 text-center">
             <h1 
@@ -261,6 +308,7 @@ export default function EditListingPage({ params }) {
             </div>
           </div>
         </div>
+      )}
       </div>
     </div>
   );
