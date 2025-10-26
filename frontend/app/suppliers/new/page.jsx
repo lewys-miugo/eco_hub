@@ -117,7 +117,7 @@ export default function NewListingPage() {
             className="mx-auto"
             style={{
               width: '544px',
-              height: '480px',
+              height: '520px',
               border: '2px solid white',
               borderRadius: '8px',
               padding: '20px'
@@ -286,7 +286,7 @@ export default function NewListingPage() {
             </div>
 
             {/* Action Buttons */}
-            <div className="space-y-3">
+            <div className="space-y-3 mt-4">
               {/* Auto-fill with AI Button */}
               <button
                 onClick={handleCancel}
@@ -306,8 +306,26 @@ export default function NewListingPage() {
                 Auto-fill with AI
               </button>
 
-              {/* Create Listing Button */}
-              <div className="flex justify-center">
+              {/* Cancel and Create Buttons */}
+              <div className="flex gap-4 justify-center">
+                {/* Cancel Button */}
+                <button
+                  onClick={handleCancel}
+                  className="rounded-md font-medium transition-colors"
+                  style={{
+                    width: '150px',
+                    height: '35px',
+                    backgroundColor: '#2FAA5B',
+                    color: 'white',
+                    fontFamily: 'Lexend Deca, sans-serif'
+                  }}
+                  onMouseEnter={(e) => e.target.style.backgroundColor = '#15803d'}
+                  onMouseLeave={(e) => e.target.style.backgroundColor = '#2FAA5B'}
+                >
+                  Cancel
+                </button>
+
+                {/* Create Listing Button */}
                 <button
                   onClick={handleCreate}
                   className="rounded-md font-medium transition-colors"
