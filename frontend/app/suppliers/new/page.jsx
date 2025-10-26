@@ -2,7 +2,7 @@
 
 import Image from 'next/image';
 import { useState } from 'react';
-import { createListing } from '../../../../lib/api';
+import { createListing } from '../../../lib/api';
 import { useRouter } from 'next/navigation';
 
 export default function NewListingPage() {
