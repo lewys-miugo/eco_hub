@@ -39,3 +39,16 @@ __pycache__/
 # Environment or secret files
 .env.*
 secrets.json
+
+# Development/testing files
+setup_backend.py
+start_backend.bat
+start_backend.sh
+test_api.py
+backend/README_SETUP.md
+backend/database/test_connection.py
+
+# Empty component directories
+frontend/components/dashboard/
+frontend/components/marketplace/
+frontend/components/suppliers/
