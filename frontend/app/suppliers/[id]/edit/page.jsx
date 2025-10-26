@@ -13,7 +13,8 @@ export default function EditListingPage({ params }) {
     pricePerKwh: '',
     amount: '',
     sellerAccount: '',
-    location: ''
+    location: '',
+    status: 'active'
   });
 
   // Fetch listing data when page loads
@@ -27,7 +28,8 @@ export default function EditListingPage({ params }) {
             pricePerKwh: listing.price || '',
             amount: listing.quantity || '',
             sellerAccount: listing.sellerAccount || '',
-            location: listing.location || ''
+            location: listing.location || '',
+            status: listing.status || 'active'
           });
         }
       } catch (error) {
@@ -62,7 +64,8 @@ export default function EditListingPage({ params }) {
         quantity: formData.amount,
         price: formData.pricePerKwh,
         sellerAccount: formData.sellerAccount,
-        location: formData.location
+        location: formData.location,
+        status: formData.status
       });
       alert('Listing updated successfully!');
       router.push('/suppliers');
@@ -98,7 +101,7 @@ export default function EditListingPage({ params }) {
             className="mx-auto"
             style={{
               width: '636px',
-              height: '582px',
+              height: '650px',
               backgroundColor: '#163466',
               borderRadius: '10px',
               padding: '32px'
@@ -135,14 +138,14 @@ export default function EditListingPage({ params }) {
             className="mx-auto"
             style={{
               width: '544px',
-              height: '446px',
+              height: '480px',
               border: '2px solid white',
               borderRadius: '8px',
               padding: '20px'
             }}
           >
             {/* Form Fields */}
-            <div className="space-y-2 mb-2">
+            <div className="space-y-3 mb-4">
               {/* Energy Type */}
               <div>
                 <label 
@@ -272,10 +275,39 @@ export default function EditListingPage({ params }) {
                   }}
                 />
               </div>
+
+              {/* Status */}
+              <div>
+                <label 
+                  className="block text-sm font-medium mb-1"
+                  style={{ 
+                    color: 'white',
+                    fontFamily: 'Lexend Deca, sans-serif'
+                  }}
+                >
+                  Status
+                </label>
+                <select
+                  name="status"
+                  value={formData.status}
+                  onChange={handleInputChange}
+                  className="w-full px-3 py-1 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  style={{
+                    backgroundColor: '#041532',
+                    border: '1px solid #374151',
+                    fontFamily: 'Lexend Deca, sans-serif',
+                    color: 'white',
+                    minHeight: '32px'
+                  }}
+                >
+                  <option value="active" style={{ backgroundColor: '#041532' }}>Active (Available)</option>
+                  <option value="inactive" style={{ backgroundColor: '#041532' }}>Inactive (Not Available)</option>
+                </select>
+              </div>
             </div>
 
-            {/* Action Buttons */}
-            <div className="flex gap-4 justify-center">
+            {/* Action Buttons - Inside white frame */}
+            <div className="flex gap-4 justify-center mt-4">
               {/* Cancel Update Button */}
               <button
                 onClick={handleCancel}
@@ -287,7 +319,7 @@ export default function EditListingPage({ params }) {
                   color: 'white',
                   fontFamily: 'Lexend Deca, sans-serif'
                 }}
-                onMouseEnter={(e) => e.target.style.backgroundColor = '#D2AB17'}
+                onMouseEnter={(e) => e.target.style.backgroundColor = '#15803d'}
                 onMouseLeave={(e) => e.target.style.backgroundColor = '#2FAA5B'}
               >
                 Cancel Update
@@ -304,7 +336,7 @@ export default function EditListingPage({ params }) {
                   color: 'white',
                   fontFamily: 'Lexend Deca, sans-serif'
                 }}
-                onMouseEnter={(e) => e.target.style.backgroundColor = '#D2AB17'}
+                onMouseEnter={(e) => e.target.style.backgroundColor = '#15803d'}
                 onMouseLeave={(e) => e.target.style.backgroundColor = '#2FAA5B'}
               >
                 Update Listing
