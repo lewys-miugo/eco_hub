@@ -23,24 +23,24 @@ export default function SuppliersPage() {
         console.error(err);
         // Fallback to sample data if API fails
         setListings([
-          {
-            id: 1,
-            title: 'I have 10KWh to sell daily',
-            energyType: 'Solar',
-            quantity: 500,
-            price: '0.12',
-            status: 'inactive',
-            location: 'Plantinum Sqr Road',
-          },
-          {
-            id: 2,
-            title: 'Solar Energy Surplus',
-            energyType: 'Solar',
-            quantity: 500,
-            price: '0.12',
-            status: 'active',
-            location: 'Tatu city Kiambu',
-          },
+    {
+      id: 1,
+      title: 'I have 10KWh to sell daily',
+      energyType: 'Solar',
+      quantity: 500,
+      price: '0.12',
+      status: 'inactive',
+      location: 'Plantinum Sqr Road',
+    },
+    {
+      id: 2,
+      title: 'Solar Energy Surplus',
+      energyType: 'Solar',
+      quantity: 500,
+      price: '0.12',
+      status: 'active',
+      location: 'Tatu city Kiambu',
+    },
           {
             id: 3,
             title: 'Wind Power Available',
