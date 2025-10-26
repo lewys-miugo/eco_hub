@@ -80,7 +80,7 @@ export default function NewListingPage() {
           className="mx-auto"
           style={{
             width: '636px',
-            height: '582px',
+            height: '650px',
             backgroundColor: '#163466',
             borderRadius: '10px',
             padding: '32px'
@@ -117,7 +117,7 @@ export default function NewListingPage() {
             className="mx-auto"
             style={{
               width: '544px',
-              height: '446px',
+              height: '480px',
               border: '2px solid white',
               borderRadius: '8px',
               padding: '20px'
