@@ -2,7 +2,7 @@
 
 import Image from 'next/image';
 import { useState, useEffect } from 'react';
-import { fetchListingById, updateListing } from '../../../lib/api.js';
+import { fetchListingById, updateListing } from '../../../../lib/api';
 import { useRouter } from 'next/navigation';
 
 export default function EditListingPage({ params }) {
