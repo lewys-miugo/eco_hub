@@ -77,7 +77,7 @@ export default function AdvisorPage() {
                       <input
                         type="text"
                         placeholder="Ask me anything about renewable energy ..."
-                        className="w-full px-6 py-3 bg-gray-200 rounded-full border-0 focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-700 placeholder-gray-500"
+                        className="w-full px-6 py-3 bg-white rounded-full border-2 border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-600 text-gray-800 placeholder-gray-400"
                         onKeyPress={(e) => {
                           if (e.key === 'Enter') {
                             // This will trigger the AI chat functionality in the content area
@@ -86,6 +86,10 @@ export default function AdvisorPage() {
                         }}
                       />
                     </div>
+                    {/* Send Button */}
+                    <button className="px-8 py-3 bg-blue-600 text-white rounded-full hover:bg-blue-700 transition-colors font-medium shadow-md">
+                      Send
+                    </button>
                   </div>
           </div>
         </div>
