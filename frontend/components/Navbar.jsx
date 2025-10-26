@@ -66,13 +66,13 @@ export default function Navbar() {
               Marketplace
             </a>
             <a
-              href="#"
+              href="/advisor"
               className="text-white hover:text-indigo-600 dark:hover:text-indigo-400 px-3 py-2 text-sm font-medium transition-colors"
             >
               Advisor
             </a>
             <a
-              href="suppliers"
+              href="/suppliers"
               className="text-white hover:text-indigo-600 dark:hover:text-indigo-400 px-3 py-2 text-sm font-medium transition-colors"
             >
               Listings
@@ -135,39 +135,45 @@ export default function Navbar() {
         <div className="md:hidden">
           <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3 border-t border-gray-200 dark:border-gray-700">
             <a
-              href="#"
+              href="/"
               className="text-gray-200 hover:text-indigo-400 block px-3 py-2 text-base font-medium transition-colors"
             >
               Home
             </a>
             <a
-              href="#"
+              href="/dashboard"
               className="text-gray-200 hover:text-indigo-400 block px-3 py-2 text-base font-medium transition-colors"
             >
-              About
+              Dashboard
             </a>
             <a
-              href="#"
+              href="/marketplace"
               className="text-gray-200 hover:text-indigo-400 block px-3 py-2 text-base font-medium transition-colors"
             >
-              Services
+              Marketplace
             </a>
             <a
-              href="#"
+              href="/advisor"
               className="text-gray-200 hover:text-indigo-400 block px-3 py-2 text-base font-medium transition-colors"
             >
-              Contact
+              Advisor
+            </a>
+            <a
+              href="/suppliers"
+              className="text-gray-200 hover:text-indigo-400 block px-3 py-2 text-base font-medium transition-colors"
+            >
+              Suppliers
             </a>
             <a
               href="/auth"
-              className="text-gray-200 hover:text-indigo-400 block px-3 py-2 text-base font-medium transition-colors"
+              className="mx-4 bg-[#D4AF37] text-[#163473] hover:bg-[#B8941F] block px-3 py-2 text-base font-medium transition-colors rounded-md w-fit"
             >
               Login
             </a>
           </div>
-          <button className="px-4 py-2 bg-[#D4AF37] text-[#163473] text-base font-medium rounded-md hover:bg-[#B8941F] transition-colors">
+          {/* <button className="px-4 py-2 bg-[#D4AF37] text-[#163473] text-base font-medium rounded-md hover:bg-[#B8941F] transition-colors">
             Logout
-          </button>
+          </button> */}
         </div>
         )}
     </nav>
