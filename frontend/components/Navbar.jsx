@@ -132,45 +132,44 @@ export default function Navbar() {
 
         {/* Mobile menu */}
         {isMenuOpen && (
-          <div className="md:hidden">
-            <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3 border-t border-gray-200 dark:border-gray-700">
-              <a
-                href="#"
-                className="text-gray-200 hover:text-indigo-400 block px-3 py-2 text-base font-medium transition-colors"
-              >
-                Home
-              </a>
-              <a
-                href="#"
-                className="text-gray-200 hover:text-indigo-400 block px-3 py-2 text-base font-medium transition-colors"
-              >
-                About
-              </a>
-              <a
-                href="#"
-                className="text-gray-200 hover:text-indigo-400 block px-3 py-2 text-base font-medium transition-colors"
-              >
-                Services
-              </a>
-              <a
-                href="#"
-                className="text-gray-200 hover:text-indigo-400 block px-3 py-2 text-base font-medium transition-colors"
-              >
-                Contact
-              </a>
-              <a
-                href="/auth"
-                className="text-gray-200 hover:text-indigo-400 block px-3 py-2 text-base font-medium transition-colors"
-              >
-                Login
-              </a>
-            </div>
-            <button className="px-4 py-2 bg-[#D4AF37] text-[#163473] text-base font-medium rounded-md hover:bg-[#B8941F] transition-colors">
-              Logout
-            </button>
+        <div className="md:hidden">
+          <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3 border-t border-gray-200 dark:border-gray-700">
+            <a
+              href="#"
+              className="text-gray-200 hover:text-indigo-400 block px-3 py-2 text-base font-medium transition-colors"
+            >
+              Home
+            </a>
+            <a
+              href="#"
+              className="text-gray-200 hover:text-indigo-400 block px-3 py-2 text-base font-medium transition-colors"
+            >
+              About
+            </a>
+            <a
+              href="#"
+              className="text-gray-200 hover:text-indigo-400 block px-3 py-2 text-base font-medium transition-colors"
+            >
+              Services
+            </a>
+            <a
+              href="#"
+              className="text-gray-200 hover:text-indigo-400 block px-3 py-2 text-base font-medium transition-colors"
+            >
+              Contact
+            </a>
+            <a
+              href="/auth"
+              className="text-gray-200 hover:text-indigo-400 block px-3 py-2 text-base font-medium transition-colors"
+            >
+              Login
+            </a>
           </div>
+          <button className="px-4 py-2 bg-[#D4AF37] text-[#163473] text-base font-medium rounded-md hover:bg-[#B8941F] transition-colors">
+            Logout
+          </button>
         </div>
-      </div>
+        )}
     </nav>
   );
 }
