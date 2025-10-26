@@ -2,8 +2,11 @@
 
 import Image from 'next/image';
 import { useState } from 'react';
+import { createListing } from '../../../../lib/api';
+import { useRouter } from 'next/navigation';
 
 export default function NewListingPage() {
+  const router = useRouter();
   const [formData, setFormData] = useState({
     energyType: '',
     pricePerKwh: '',
@@ -22,12 +25,36 @@ export default function NewListingPage() {
 
   const handleCancel = () => {
     // Navigate back to suppliers page
-    window.history.back();
+    router.push('/suppliers');
   };
 
-  const handleCreate = () => {
-    console.log('Creating new listing:', formData);
-    // TODO: Implement create functionality
+  const handleCreate = async () => {
+    try {
+      // Validate required fields
+      if (!formData.energyType || !formData.pricePerKwh || !formData.amount || 
+          !formData.sellerAccount || !formData.location) {
+        alert('Please fill in all fields');
+        return;
+      }
+
+      // Create the listing with proper title
+      const title = `${formData.energyType} Energy - ${formData.amount} kWh`;
+      
+      await createListing({
+        title: title,
+        energyType: formData.energyType,
+        quantity: formData.amount,
+        price: formData.pricePerKwh,
+        sellerAccount: formData.sellerAccount,
+        location: formData.location
+      });
+      
+      alert('Listing created successfully!');
+      router.push('/suppliers');
+    } catch (error) {
+      alert('Failed to create listing: ' + error.message);
+      console.error('Error creating listing:', error);
+    }
   };
 
   return (
