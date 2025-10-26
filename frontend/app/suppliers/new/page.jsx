@@ -12,7 +12,8 @@ export default function NewListingPage() {
     pricePerKwh: '',
     amount: '',
     sellerAccount: '',
-    location: ''
+    location: '',
+    status: 'active'
   });
 
   const handleInputChange = (e) => {
@@ -46,7 +47,8 @@ export default function NewListingPage() {
         quantity: formData.amount,
         price: formData.pricePerKwh,
         sellerAccount: formData.sellerAccount,
-        location: formData.location
+        location: formData.location,
+        status: formData.status
       });
       
       alert('Listing created successfully!');
@@ -252,6 +254,35 @@ export default function NewListingPage() {
                   }}
                 />
               </div>
+
+              {/* Status */}
+              <div>
+                <label 
+                  className="block text-sm font-medium mb-1"
+                  style={{ 
+                    color: 'white',
+                    fontFamily: 'Lexend Deca, sans-serif'
+                  }}
+                >
+                  Status
+                </label>
+                <select
+                  name="status"
+                  value={formData.status}
+                  onChange={handleInputChange}
+                  className="w-full px-3 py-1 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  style={{
+                    backgroundColor: '#041532',
+                    border: '1px solid #374151',
+                    fontFamily: 'Lexend Deca, sans-serif',
+                    color: 'white',
+                    minHeight: '32px'
+                  }}
+                >
+                  <option value="active" style={{ backgroundColor: '#041532' }}>Active (Available)</option>
+                  <option value="inactive" style={{ backgroundColor: '#041532' }}>Inactive (Not Available)</option>
+                </select>
+              </div>
             </div>
 
             {/* Action Buttons */}
@@ -287,7 +318,7 @@ export default function NewListingPage() {
                     color: 'white',
                     fontFamily: 'Lexend Deca, sans-serif'
                   }}
-                  onMouseEnter={(e) => e.target.style.backgroundColor = '#D2AB17'}
+                  onMouseEnter={(e) => e.target.style.backgroundColor = '#15803d'}
                   onMouseLeave={(e) => e.target.style.backgroundColor = '#2FAA5B'}
                 >
                   Create Listing
