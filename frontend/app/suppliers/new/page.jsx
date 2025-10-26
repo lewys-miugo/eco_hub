@@ -287,6 +287,8 @@ export default function NewListingPage() {
                     color: 'white',
                     fontFamily: 'Lexend Deca, sans-serif'
                   }}
+                  onMouseEnter={(e) => e.target.style.backgroundColor = '#D2AB17'}
+                  onMouseLeave={(e) => e.target.style.backgroundColor = '#2FAA5B'}
                 >
                   Create Listing
                 </button>
