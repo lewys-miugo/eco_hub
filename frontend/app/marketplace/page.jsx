@@ -5,6 +5,36 @@ import Image from 'next/image';
 
 export default function MarketplacePage() {
   const [searchQuery, setSearchQuery] = useState('');
+  const [selectedListing, setSelectedListing] = useState(null);
+  const [contactForm, setContactForm] = useState({
+    name: '',
+    email: '',
+    phone: '',
+    message: ''
+  });
+
+  const handleBuyContact = (listing) => {
+    setSelectedListing(listing);
+  };
+
+  const handleCloseModal = () => {
+    setSelectedListing(null);
+    setContactForm({ name: '', email: '', phone: '', message: '' });
+  };
+
+  const handleContactSubmit = (e) => {
+    e.preventDefault();
+    // TODO: Send contact form to backend
+    alert('Contact form submitted! We will connect you with the seller soon.');
+    handleCloseModal();
+  };
+
+  const handleInputChange = (e) => {
+    setContactForm({
+      ...contactForm,
+      [e.target.name]: e.target.value
+    });
+  };
 
   // Sample marketplace data
   const listings = [
@@ -132,6 +162,7 @@ export default function MarketplacePage() {
 
                 {/* Button - positioned at x=241, y=377 (from card top) */}
                 <button 
+                  onClick={() => handleBuyContact(listing)}
                   className="hover:opacity-90 transition-opacity absolute"
                   style={{ 
                     backgroundColor: '#D2AB17',
@@ -153,6 +184,111 @@ export default function MarketplacePage() {
           ))}
         </div>
       </section>
+
+      {/* Contact Modal */}
+      {selectedListing && (
+        <div 
+          className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center"
+          onClick={handleCloseModal}
+        >
+          <div 
+            className="bg-white rounded-lg p-8 max-w-md w-full mx-4"
+            style={{ fontFamily: 'Lexend Deca, sans-serif' }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h2 className="text-2xl font-semibold mb-4 text-[#163466]">
+              Contact Seller
+            </h2>
+            
+            <div className="mb-4">
+              <p className="text-gray-600">
+                Energy Type: <span className="font-semibold">{selectedListing.energyType}</span>
+              </p>
+              <p className="text-gray-600">
+                Price: <span className="font-semibold">{selectedListing.price} KSH/kWh</span>
+              </p>
+              <p className="text-gray-600">
+                Distance: <span className="font-semibold">{selectedListing.distance} miles</span>
+              </p>
+            </div>
+
+            <form onSubmit={handleContactSubmit}>
+              <div className="mb-4">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Your Name
+                </label>
+                <input
+                  type="text"
+                  name="name"
+                  value={contactForm.name}
+                  onChange={handleInputChange}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#163466]"
+                  required
+                />
+              </div>
+
+              <div className="mb-4">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Email
+                </label>
+                <input
+                  type="email"
+                  name="email"
+                  value={contactForm.email}
+                  onChange={handleInputChange}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#163466]"
+                  required
+                />
+              </div>
+
+              <div className="mb-4">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Phone
+                </label>
+                <input
+                  type="tel"
+                  name="phone"
+                  value={contactForm.phone}
+                  onChange={handleInputChange}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#163466]"
+                  required
+                />
+              </div>
+
+              <div className="mb-4">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Message
+                </label>
+                <textarea
+                  name="message"
+                  value={contactForm.message}
+                  onChange={handleInputChange}
+                  rows="3"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#163466]"
+                  placeholder="Your message to the seller..."
+                />
+              </div>
+
+              <div className="flex gap-3">
+                <button
+                  type="button"
+                  onClick={handleCloseModal}
+                  className="flex-1 px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="flex-1 px-4 py-2 rounded-md text-white transition-colors"
+                  style={{ backgroundColor: '#D2AB17' }}
+                >
+                  Send Message
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
