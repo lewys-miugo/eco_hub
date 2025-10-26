@@ -25,13 +25,13 @@ export default function Navbar() {
               Home
             </a>
             <a
-              href="#"
+              href="/dashboard"
               className="text-white hover:text-indigo-600 dark:hover:text-indigo-400 px-3 py-2 text-sm font-medium transition-colors"
             >
               Dashboard
             </a>
             <a
-              href="#"
+              href="/marketplace"
               className="text-white hover:text-indigo-600 dark:hover:text-indigo-400 px-3 py-2 text-sm font-medium transition-colors"
             >
               Marketplace
@@ -43,7 +43,7 @@ export default function Navbar() {
               Advisor
             </a>
             <a
-              href="#"
+              href="/suppliers"
               className="text-white hover:text-indigo-600 dark:hover:text-indigo-400 px-3 py-2 text-sm font-medium transition-colors"
             >
               Listings
@@ -93,22 +93,28 @@ export default function Navbar() {
                 Home
               </a>
               <a
-                href="#"
+                href="/dashboard"
                 className="text-gray-200 hover:text-indigo-400 block px-3 py-2 text-base font-medium transition-colors"
               >
-                About
+                Dashboard
+              </a>
+              <a
+                href="/marketplace"
+                className="text-gray-200 hover:text-indigo-400 block px-3 py-2 text-base font-medium transition-colors"
+              >
+                Marketplace
               </a>
               <a
                 href="#"
                 className="text-gray-200 hover:text-indigo-400 block px-3 py-2 text-base font-medium transition-colors"
               >
-                Services
+                Advisor
               </a>
               <a
-                href="#"
+                href="/suppliers"
                 className="text-gray-200 hover:text-indigo-400 block px-3 py-2 text-base font-medium transition-colors"
               >
-                Contact
+                Listings
               </a>
             </div>
           </div>
