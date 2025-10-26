@@ -1,11 +1,111 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { fetchListings, deleteListing as deleteListingAPI } from '../../lib/api.js';
 
 export default function SuppliersPage() {
-  // Sample listings data
-  const listings = [
+  const [listings, setListings] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  // Fetch listings from API
+  useEffect(() => {
+    async function loadListings() {
+      try {
+        setLoading(true);
+        const data = await fetchListings();
+        setListings(data);
+        setError(null);
+      } catch (err) {
+        setError('Failed to load listings');
+        console.error(err);
+        // Fallback to sample data if API fails
+        setListings([
+          {
+            id: 1,
+            title: 'I have 10KWh to sell daily',
+            energyType: 'Solar',
+            quantity: 500,
+            price: '0.12',
+            status: 'inactive',
+            location: 'Plantinum Sqr Road',
+          },
+          {
+            id: 2,
+            title: 'Solar Energy Surplus',
+            energyType: 'Solar',
+            quantity: 500,
+            price: '0.12',
+            status: 'active',
+            location: 'Tatu city Kiambu',
+          },
+          {
+            id: 3,
+            title: 'Wind Power Available',
+            energyType: 'Wind',
+            quantity: 750,
+            price: '0.15',
+            status: 'active',
+            location: 'Ngong Hills Nairobi',
+          },
+          {
+            id: 4,
+            title: 'Hydroelectric Excess',
+            energyType: 'Hydro',
+            quantity: 1200,
+            price: '0.10',
+            status: 'active',
+            location: 'Tana River Basin',
+          },
+          {
+            id: 5,
+            title: 'Biomass Energy Supply',
+            energyType: 'Biomass',
+            quantity: 300,
+            price: '0.18',
+            status: 'active',
+            location: 'Kakamega County',
+          },
+        ]);
+      } finally {
+        setLoading(false);
+      }
+    }
+    
+    loadListings();
+  }, []);
+
+  // Handle delete action
+  const handleDelete = async (id) => {
+    if (!confirm('Are you sure you want to delete this listing?')) {
+      return;
+    }
+
+    try {
+      await deleteListingAPI(id);
+      // Remove from local state
+      setListings(listings.filter(listing => listing.id !== id));
+    } catch (err) {
+      alert('Failed to delete listing');
+      console.error(err);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900 mx-auto"></div>
+          <p className="mt-4 text-gray-600">Loading listings...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Sample listings data (fallback)
+  const fallbackListings = [
     {
       id: 1,
       title: 'I have 10KWh to sell daily',
@@ -52,11 +152,6 @@ export default function SuppliersPage() {
       location: 'Kakamega County',
     },
   ];
-
-  const handleDelete = (id) => {
-    console.log('Delete listing:', id);
-    // TODO: Implement delete functionality
-  };
 
   return (
     <div className="min-h-screen bg-white">
