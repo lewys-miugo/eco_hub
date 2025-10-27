@@ -30,7 +30,7 @@ export async function fetchListings(filters = {}) {
  */
 export async function fetchListingById(id) {
   try {
-    const response = await fetch(`${API_BASE_URL}/listings/${id}`);
+    const response = await fetch(`${API_BASE_URL}/listings/${id}/`);
     
     if (!response.ok) {
       throw new Error(`API error: ${response.status}`);
@@ -58,7 +58,13 @@ export async function createListing(listingData) {
     });
     
     if (!response.ok) {
-      const errorData = await response.json();
+      const errorText = await response.text();
+      let errorData;
+      try {
+        errorData = JSON.parse(errorText);
+      } catch (e) {
+        errorData = { message: errorText || 'Failed to create listing' };
+      }
       throw new Error(errorData.message || 'Failed to create listing');
     }
     
@@ -75,7 +81,7 @@ export async function createListing(listingData) {
  */
 export async function updateListing(id, listingData) {
   try {
-    const response = await fetch(`${API_BASE_URL}/listings/${id}`, {
+    const response = await fetch(`${API_BASE_URL}/listings/${id}/`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
@@ -101,7 +107,7 @@ export async function updateListing(id, listingData) {
  */
 export async function deleteListing(id) {
   try {
-    const response = await fetch(`${API_BASE_URL}/listings/${id}`, {
+    const response = await fetch(`${API_BASE_URL}/listings/${id}/`, {
       method: 'DELETE',
     });
     
