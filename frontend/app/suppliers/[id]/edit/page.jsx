@@ -16,11 +16,6 @@ export default function EditListingPage({ params }) {
     location: '',
     status: 'active'
   });
-  
-  // Image upload state
-  const [showImageModal, setShowImageModal] = useState(false);
-  const [selectedImage, setSelectedImage] = useState(null);
-  const [imagePreview, setImagePreview] = useState(null);
 
   // Fetch listing data when page loads
   useEffect(() => {
@@ -55,32 +50,6 @@ export default function EditListingPage({ params }) {
       ...prev,
       [name]: value
     }));
-  };
-
-  const handleImageUpload = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      setSelectedImage(file);
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setImagePreview(reader.result);
-      };
-      reader.readAsDataURL(file);
-    }
-  };
-
-  const handleCloseImageModal = () => {
-    setShowImageModal(false);
-  };
-
-  const handleContinueWithoutImage = () => {
-    setShowImageModal(false);
-  };
-
-  const handleCapturePhoto = () => {
-    // This would use the device camera
-    // For now, just trigger file input
-    document.getElementById('hidden-file-input')?.click();
   };
 
   const handleCancel = () => {
@@ -120,7 +89,7 @@ export default function EditListingPage({ params }) {
       <div className="absolute inset-0 bg-gradient-to-br from-black/60 to-black/40"></div>
       
       {/* Main Content */}
-      <div className="relative z-10 min-h-screen flex items-center justify-center p-8 pt-24">
+      <div className="relative z-10 min-h-screen flex items-center justify-center p-8">
         {loading ? (
           <div className="text-center text-white">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white mx-auto mb-4"></div>
@@ -132,7 +101,7 @@ export default function EditListingPage({ params }) {
             className="mx-auto"
             style={{
               width: '636px',
-              height: '750px',
+              height: '650px',
               backgroundColor: '#163466',
               borderRadius: '10px',
               padding: '32px'
@@ -169,7 +138,7 @@ export default function EditListingPage({ params }) {
             className="mx-auto"
             style={{
               width: '544px',
-              height: '580px',
+              height: '480px',
               border: '2px solid white',
               borderRadius: '8px',
               padding: '20px'
@@ -337,51 +306,6 @@ export default function EditListingPage({ params }) {
               </div>
             </div>
 
-            {/* Upload Photo Button */}
-            <div className="mt-4">
-              <button
-                type="button"
-                onClick={() => setShowImageModal(true)}
-                className="w-full py-2 rounded-md font-medium transition-colors flex items-center justify-center gap-2"
-                style={{
-                  backgroundColor: 'rgba(210, 171, 23, 0.8)',
-                  color: '#000',
-                  fontFamily: 'Lexend Deca, sans-serif',
-                  border: '2px solid white'
-                }}
-                onMouseEnter={(e) => e.target.style.backgroundColor = 'rgba(210, 171, 23, 1)'}
-                onMouseLeave={(e) => e.target.style.backgroundColor = 'rgba(210, 171, 23, 0.8)'}
-              >
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
-                  <circle cx="12" cy="13" r="4" />
-                </svg>
-                Update Photo
-              </button>
-              
-              {/* Image Preview */}
-              {imagePreview && (
-                <div className="mt-3 relative">
-                  <img 
-                    src={imagePreview} 
-                    alt="Preview" 
-                    className="w-full h-32 object-cover rounded-md"
-                    style={{ border: '2px solid white' }}
-                  />
-                  <button
-                    onClick={() => {
-                      setImagePreview(null);
-                      setSelectedImage(null);
-                      setShowImageModal(true);
-                    }}
-                    className="absolute top-2 right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm"
-                  >
-                    ×
-                  </button>
-                </div>
-              )}
-            </div>
-
             {/* Action Buttons - Inside white frame */}
             <div className="flex gap-4 justify-center mt-4">
               {/* Cancel Update Button */}
@@ -418,112 +342,6 @@ export default function EditListingPage({ params }) {
                 Update Listing
               </button>
             </div>
-          </div>
-        </div>
-      )}
-
-      {/* Image Upload Modal */}
-      {showImageModal && (
-        <div 
-          className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center"
-          onClick={handleCloseImageModal}
-        >
-          <div 
-            className="bg-white rounded-lg p-8 max-w-md w-full mx-4"
-            style={{ fontFamily: 'Lexend Deca, sans-serif' }}
-            onClick={(e) => e.stopPropagation()}
-          >
-            <h2 className="text-2xl font-semibold mb-4 text-[#163466]">
-              Update Listing Image
-            </h2>
-            
-            {imagePreview ? (
-              <>
-                <div className="mb-4">
-                  <img 
-                    src={imagePreview} 
-                    alt="Preview" 
-                    className="w-full h-64 object-cover rounded-lg"
-                  />
-                </div>
-                <div className="flex gap-4">
-                  <button
-                    onClick={() => document.getElementById('hidden-file-input')?.click()}
-                    className="flex-1 py-2 px-4 rounded-md font-medium transition-colors"
-                    style={{
-                      backgroundColor: '#D2AB17',
-                      color: '#000'
-                    }}
-                  >
-                    Change Image
-                  </button>
-                  <button
-                    onClick={handleCloseImageModal}
-                    className="flex-1 py-2 px-4 rounded-md font-medium transition-colors"
-                    style={{
-                      backgroundColor: '#2FAA5B',
-                      color: 'white'
-                    }}
-                  >
-                    Use This Image
-                  </button>
-                </div>
-              </>
-            ) : (
-              <>
-                <p className="text-gray-600 mb-4">
-                  Upload a new photo for your energy listing
-                </p>
-                <div className="flex flex-col gap-3">
-                  <button
-                    onClick={handleCapturePhoto}
-                    className="w-full py-3 px-4 rounded-md font-medium transition-colors flex items-center justify-center gap-2"
-                    style={{
-                      backgroundColor: '#D2AB17',
-                      color: '#000'
-                    }}
-                  >
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                      <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
-                      <circle cx="12" cy="13" r="4" />
-                    </svg>
-                    Take Photo
-                  </button>
-                  
-                  <label className="w-full">
-                    <input
-                      type="file"
-                      accept="image/*"
-                      onChange={handleImageUpload}
-                      className="hidden"
-                      id="hidden-file-input"
-                    />
-                    <span 
-                      className="block w-full py-3 px-4 rounded-md font-medium text-center cursor-pointer transition-colors"
-                      style={{
-                        backgroundColor: '#163466',
-                        color: 'white'
-                      }}
-                      onMouseEnter={(e) => e.target.style.opacity = '0.9'}
-                      onMouseLeave={(e) => e.target.style.opacity = '1'}
-                    >
-                      Upload from Computer
-                    </span>
-                  </label>
-                  
-                  <button
-                    onClick={handleContinueWithoutImage}
-                    className="w-full py-2 px-4 rounded-md font-medium transition-colors"
-                    style={{
-                      backgroundColor: 'transparent',
-                      color: '#666'
-                    }}
-                  >
-                    Cancel
-                  </button>
-                </div>
-              </>
-            )}
           </div>
         </div>
       )}
