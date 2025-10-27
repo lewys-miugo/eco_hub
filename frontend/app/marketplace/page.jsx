@@ -197,10 +197,10 @@ export default function MarketplacePage() {
                           <span className="font-semibold">Quantity:</span> {listing.quantity} kWh
                         </p>
                         <p className="text-sm text-gray-700">
-                          <span className="font-semibold">Price:</span> {listing.price} Ksh/kWh
+                          <span className="font-semibold">Location:</span> {listing.location}
                         </p>
                         <p className="text-sm text-gray-700">
-                          <span className="font-semibold">Location:</span> {listing.location}
+                          <span className="font-semibold">Price:</span> {listing.price} Ksh/kWh
                         </p>
                       </div>
 
