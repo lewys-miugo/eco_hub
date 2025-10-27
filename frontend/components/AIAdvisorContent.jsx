@@ -1,16 +1,22 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 
 export default function AIAdvisorContent() {
   const [messages, setMessages] = useState([]);
   const [inputMessage, setInputMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const messagesEndRef = useRef(null);
   const [metrics, setMetrics] = useState({
     carbonSaved: 2847,
     energyGenerated: 2847,
     costSaving: 2847
   });
+
+  // Auto-scroll to bottom when messages change
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages, isLoading]);
 
   // Initialize with welcome message
   useEffect(() => {
@@ -41,11 +47,11 @@ export default function AIAdvisorContent() {
     try {
       // For now, we'll use a mock response since we need authentication
       // In a real implementation, you'd call the API here
-      const response = await fetch('/api/v1/ai/chat', {
+      const response = await fetch('http://localhost:5000/api/v1/ai/chat', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}` // You'll need to implement auth
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
         },
         body: JSON.stringify({ message: inputMessage })
       });
@@ -195,6 +201,7 @@ export default function AIAdvisorContent() {
               </div>
             </div>
           )}
+          <div ref={messagesEndRef} />
         </div>
 
         {/* Chat Input */}
@@ -205,7 +212,7 @@ export default function AIAdvisorContent() {
             onChange={(e) => setInputMessage(e.target.value)}
             onKeyPress={handleKeyPress}
             placeholder="Ask me anything about renewable energy..."
-            className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-black placeholder-gray-400"
             disabled={isLoading}
           />
           <button
