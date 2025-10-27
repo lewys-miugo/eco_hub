@@ -72,7 +72,7 @@ export default function NewListingPage() {
       }
 
       // Create the listing with proper title
-      const title = `${formData.energyType} Energy - ${formData.amount} kWh`;
+      const title = `${formData.energyType} Energy`;
       
       await createListing({
         title: title,
@@ -93,7 +93,7 @@ export default function NewListingPage() {
   };
 
   return (
-    <div className="min-h-screen relative">
+    <div className="min-h-screen relative -mt-[72px]">
       {/* Background Image */}
       <Image
         src="/images/unsplash_Ilpf2eUPpUE.jpg"
@@ -107,7 +107,7 @@ export default function NewListingPage() {
       <div className="absolute inset-0 bg-gradient-to-br from-black/60 to-black/40"></div>
       
       {/* Main Content */}
-      <div className="relative z-10 min-h-screen flex items-center justify-center p-8">
+      <div className="relative z-10 min-h-screen flex items-center justify-center p-8 pt-[80px]">
         {/* Main Content Card */}
         <div 
           className="mx-auto"
