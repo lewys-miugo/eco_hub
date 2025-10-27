@@ -11,6 +11,7 @@ export default function DashboardPage() {
     async function loadMetrics() {
       try {
         const data = await fetchDashboardMetrics();
+        console.log('Dashboard metrics loaded:', data);
         setMetrics(data);
       } catch (error) {
         console.error('Error loading dashboard metrics:', error);
