@@ -23,10 +23,6 @@ export default function ListGeneratorContent() {
     router.push('/marketplace');
   };
 
-  const handleContactSupplier = () => {
-    alert('Contact Supplier functionality - This will connect you to the supplier for this listing.');
-  };
-
   const energyListings = [
     {
       id: 1,
@@ -310,17 +306,11 @@ export default function ListGeneratorContent() {
                   </ul>
                 </div>
 
-                {/* Action Buttons */}
-                <div className="flex gap-4 pt-4">
-                  <button 
-                    onClick={handleContactSupplier}
-                    className="flex-1 bg-[#D4AF37] text-[#1A202C] px-6 py-3 rounded-lg font-medium hover:bg-[#B8941F] transition-colors"
-                  >
-                    Contact Supplier
-                  </button>
+                {/* Action Button */}
+                <div className="flex justify-center pt-4">
                   <button 
                     onClick={handleViewDetails}
-                    className="flex-1 bg-blue-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-blue-700 transition-colors"
+                    className="w-full max-w-md bg-blue-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-blue-700 transition-colors"
                   >
                     View Details
                   </button>
