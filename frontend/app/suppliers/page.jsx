@@ -154,9 +154,9 @@ export default function SuppliersPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-white -mt-[72px]">
       {/* Header Section with Background Image */}
-      <div className="relative w-full h-[267px]">
+      <div className="relative w-full h-[267px] pt-[72px]">
         {/* Background Image */}
         <Image
           src="/images/unsplash_JlhvFEVMwng.jpg"
@@ -171,7 +171,7 @@ export default function SuppliersPage() {
           className="absolute"
           style={{
             left: '46px',
-            top: '118px',
+            top: '160px',
             fontSize: '45px',
             fontFamily: 'Lexend Deca, sans-serif',
             fontWeight: 'normal',
@@ -184,15 +184,13 @@ export default function SuppliersPage() {
 
       {/* Table Section */}
       <div 
-        className="absolute w-full"
+        className="relative w-full"
         style={{
-          left: '0px',
-          top: '212px',
           height: '732px',
         }}
       >
         {/* New Listing Button */}
-        <div className="flex justify-end mb-6 px-8">
+        <div className="flex justify-end mb-2 px-8" style={{ marginTop: '-50px' }}>
           <Link href="/suppliers/new">
             <button
               style={{
@@ -212,6 +210,7 @@ export default function SuppliersPage() {
           </Link>
         </div>
 
+        {/* Table */}
         {/* Table */}
         <div 
           className="overflow-hidden shadow-lg w-full"
