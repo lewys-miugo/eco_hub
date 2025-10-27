@@ -1,4 +1,32 @@
+'use client';
+
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+
 export default function EnergyInsightContent() {
+  const [selectedProject, setSelectedProject] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const router = useRouter();
+
+  const handleButtonClick = (project) => {
+    setSelectedProject(project);
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setSelectedProject(null);
+  };
+
+  const handleGetStarted = () => {
+    closeModal();
+    router.push('/marketplace');
+  };
+
+  const handleLearnMore = () => {
+    alert('Learn more about this energy solution - Detailed information coming soon!');
+  };
+
   const energyProjects = [
     {
       id: 1,
@@ -135,7 +163,10 @@ export default function EnergyInsightContent() {
                 </div>
               </div>
               
-              <button className="bg-[#D4AF37] text-[#1A202C] px-6 py-2 rounded-lg font-medium hover:bg-[#B8941F] transition-colors">
+              <button 
+                onClick={() => handleButtonClick(project)}
+                className="bg-[#D4AF37] text-[#1A202C] px-6 py-2 rounded-lg font-medium hover:bg-[#B8941F] transition-colors"
+              >
                 {project.buttonText}
               </button>
             </div>
@@ -161,6 +192,131 @@ export default function EnergyInsightContent() {
           </div>
         </div>
       ))}
+
+      {/* Modal */}
+      {isModalOpen && selectedProject && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg shadow-2xl max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+            <div className="p-6">
+              {/* Header */}
+              <div className="flex items-center justify-between mb-6">
+                <div className="flex items-center">
+                  <div className="w-16 h-16 bg-gradient-to-br from-blue-100 to-green-100 rounded-lg flex items-center justify-center mr-4">
+                    {selectedProject.image === 'users' && (
+                      <svg className="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z" />
+                      </svg>
+                    )}
+                    {selectedProject.image === 'sun' && (
+                      <svg className="w-8 h-8 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+                      </svg>
+                    )}
+                    {selectedProject.image === 'lightbulb' && (
+                      <svg className="w-8 h-8 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+                      </svg>
+                    )}
+                  </div>
+                  <h2 className="text-2xl font-bold text-gray-800">{selectedProject.title}</h2>
+                </div>
+                <button
+                  onClick={closeModal}
+                  className="text-gray-500 hover:text-gray-700 transition-colors"
+                >
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+
+              {/* Content */}
+              <div className="space-y-4">
+                <p className="text-gray-600">{selectedProject.description}</p>
+                
+                <div className="bg-gray-50 rounded-lg p-4">
+                  <h3 className="font-bold text-gray-800 mb-3">Impact Summary</h3>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="flex items-center text-green-600">
+                      <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M17 8C8 10 5.9 16.17 3.82 21.34l1.89.66.95-2.3c.48.17.98.3 1.34.3C19 20 22 3 22 3c-1 2-8 2.25-13 3.25S2 11.5 2 13.5s1.75 3.75 1.75 3.75S7 14 17 8z"/>
+                      </svg>
+                      <span className="font-medium">{selectedProject.carbonImpact}</span>
+                    </div>
+                    <div className="flex items-center text-blue-600">
+                      <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
+                      </svg>
+                      <span className="font-medium">{selectedProject.savings}</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="bg-blue-50 rounded-lg p-4">
+                  <h3 className="font-bold text-gray-800 mb-2">What You'll Get</h3>
+                  <ul className="list-disc list-inside text-sm text-gray-600 space-y-1">
+                    {selectedProject.id === 1 && (
+                      <>
+                        <li>Invest in local renewable energy projects</li>
+                        <li>Earn 8-12% returns on your investment</li>
+                        <li>Support your local community</li>
+                        <li>Reduce carbon footprint significantly</li>
+                        <li>Access to exclusive community energy markets</li>
+                      </>
+                    )}
+                    {selectedProject.id === 2 && (
+                      <>
+                        <li>Switch to clean solar energy</li>
+                        <li>Save up to $500 per year on energy costs</li>
+                        <li>6-year payback period</li>
+                        <li>Increase property value</li>
+                        <li>Reduce dependency on grid electricity</li>
+                      </>
+                    )}
+                    {selectedProject.id === 3 && (
+                      <>
+                        <li>Personalized energy optimization tips</li>
+                        <li>Reduce energy consumption by 25%</li>
+                        <li>Maximize home energy efficiency</li>
+                        <li>Save $150-250 per year</li>
+                        <li>Track your energy usage patterns</li>
+                      </>
+                    )}
+                  </ul>
+                </div>
+
+                <div className="bg-green-50 rounded-lg p-4">
+                  <h3 className="font-bold text-gray-800 mb-2 flex items-center">
+                    <svg className="w-5 h-5 text-green-600 mr-2" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M17 8C8 10 5.9 16.17 3.82 21.34l1.89.66.95-2.3c.48.17.98.3 1.34.3C19 20 22 3 22 3c-1 2-8 2.25-13 3.25S2 11.5 2 13.5s1.75 3.75 1.75 3.75S7 14 17 8z"/>
+                    </svg>
+                    Environmental Benefits
+                  </h3>
+                  <p className="text-sm text-green-700">
+                    {selectedProject.carbonImpact} - Join the fight against climate change with these sustainable energy solutions.
+                  </p>
+                </div>
+
+                {/* Action Buttons */}
+                <div className="flex gap-4 pt-4">
+                  <button 
+                    onClick={handleGetStarted}
+                    className="flex-1 bg-[#D4AF37] text-[#1A202C] px-6 py-3 rounded-lg font-medium hover:bg-[#B8941F] transition-colors"
+                  >
+                    Get Started
+                  </button>
+                  <button 
+                    onClick={handleLearnMore}
+                    className="flex-1 bg-blue-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-blue-700 transition-colors"
+                  >
+                    Learn More
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

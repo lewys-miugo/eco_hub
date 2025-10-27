@@ -1,4 +1,28 @@
+'use client';
+
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+
 export default function ListGeneratorContent() {
+  const [selectedListing, setSelectedListing] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const router = useRouter();
+
+  const handleMoreClick = (listing) => {
+    setSelectedListing(listing);
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setSelectedListing(null);
+  };
+
+  const handleViewDetails = () => {
+    closeModal();
+    router.push('/marketplace');
+  };
+
   const energyListings = [
     {
       id: 1,
@@ -165,13 +189,137 @@ export default function ListGeneratorContent() {
                   </svg>
                 </div>
               </div>
-              <button className="bg-[#D4AF37] text-[#1A202C] px-6 py-2 rounded-lg font-medium hover:bg-[#B8941F] transition-colors">
+              <button 
+                onClick={() => handleMoreClick(listing)}
+                className="bg-[#D4AF37] text-[#1A202C] px-6 py-2 rounded-lg font-medium hover:bg-[#B8941F] transition-colors"
+              >
                 More
               </button>
             </div>
           </div>
         </div>
       ))}
+
+      {/* Modal */}
+      {isModalOpen && selectedListing && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg shadow-2xl max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+            <div className="p-6">
+              {/* Header */}
+              <div className="flex items-center justify-between mb-6">
+                <div className="flex items-center">
+                  <div className="w-16 h-16 bg-gradient-to-br from-blue-100 to-green-100 rounded-lg flex items-center justify-center mr-4">
+                    {selectedListing.image === 'sun' && (
+                      <svg className="w-8 h-8 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+                      </svg>
+                    )}
+                    {selectedListing.image === 'wind' && (
+                      <svg className="w-8 h-8 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                      </svg>
+                    )}
+                    {selectedListing.image === 'droplet' && (
+                      <svg className="w-8 h-8 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
+                      </svg>
+                    )}
+                  </div>
+                  <h2 className="text-2xl font-bold text-gray-800">{selectedListing.title}</h2>
+                </div>
+                <button
+                  onClick={closeModal}
+                  className="text-gray-500 hover:text-gray-700 transition-colors"
+                >
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+
+              {/* Content */}
+              <div className="space-y-4">
+                <p className="text-gray-600">{selectedListing.description}</p>
+                
+                <div className="bg-gray-50 rounded-lg p-4">
+                  <h3 className="font-bold text-gray-800 mb-3">Details</h3>
+                  <div className="grid grid-cols-2 gap-4 text-sm">
+                    <div>
+                      <span className="text-gray-600">Energy Type:</span>
+                      <span className="font-bold ml-2 text-gray-800">{selectedListing.energyType}</span>
+                    </div>
+                    <div>
+                      <span className="text-gray-600">Price per kWh:</span>
+                      <span className="font-bold ml-2 text-gray-800">{selectedListing.pricePerKwh}</span>
+                    </div>
+                    <div>
+                      <span className="text-gray-600">Available kWh:</span>
+                      <span className="font-bold ml-2 text-gray-800">{selectedListing.availableKwh}</span>
+                    </div>
+                    <div>
+                      <span className="text-gray-600">Rating:</span>
+                      <span className="font-bold ml-2 text-yellow-600">{selectedListing.rating} ⭐</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="bg-green-50 rounded-lg p-4">
+                  <h3 className="font-bold text-gray-800 mb-2 flex items-center">
+                    <svg className="w-5 h-5 text-green-600 mr-2" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M17 8C8 10 5.9 16.17 3.82 21.34l1.89.66.95-2.3c.48.17.98.3 1.34.3C19 20 22 3 22 3c-1 2-8 2.25-13 3.25S2 11.5 2 13.5s1.75 3.75 1.75 3.75S7 14 17 8z"/>
+                    </svg>
+                    Environmental Impact
+                  </h3>
+                  <p className="text-green-700 font-bold">{selectedListing.carbonSaved}</p>
+                  <p className="text-sm text-green-600 mt-2">
+                    This renewable energy source helps reduce carbon emissions and promotes sustainable living.
+                  </p>
+                </div>
+
+                <div className="bg-blue-50 rounded-lg p-4">
+                  <h3 className="font-bold text-gray-800 mb-2">Why Choose This?</h3>
+                  <ul className="list-disc list-inside text-sm text-gray-600 space-y-1">
+                    {selectedListing.energyType === 'Solar' && (
+                      <>
+                        <li>25-year warranty on high-efficiency panels</li>
+                        <li>Reduces electricity bill by 50-90%</li>
+                        <li>Low maintenance requirements</li>
+                        <li>Increases property value</li>
+                      </>
+                    )}
+                    {selectedListing.energyType === 'Wind' && (
+                      <>
+                        <li>Clean energy from local turbines</li>
+                        <li>Great for reducing carbon footprint</li>
+                        <li>Sustainable and affordable</li>
+                        <li>Consistent energy generation</li>
+                      </>
+                    )}
+                    {selectedListing.energyType === 'Hydro' && (
+                      <>
+                        <li>Sustainable hydroelectric energy</li>
+                        <li>Consistent supply</li>
+                        <li>Minimal environmental impact</li>
+                        <li>Natural and clean power source</li>
+                      </>
+                    )}
+                  </ul>
+                </div>
+
+                {/* Action Button */}
+                <div className="flex justify-center pt-4">
+                  <button 
+                    onClick={handleViewDetails}
+                    className="w-full max-w-md bg-blue-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-blue-700 transition-colors"
+                  >
+                    View Details
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

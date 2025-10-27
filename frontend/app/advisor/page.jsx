@@ -62,35 +62,6 @@ export default function AdvisorPage() {
                 ))}
               </div>
             </div>
-
-                  {/* AI Chat Input - Now Functional */}
-                  <div className="flex items-center space-x-4">
-                    {/* AI Avatar - Black Circle with AI Icon */}
-                    <div className="w-12 h-12 bg-black rounded-full flex-shrink-0 flex items-center justify-center">
-                      <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                      </svg>
-                    </div>
-                    
-                    {/* Chat Input Field */}
-                    <div className="flex-1">
-                      <input
-                        type="text"
-                        placeholder="Ask me anything about renewable energy ..."
-                        className="w-full px-6 py-3 bg-white rounded-full border-2 border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-600 text-gray-800 placeholder-gray-400"
-                        onKeyPress={(e) => {
-                          if (e.key === 'Enter') {
-                            // This will trigger the AI chat functionality in the content area
-                            console.log('AI Chat input:', e.target.value);
-                          }
-                        }}
-                      />
-                    </div>
-                    {/* Send Button */}
-                    <button className="px-8 py-3 bg-blue-600 text-white rounded-full hover:bg-blue-700 transition-colors font-medium shadow-md">
-                      Send
-                    </button>
-                  </div>
           </div>
         </div>
 

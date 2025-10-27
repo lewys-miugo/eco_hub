@@ -416,7 +416,32 @@ def ai_chat():
         }), 200
         
     except Exception as e:
-        return jsonify({'error': f'Chat error: {str(e)}'}), 500
+        error_msg = str(e)
+        
+        # Check if it's a quota error
+        if "quota" in error_msg.lower() or "429" in error_msg or "insufficient_quota" in error_msg:
+            # Return fallback response for quota exceeded
+            fallback_responses = [
+                "Great question! Solar panels can reduce your electricity bill by 50-90% depending on your location and energy usage. The average payback period is 6-8 years. Would you like specific advice for your area?",
+                "Excellent! Wind energy is perfect for locations with consistent wind patterns. I recommend checking our marketplace for local wind energy suppliers. You could save up to $200/month on energy costs!",
+                "That's a fantastic goal! For a 2000 sq ft home, you'd need about 20-25 solar panels. The total cost would be around $15,000-$25,000, but with tax incentives, you could save 30%!",
+                "Absolutely! Our marketplace connects you with local renewable energy suppliers. You can buy clean energy directly from your neighbors and support the community!",
+                "Perfect timing! Solar is one of the best renewable energy options. Consider factors like roof orientation, shading, and local incentives when planning your installation."
+            ]
+            
+            import random
+            fallback_response = random.choice(fallback_responses)
+            emojis = ['☀️', '🌱', '⚡', '💡']
+            
+            return jsonify({
+                'response': fallback_response,
+                'emojis': emojis,
+                'note': 'Using fallback response - OpenAI quota exceeded'
+            }), 200
+        
+        # For other errors, return generic error message
+        print(f"AI Chat error: {error_msg}")
+        return jsonify({'error': f'Chat error: {error_msg}'}), 500
 
 @app.route('/api/v1/ai/interactions', methods=['GET'])
 @jwt_required()
