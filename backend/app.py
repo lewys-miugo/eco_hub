@@ -1,15 +1,9 @@
 import os
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify
 from flask_cors import CORS
-from flask_sqlalchemy import SQLAlchemy
-from flask_jwt_extended import JWTManager, create_access_token, jwt_required, get_jwt_identity
-from flask_bcrypt import Bcrypt
 import psycopg2
 from psycopg2.extras import RealDictCursor
 from dotenv import load_dotenv
-from models import User, Listing, AIInteraction, Transaction, db
-from ai_service import AIService
-from config import config
 
 # Import API blueprints
 from api.listings import listings_bp
@@ -17,7 +11,7 @@ from api.dashboard import dashboard_bp
 from api.ai import ai_bp
 
 load_dotenv()
-DATABASE_URL = os.getenv("DATABASE_URL")
+
 app = Flask(__name__)
 CORS(app, resources={
     r"/api/*": {
@@ -40,18 +34,8 @@ app.register_blueprint(listings_bp)
 app.register_blueprint(dashboard_bp)
 app.register_blueprint(ai_bp)
 
-# Configuration
-config_name = os.getenv('FLASK_ENV', 'development')
-app.config.from_object(config[config_name])
-
-# Initialize extensions
-CORS(app)
-jwt = JWTManager(app)
-bcrypt = Bcrypt(app)
-db.init_app(app)
-
-# Initialize AI service
-ai_service = AIService()
+# Database configuration
+DATABASE_URL = os.getenv('DATABASE_URL', 'postgresql://user:password@localhost:5432/eco_hub')
 
 def get_db_connection():
     """Create a database connection"""
@@ -467,7 +451,5 @@ def get_user_ai_interactions():
         return jsonify({'error': f'Error fetching interactions: {str(e)}'}), 500
 
 if __name__ == '__main__':
-    # Ensure tables exist on direct run (Flask 3 removed before_first_request)
-    with app.app_context():
-        db.create_all()
     app.run(debug=True, host='0.0.0.0', port=5000)
+
