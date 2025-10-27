@@ -47,11 +47,11 @@ export default function AIAdvisorContent() {
     try {
       // For now, we'll use a mock response since we need authentication
       // In a real implementation, you'd call the API here
-      const response = await fetch('/api/v1/ai/chat', {
+      const response = await fetch('http://localhost:5000/api/v1/ai/chat', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}` // You'll need to implement auth
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
         },
         body: JSON.stringify({ message: inputMessage })
       });
