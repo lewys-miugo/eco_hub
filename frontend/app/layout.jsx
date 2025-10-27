@@ -14,7 +14,9 @@ export default function RootLayout({ children }) {
     <html lang="en">
       <body className={`${inter.variable} antialiased`}>
         <Navbar />
-        {children}
+        <div style={{ paddingTop: '72px' }}>
+          {children}
+        </div>
         <Footer />
       </body>
     </html>
