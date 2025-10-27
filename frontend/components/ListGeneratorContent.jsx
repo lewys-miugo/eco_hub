@@ -1,10 +1,12 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 
 export default function ListGeneratorContent() {
   const [selectedListing, setSelectedListing] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const router = useRouter();
 
   const handleMoreClick = (listing) => {
     setSelectedListing(listing);
@@ -14,6 +16,15 @@ export default function ListGeneratorContent() {
   const closeModal = () => {
     setIsModalOpen(false);
     setSelectedListing(null);
+  };
+
+  const handleViewDetails = () => {
+    closeModal();
+    router.push('/marketplace');
+  };
+
+  const handleContactSupplier = () => {
+    alert('Contact Supplier functionality - This will connect you to the supplier for this listing.');
   };
 
   const energyListings = [
@@ -301,10 +312,16 @@ export default function ListGeneratorContent() {
 
                 {/* Action Buttons */}
                 <div className="flex gap-4 pt-4">
-                  <button className="flex-1 bg-[#D4AF37] text-[#1A202C] px-6 py-3 rounded-lg font-medium hover:bg-[#B8941F] transition-colors">
+                  <button 
+                    onClick={handleContactSupplier}
+                    className="flex-1 bg-[#D4AF37] text-[#1A202C] px-6 py-3 rounded-lg font-medium hover:bg-[#B8941F] transition-colors"
+                  >
                     Contact Supplier
                   </button>
-                  <button className="flex-1 bg-blue-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-blue-700 transition-colors">
+                  <button 
+                    onClick={handleViewDetails}
+                    className="flex-1 bg-blue-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-blue-700 transition-colors"
+                  >
                     View Details
                   </button>
                 </div>

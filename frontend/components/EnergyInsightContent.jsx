@@ -1,10 +1,12 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 
 export default function EnergyInsightContent() {
   const [selectedProject, setSelectedProject] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const router = useRouter();
 
   const handleButtonClick = (project) => {
     setSelectedProject(project);
@@ -14,6 +16,15 @@ export default function EnergyInsightContent() {
   const closeModal = () => {
     setIsModalOpen(false);
     setSelectedProject(null);
+  };
+
+  const handleGetStarted = () => {
+    closeModal();
+    router.push('/marketplace');
+  };
+
+  const handleLearnMore = () => {
+    alert('Learn more about this energy solution - Detailed information coming soon!');
   };
 
   const energyProjects = [
@@ -288,10 +299,16 @@ export default function EnergyInsightContent() {
 
                 {/* Action Buttons */}
                 <div className="flex gap-4 pt-4">
-                  <button className="flex-1 bg-[#D4AF37] text-[#1A202C] px-6 py-3 rounded-lg font-medium hover:bg-[#B8941F] transition-colors">
+                  <button 
+                    onClick={handleGetStarted}
+                    className="flex-1 bg-[#D4AF37] text-[#1A202C] px-6 py-3 rounded-lg font-medium hover:bg-[#B8941F] transition-colors"
+                  >
                     Get Started
                   </button>
-                  <button className="flex-1 bg-blue-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-blue-700 transition-colors">
+                  <button 
+                    onClick={handleLearnMore}
+                    className="flex-1 bg-blue-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-blue-700 transition-colors"
+                  >
                     Learn More
                   </button>
                 </div>
