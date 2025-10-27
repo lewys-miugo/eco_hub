@@ -49,7 +49,7 @@ export async function fetchListingById(id) {
  */
 export async function createListing(listingData) {
   try {
-    const response = await fetch(`${API_BASE_URL}/listings`, {
+    const response = await fetch(`${API_BASE_URL}/listings/`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
