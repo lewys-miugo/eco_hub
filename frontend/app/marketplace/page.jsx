@@ -17,6 +17,10 @@ export default function MarketplacePage() {
     message: ''
   });
 
+  // Filter states
+  const [selectedEnergyType, setSelectedEnergyType] = useState('');
+  const [sortBy, setSortBy] = useState('price'); // price, distance, newest
+
   // Fetch listings from API
   useEffect(() => {
     async function loadListings() {
@@ -61,16 +65,34 @@ export default function MarketplacePage() {
     });
   };
 
-  // Filter listings based on search query
-  const filteredListings = listings.filter(listing => {
-    if (!searchQuery) return true;
-    const query = searchQuery.toLowerCase();
-    return (
-      listing.title?.toLowerCase().includes(query) ||
-      listing.energyType?.toLowerCase().includes(query) ||
-      listing.location?.toLowerCase().includes(query)
-    );
-  });
+  // Filter listings based on search query, energy type, and sort
+  const filteredListings = listings
+    .filter(listing => {
+      // Search query filter
+      if (searchQuery) {
+        const query = searchQuery.toLowerCase();
+        const matchesSearch = (
+          listing.title?.toLowerCase().includes(query) ||
+          listing.energyType?.toLowerCase().includes(query) ||
+          listing.location?.toLowerCase().includes(query)
+        );
+        if (!matchesSearch) return false;
+      }
+      
+      // Energy type filter
+      if (selectedEnergyType && listing.energyType !== selectedEnergyType) {
+        return false;
+      }
+      
+      return true;
+    })
+    .sort((a, b) => {
+      if (sortBy === 'price') {
+        return parseFloat(a.price) - parseFloat(b.price);
+      }
+      // Default to newest first
+      return new Date(b.createdAt) - new Date(a.createdAt);
+    });
 
   // Helper function to get image based on energy type
   const getImageForEnergyType = (energyType) => {
@@ -114,27 +136,69 @@ export default function MarketplacePage() {
       {/* Marketplace Section */}
       <section className="container mx-auto px-8" style={{ paddingTop: '24px' }}>
         {/* Header */}
-        <div>
-          <h1 
-            className="text-[35px] font-normal"
-            style={{ 
-              color: '#163466', 
-              fontFamily: 'Lexend Deca, sans-serif',
-              marginBottom: '8px'
-            }}
-          >
-            Marketplace
-          </h1>
-          <p 
-            className="text-[24px] font-light"
-            style={{ 
-              color: '#163466', 
-              fontFamily: 'Lexend Deca, sans-serif',
-              marginBottom: '24px'
-            }}
-          >
-            Solar Energy closest to you for you at affordable price!
-          </p>
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
+          <div>
+            <h1 
+              className="text-[35px] font-normal"
+              style={{ 
+                color: '#163466', 
+                fontFamily: 'Lexend Deca, sans-serif',
+                marginBottom: '8px'
+              }}
+            >
+              Marketplace
+            </h1>
+            <p 
+              className="text-[24px] font-light"
+              style={{ 
+                color: '#163466', 
+                fontFamily: 'Lexend Deca, sans-serif'
+              }}
+            >
+              Solar Energy closest to you for you at affordable price!
+            </p>
+          </div>
+          
+          {/* Filters */}
+          <div className="flex gap-3" style={{ fontFamily: 'Lexend Deca, sans-serif' }}>
+            {/* Energy Type Filter */}
+            <select
+              value={selectedEnergyType}
+              onChange={(e) => setSelectedEnergyType(e.target.value)}
+              className="px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#163466]"
+              style={{
+                backgroundColor: 'white',
+                color: '#163466',
+                minWidth: '150px',
+                border: '1px solid #D1D5DB',
+                borderRadius: '10px'
+              }}
+            >
+              <option value="">All Energy Types</option>
+              <option value="Solar">Solar</option>
+              <option value="Wind">Wind</option>
+              <option value="Hydro">Hydro</option>
+              <option value="Biomass">Biomass</option>
+              <option value="Geothermal">Geothermal</option>
+            </select>
+            
+            {/* Sort Filter */}
+            <select
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value)}
+              className="px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#163466]"
+              style={{
+                backgroundColor: 'white',
+                color: '#163466',
+                minWidth: '140px',
+                border: '1px solid #D1D5DB',
+                borderRadius: '10px'
+              }}
+            >
+              <option value="newest">Newest First</option>
+              <option value="price">Lowest Price</option>
+            </select>
+          </div>
         </div>
 
         {/* Loading State */}
