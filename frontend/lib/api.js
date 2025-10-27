@@ -10,7 +10,7 @@ export async function fetchListings(filters = {}) {
     if (filters.energyType) queryParams.append('energy_type', filters.energyType);
     if (filters.limit) queryParams.append('limit', filters.limit);
     
-    const url = `${API_BASE_URL}/listings?${queryParams}`;
+    const url = `${API_BASE_URL}/listings/?${queryParams}`;
     const response = await fetch(url);
     
     if (!response.ok) {
@@ -30,7 +30,7 @@ export async function fetchListings(filters = {}) {
  */
 export async function fetchListingById(id) {
   try {
-    const response = await fetch(`${API_BASE_URL}/listings/${id}`);
+    const response = await fetch(`${API_BASE_URL}/listings/${id}/`);
     
     if (!response.ok) {
       throw new Error(`API error: ${response.status}`);
@@ -49,7 +49,7 @@ export async function fetchListingById(id) {
  */
 export async function createListing(listingData) {
   try {
-    const response = await fetch(`${API_BASE_URL}/listings`, {
+    const response = await fetch(`${API_BASE_URL}/listings/`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -75,7 +75,7 @@ export async function createListing(listingData) {
  */
 export async function updateListing(id, listingData) {
   try {
-    const response = await fetch(`${API_BASE_URL}/listings/${id}`, {
+    const response = await fetch(`${API_BASE_URL}/listings/${id}/`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
@@ -101,7 +101,7 @@ export async function updateListing(id, listingData) {
  */
 export async function deleteListing(id) {
   try {
-    const response = await fetch(`${API_BASE_URL}/listings/${id}`, {
+    const response = await fetch(`${API_BASE_URL}/listings/${id}/`, {
       method: 'DELETE',
     });
     
