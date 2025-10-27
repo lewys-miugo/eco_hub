@@ -15,6 +15,11 @@ export default function NewListingPage() {
     location: '',
     status: 'active'
   });
+  
+  // Image upload state
+  const [showImageModal, setShowImageModal] = useState(false);
+  const [selectedImage, setSelectedImage] = useState(null);
+  const [imagePreview, setImagePreview] = useState(null);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -22,6 +27,34 @@ export default function NewListingPage() {
       ...prev,
       [name]: value
     }));
+  };
+
+  const handleImageUpload = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setSelectedImage(file);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreview(reader.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleCloseImageModal = () => {
+    setShowImageModal(false);
+    setSelectedImage(null);
+    setImagePreview(null);
+  };
+
+  const handleContinueWithoutImage = () => {
+    setShowImageModal(false);
+  };
+
+  const handleCapturePhoto = () => {
+    // This would use the device camera
+    // For now, just trigger file input
+    document.getElementById('hidden-file-input')?.click();
   };
 
   const handleCancel = () => {
@@ -283,27 +316,59 @@ export default function NewListingPage() {
                   <option value="inactive" style={{ backgroundColor: '#041532' }}>Inactive (Not Available)</option>
                 </select>
               </div>
+
+              {/* Image Preview */}
+              {imagePreview && (
+                <div className="mt-3">
+                  <label 
+                    className="block text-sm font-medium mb-2"
+                    style={{ 
+                      color: 'white',
+                      fontFamily: 'Lexend Deca, sans-serif'
+                    }}
+                  >
+                    Selected Image
+                  </label>
+                  <div className="relative w-full h-32 rounded-md overflow-hidden">
+                    <img 
+                      src={imagePreview} 
+                      alt="Preview" 
+                      className="w-full h-full object-cover"
+                    />
+                    <button
+                      onClick={() => {
+                        setImagePreview(null);
+                        setSelectedImage(null);
+                        setShowImageModal(true);
+                      }}
+                      className="absolute top-2 right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm"
+                    >
+                      ×
+                    </button>
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* Action Buttons */}
             <div className="space-y-3 mt-4">
-              {/* Auto-fill with AI Button */}
+              {/* Upload Photo Button */}
               <button
-                onClick={handleCancel}
+                onClick={() => setShowImageModal(true)}
                 className="w-full py-1 rounded-md font-medium transition-colors flex items-center justify-center gap-2"
                 style={{
-                  backgroundColor: 'rgba(47, 170, 91, 0.5)',
-                  color: 'white',
+                  backgroundColor: 'rgba(210, 171, 23, 0.8)',
+                  color: '#000',
                   fontFamily: 'Lexend Deca, sans-serif'
                 }}
+                onMouseEnter={(e) => e.target.style.backgroundColor = 'rgba(210, 171, 23, 1)'}
+                onMouseLeave={(e) => e.target.style.backgroundColor = 'rgba(210, 171, 23, 0.8)'}
               >
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M12 19l7-7 3 3-7 7-3-3z" />
-                  <path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z" />
-                  <path d="M2 2l7.586 7.586" />
-                  <circle cx="11" cy="11" r="2" />
+                  <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
+                  <circle cx="12" cy="13" r="4" />
                 </svg>
-                Auto-fill with AI
+                Upload Photo
               </button>
 
               {/* Cancel and Create Buttons */}
@@ -346,6 +411,112 @@ export default function NewListingPage() {
           </div>
         </div>
       </div>
+
+      {/* Image Upload Modal */}
+      {showImageModal && (
+        <div 
+          className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center"
+          onClick={handleCloseImageModal}
+        >
+          <div 
+            className="bg-white rounded-lg p-8 max-w-md w-full mx-4"
+            style={{ fontFamily: 'Lexend Deca, sans-serif' }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h2 className="text-2xl font-semibold mb-4 text-[#163466]">
+              Add Listing Image
+            </h2>
+            
+            {imagePreview ? (
+              <>
+                <div className="mb-4">
+                  <img 
+                    src={imagePreview} 
+                    alt="Preview" 
+                    className="w-full h-64 object-cover rounded-lg"
+                  />
+                </div>
+                <div className="flex gap-4">
+                  <button
+                    onClick={() => document.getElementById('hidden-file-input')?.click()}
+                    className="flex-1 py-2 px-4 rounded-md font-medium transition-colors"
+                    style={{
+                      backgroundColor: '#D2AB17',
+                      color: '#000'
+                    }}
+                  >
+                    Change Image
+                  </button>
+                  <button
+                    onClick={handleCloseImageModal}
+                    className="flex-1 py-2 px-4 rounded-md font-medium transition-colors"
+                    style={{
+                      backgroundColor: '#2FAA5B',
+                      color: 'white'
+                    }}
+                  >
+                    Use This Image
+                  </button>
+                </div>
+              </>
+            ) : (
+              <>
+                <p className="text-gray-600 mb-4">
+                  Add a photo of your energy installation
+                </p>
+                <div className="flex flex-col gap-3">
+                  <button
+                    onClick={handleCapturePhoto}
+                    className="w-full py-3 px-4 rounded-md font-medium transition-colors flex items-center justify-center gap-2"
+                    style={{
+                      backgroundColor: '#D2AB17',
+                      color: '#000'
+                    }}
+                  >
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
+                      <circle cx="12" cy="13" r="4" />
+                    </svg>
+                    Take Photo
+                  </button>
+                  
+                  <label className="w-full">
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={handleImageUpload}
+                      className="hidden"
+                      id="hidden-file-input"
+                    />
+                    <span 
+                      className="block w-full py-3 px-4 rounded-md font-medium text-center cursor-pointer transition-colors"
+                      style={{
+                        backgroundColor: '#163466',
+                        color: 'white'
+                      }}
+                      onMouseEnter={(e) => e.target.style.opacity = '0.9'}
+                      onMouseLeave={(e) => e.target.style.opacity = '1'}
+                    >
+                      Upload from Computer
+                    </span>
+                  </label>
+                  
+                  <button
+                    onClick={handleContinueWithoutImage}
+                    className="w-full py-2 px-4 rounded-md font-medium transition-colors"
+                    style={{
+                      backgroundColor: 'transparent',
+                      color: '#666'
+                    }}
+                  >
+                    Skip for now
+                  </button>
+                </div>
+              </>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
