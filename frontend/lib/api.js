@@ -10,7 +10,7 @@ export async function fetchListings(filters = {}) {
     if (filters.energyType) queryParams.append('energy_type', filters.energyType);
     if (filters.limit) queryParams.append('limit', filters.limit);
     
-    const url = `${API_BASE_URL}/listings?${queryParams}`;
+    const url = `${API_BASE_URL}/listings/?${queryParams}`;
     const response = await fetch(url);
     
     if (!response.ok) {
