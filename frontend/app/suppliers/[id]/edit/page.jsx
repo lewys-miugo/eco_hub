@@ -11,6 +11,7 @@ export default function EditListingPage({ params }) {
   const { showToast } = useToast();
   const [loading, setLoading] = useState(true);
   const [formData, setFormData] = useState({
+    title: '',
     energyType: '',
     pricePerKwh: '',
     amount: '',
@@ -26,6 +27,7 @@ export default function EditListingPage({ params }) {
         const listing = await fetchListingById(params.id);
         if (listing) {
           setFormData({
+            title: listing.title || '',
             energyType: listing.energyType || '',
             pricePerKwh: listing.price || '',
             amount: listing.quantity || '',
@@ -62,6 +64,7 @@ export default function EditListingPage({ params }) {
   const handleUpdate = async () => {
     try {
       await updateListing(params.id, {
+        title: formData.title,
         energyType: formData.energyType,
         quantity: formData.amount,
         price: formData.pricePerKwh,
@@ -93,7 +96,7 @@ export default function EditListingPage({ params }) {
       <div className="absolute inset-0 bg-gradient-to-br from-black/60 to-black/40"></div>
       
       {/* Main Content */}
-      <div className="relative z-10 min-h-screen flex items-center justify-center p-8">
+      <div className="relative z-10 min-h-screen flex items-center justify-center p-4 sm:p-8">
         {loading ? (
           <div className="text-center text-white">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white mx-auto mb-4"></div>
@@ -102,13 +105,12 @@ export default function EditListingPage({ params }) {
         ) : (
           /* Main Content Card */
           <div 
-            className="mx-auto"
+            className="mx-auto w-full max-w-2xl"
             style={{
-              width: '636px',
-              height: '650px',
+              minHeight: '650px',
               backgroundColor: '#163466',
               borderRadius: '10px',
-              padding: '32px'
+              padding: '24px'
             }}
           >
           {/* Card Header */}
@@ -139,17 +141,42 @@ export default function EditListingPage({ params }) {
 
           {/* White Frame Container */}
           <div 
-            className="mx-auto"
+            className="mx-auto w-full max-w-xl"
             style={{
-              width: '544px',
-              height: '486px',
+              minHeight: '486px',
               border: '2px solid white',
               borderRadius: '8px',
-              padding: '20px'
+              padding: '16px'
             }}
           >
             {/* Form Fields */}
             <div className="space-y-3 mb-4">
+              {/* Listing Title */}
+              <div>
+                <label 
+                  className="block text-sm font-medium mb-1"
+                  style={{ 
+                    color: 'white',
+                    fontFamily: 'Lexend Deca, sans-serif'
+                  }}
+                >
+                  Listing Title
+                </label>
+                <input
+                  type="text"
+                  name="title"
+                  value={formData.title}
+                  onChange={handleInputChange}
+                  placeholder="e.g., Solar Energy Available"
+                  className="w-full px-3 py-1 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  style={{
+                    backgroundColor: '#041532',
+                    border: '1px solid #374151',
+                    fontFamily: 'Lexend Deca, sans-serif'
+                  }}
+                />
+              </div>
+
               {/* Energy Type */}
               <div>
                 <label 
@@ -311,13 +338,15 @@ export default function EditListingPage({ params }) {
             </div>
 
             {/* Action Buttons - Inside white frame */}
-            <div className="flex gap-4 justify-center mt-4">
+            <div className="flex gap-4 justify-center mt-4 flex-wrap">
               {/* Cancel Update Button */}
               <button
                 onClick={handleCancel}
                 className="rounded-md font-medium transition-colors"
                 style={{
-                  width: '150px',
+                  minWidth: '120px',
+                  width: '100%',
+                  maxWidth: '150px',
                   height: '35px',
                   backgroundColor: '#2FAA5B',
                   color: 'white',
@@ -326,16 +355,18 @@ export default function EditListingPage({ params }) {
                 onMouseEnter={(e) => e.target.style.backgroundColor = '#15803d'}
                 onMouseLeave={(e) => e.target.style.backgroundColor = '#2FAA5B'}
               >
-                Cancel Update
+                Cancel
               </button>
 
               {/* Update Listing Button */}
               <button
                 onClick={handleUpdate}
                 className="rounded-md font-medium transition-colors"
-                style={{
-                  width: '150px',
-                  height: '35px',
+                  style={{
+                    minWidth: '120px',
+                    width: '100%',
+                    maxWidth: '150px',
+                    height: '35px',
                   backgroundColor: '#2FAA5B',
                   color: 'white',
                   fontFamily: 'Lexend Deca, sans-serif'
@@ -343,7 +374,7 @@ export default function EditListingPage({ params }) {
                 onMouseEnter={(e) => e.target.style.backgroundColor = '#15803d'}
                 onMouseLeave={(e) => e.target.style.backgroundColor = '#2FAA5B'}
               >
-                Update Listing
+                Update
               </button>
             </div>
           </div>

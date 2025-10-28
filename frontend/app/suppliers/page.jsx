@@ -120,7 +120,7 @@ export default function SuppliersPage() {
   return (
     <div className="min-h-screen bg-white -mt-[72px]">
       {/* Header Section with Background Image */}
-      <div className="relative w-full h-[267px] pt-[72px]">
+      <div className="relative w-full h-48 sm:h-64 md:h-[267px] pt-[72px]">
         {/* Background Image */}
         <Image
           src="/images/unsplash_JlhvFEVMwng.jpg"
@@ -131,43 +131,34 @@ export default function SuppliersPage() {
         />
         
         {/* Heading */}
-        <h1 
-          className="absolute"
-          style={{
-            left: '46px',
-            top: '160px',
-            fontSize: '45px',
-            fontFamily: 'Lexend Deca, sans-serif',
-            fontWeight: 'normal',
-            color: '#163466',
-          }}
-        >
-          Manage Listings
-        </h1>
+        <div className="absolute top-0 left-0 right-0 h-full flex items-center px-4 sm:px-6 md:px-8">
+          <h1 
+            className="text-2xl sm:text-3xl md:text-5xl"
+            style={{
+              fontFamily: 'Lexend Deca, sans-serif',
+              fontWeight: 'normal',
+              color: '#163466',
+            }}
+          >
+            Manage Listings
+          </h1>
+        </div>
       </div>
 
       {/* Table Section */}
-      <div 
-        className="relative w-full"
-        style={{
-          height: '732px',
-        }}
-      >
+      <div className="relative w-full px-4 sm:px-8 py-8">
         {/* New Listing Button */}
-        <div className="flex justify-end mb-2 px-8" style={{ marginTop: '-50px' }}>
+        <div className="flex justify-end mb-6">
           <Link href="/suppliers/new">
             <button
+              className="hover:opacity-90 transition-opacity px-6 py-2 rounded-lg"
               style={{
                 backgroundColor: '#D2AB17',
-                width: '139px',
-                height: '41px',
-                borderRadius: '10px',
                 fontFamily: 'Lexend Deca, sans-serif',
-                fontSize: '20px',
+                fontSize: '16px',
                 fontWeight: 'normal',
                 color: '#000',
               }}
-              className="hover:opacity-90 transition-opacity"
             >
               New Listing
             </button>
@@ -176,7 +167,7 @@ export default function SuppliersPage() {
 
         {/* Error Message */}
         {error && (
-          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4 mx-8">
+          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
             <p className="font-semibold">Error loading listings</p>
             <p>{error}</p>
           </div>
@@ -184,199 +175,132 @@ export default function SuppliersPage() {
 
         {/* Empty State */}
         {!error && !loading && listings.length === 0 && (
-          <div className="bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-3 rounded mb-4 mx-8">
+          <div className="bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-3 rounded mb-4">
             <p className="font-semibold">No listings found</p>
             <p>Click "New Listing" to create your first energy listing</p>
           </div>
         )}
 
-        {/* Table */}
+        {/* Table - Hidden on mobile, shown on desktop */}
         {!error && listings.length > 0 && (
-        <div 
-          className="overflow-hidden shadow-lg w-full"
-          style={{
-            backgroundColor: '#EDF9F9',
-            borderTopLeftRadius: '10px',
-            borderTopRightRadius: '10px',
-          }}
-        >
-          <table className="w-full">
-            <thead>
-              <tr className="border-b border-gray-300">
-                <th 
-                  className="px-6 py-4 text-left"
-                  style={{ 
-                    fontFamily: 'Lexend Deca, sans-serif', 
-                    fontSize: '20px',
-                    fontWeight: 'normal',
-                    color: '#163466' 
-                  }}
-                >
-                  Listing Title
-                </th>
-                <th 
-                  className="px-6 py-4 text-left"
-                  style={{ 
-                    fontFamily: 'Lexend Deca, sans-serif', 
-                    fontSize: '20px',
-                    fontWeight: 'normal',
-                    color: '#163466' 
-                  }}
-                >
-                  Energy Type
-                </th>
-                <th 
-                  className="px-6 py-4 text-left"
-                  style={{ 
-                    fontFamily: 'Lexend Deca, sans-serif', 
-                    fontSize: '20px',
-                    fontWeight: 'normal',
-                    color: '#163466' 
-                  }}
-                >
-                  Quantity (kWh)
-                </th>
-                <th 
-                  className="px-6 py-4 text-left"
-                  style={{ 
-                    fontFamily: 'Lexend Deca, sans-serif', 
-                    fontSize: '20px',
-                    fontWeight: 'normal',
-                    color: '#163466' 
-                  }}
-                >
-                  Price (Ksh/kWh)
-                </th>
-                <th 
-                  className="px-6 py-4 text-left"
-                  style={{ 
-                    fontFamily: 'Lexend Deca, sans-serif', 
-                    fontSize: '20px',
-                    fontWeight: 'normal',
-                    color: '#163466' 
-                  }}
-                >
-                  Status
-                </th>
-                <th 
-                  className="px-6 py-4 text-left"
-                  style={{ 
-                    fontFamily: 'Lexend Deca, sans-serif', 
-                    fontSize: '20px',
-                    fontWeight: 'normal',
-                    color: '#163466' 
-                  }}
-                >
-                  Actions
-                </th>
-                <th 
-                  className="px-6 py-4 text-left"
-                  style={{ 
-                    fontFamily: 'Lexend Deca, sans-serif', 
-                    fontSize: '20px',
-                    fontWeight: 'normal',
-                    color: '#163466' 
-                  }}
-                >
-                  Location
-                </th>
-              </tr>
-            </thead>
-            <tbody>
+          <>
+            {/* Desktop Table View */}
+            <div className="hidden md:block">
+              <div 
+                className="overflow-hidden shadow-lg w-full"
+                style={{
+                  backgroundColor: '#EDF9F9',
+                  borderTopLeftRadius: '10px',
+                  borderTopRightRadius: '10px',
+                }}
+              >
+                <div className="overflow-x-auto">
+                  <table className="w-full min-w-[800px]">
+                    <thead>
+                      <tr className="border-b border-gray-300">
+                        <th className="px-4 sm:px-6 py-4 text-left text-sm sm:text-base md:text-lg lg:text-xl font-normal" style={{ color: '#163466', fontFamily: 'Lexend Deca, sans-serif' }}>Listing Title</th>
+                        <th className="px-4 sm:px-6 py-4 text-left text-sm sm:text-base md:text-lg lg:text-xl font-normal" style={{ color: '#163466', fontFamily: 'Lexend Deca, sans-serif' }}>Energy Type</th>
+                        <th className="px-4 sm:px-6 py-4 text-left text-sm sm:text-base md:text-lg lg:text-xl font-normal" style={{ color: '#163466', fontFamily: 'Lexend Deca, sans-serif' }}>Quantity (kWh)</th>
+                        <th className="px-4 sm:px-6 py-4 text-left text-sm sm:text-base md:text-lg lg:text-xl font-normal" style={{ color: '#163466', fontFamily: 'Lexend Deca, sans-serif' }}>Price</th>
+                        <th className="px-4 sm:px-6 py-4 text-left text-sm sm:text-base md:text-lg lg:text-xl font-normal" style={{ color: '#163466', fontFamily: 'Lexend Deca, sans-serif' }}>Status</th>
+                        <th className="px-4 sm:px-6 py-4 text-left text-sm sm:text-base md:text-lg lg:text-xl font-normal" style={{ color: '#163466', fontFamily: 'Lexend Deca, sans-serif' }}>Actions</th>
+                        <th className="px-4 sm:px-6 py-4 text-left text-sm sm:text-base md:text-lg lg:text-xl font-normal" style={{ color: '#163466', fontFamily: 'Lexend Deca, sans-serif' }}>Location</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {listings.map((listing) => (
+                        <tr key={listing.id} className="border-b border-gray-200 hover:bg-white/50 transition-colors">
+                          <td className="px-4 sm:px-6 py-4 text-sm sm:text-base font-light" style={{ color: '#163466', fontFamily: 'Lexend Deca, sans-serif' }}>{listing.title}</td>
+                          <td className="px-4 sm:px-6 py-4 text-sm sm:text-base font-light" style={{ color: '#163466', fontFamily: 'Lexend Deca, sans-serif' }}>{listing.energyType}</td>
+                          <td className="px-4 sm:px-6 py-4 text-sm sm:text-base font-light" style={{ color: '#163466', fontFamily: 'Lexend Deca, sans-serif' }}>{listing.quantity}</td>
+                          <td className="px-4 sm:px-6 py-4 text-sm sm:text-base font-light" style={{ color: '#163466', fontFamily: 'Lexend Deca, sans-serif' }}>{listing.price}</td>
+                          <td className="px-4 sm:px-6 py-4">
+                            {listing.status === 'active' ? (
+                              <span className="text-green-600 text-xl">✓</span>
+                            ) : (
+                              <span className="text-red-600 text-xl">⊘</span>
+                            )}
+                          </td>
+                          <td className="px-4 sm:px-6 py-4">
+                            <div className="flex gap-3">
+                              <Link href={`/suppliers/${listing.id}/edit`}>
+                                <button className="text-blue-600 hover:text-blue-800 transition-colors" title="Edit">
+                                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+                                    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+                                  </svg>
+                                </button>
+                              </Link>
+                              <button onClick={() => confirmDelete(listing.id)} className="text-red-600 hover:text-red-800 transition-colors" title="Delete">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                  <polyline points="3 6 5 6 21 6" />
+                                  <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                                </svg>
+                              </button>
+                            </div>
+                          </td>
+                          <td className="px-4 sm:px-6 py-4 text-sm sm:text-base font-light" style={{ color: '#163466', fontFamily: 'Lexend Deca, sans-serif' }}>{listing.location}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+
+            {/* Mobile Card View */}
+            <div className="md:hidden space-y-4">
               {listings.map((listing) => (
-                <tr key={listing.id} className="border-b border-gray-200 hover:bg-white/50 transition-colors">
-                  <td 
-                    className="px-6 py-4"
-                    style={{ 
-                      fontFamily: 'Lexend Deca, sans-serif',
-                      fontSize: '18px',
-                      fontWeight: '300',
-                      color: '#163466'
-                    }}
-                  >
-                    {listing.title}
-                  </td>
-                  <td 
-                    className="px-6 py-4"
-                    style={{ 
-                      fontFamily: 'Lexend Deca, sans-serif',
-                      fontSize: '18px',
-                      fontWeight: '300',
-                      color: '#163466'
-                    }}
-                  >
-                    {listing.energyType}
-                  </td>
-                  <td 
-                    className="px-6 py-4"
-                    style={{ 
-                      fontFamily: 'Lexend Deca, sans-serif',
-                      fontSize: '18px',
-                      fontWeight: '300',
-                      color: '#163466'
-                    }}
-                  >
-                    {listing.quantity}
-                  </td>
-                  <td 
-                    className="px-6 py-4"
-                    style={{ 
-                      fontFamily: 'Lexend Deca, sans-serif',
-                      fontSize: '18px',
-                      fontWeight: '300',
-                      color: '#163466'
-                    }}
-                  >
-                    {listing.price}
-                  </td>
-                  <td className="px-6 py-4">
-                    {listing.status === 'active' ? (
-                      <span className="text-green-600 text-xl">✓</span>
-                    ) : (
-                      <span className="text-red-600 text-xl">⊘</span>
-                    )}
-                  </td>
-                  <td className="px-6 py-4">
-                    <div className="flex gap-3">
+                <div key={listing.id} className="bg-[#EDF9F9] rounded-lg p-4 shadow-md">
+                  <div className="flex justify-between items-start mb-3">
+                    <h3 className="font-semibold text-[#163466] text-lg" style={{ fontFamily: 'Lexend Deca, sans-serif' }}>{listing.title}</h3>
+                    <div className="flex gap-2">
                       <Link href={`/suppliers/${listing.id}/edit`}>
-                        <button 
-                          className="text-blue-600 hover:text-blue-800 transition-colors"
-                          title="Edit"
-                        >
+                        <button className="text-blue-600 hover:text-blue-800" title="Edit">
                           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                             <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
                             <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
                           </svg>
                         </button>
                       </Link>
-                      <button 
-                        onClick={() => confirmDelete(listing.id)}
-                        className="text-red-600 hover:text-red-800 transition-colors"
-                        title="Delete"
-                      >
+                      <button onClick={() => confirmDelete(listing.id)} className="text-red-600 hover:text-red-800" title="Delete">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                           <polyline points="3 6 5 6 21 6" />
                           <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
                         </svg>
                       </button>
                     </div>
-                  </td>
-                  <td 
-                    className="px-6 py-4"
-                    style={{ 
-                      fontFamily: 'Lexend Deca, sans-serif',
-                      fontSize: '18px',
-                      fontWeight: '300',
-                      color: '#163466'
-                    }}
-                  >
-                    {listing.location}
-                  </td>
-                </tr>
+                  </div>
+                  <div className="space-y-2">
+                    <div className="flex justify-between">
+                      <span className="text-gray-600" style={{ fontFamily: 'Lexend Deca, sans-serif' }}>Energy Type:</span>
+                      <span className="font-medium text-[#163466]" style={{ fontFamily: 'Lexend Deca, sans-serif' }}>{listing.energyType}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-600" style={{ fontFamily: 'Lexend Deca, sans-serif' }}>Quantity:</span>
+                      <span className="font-medium text-[#163466]" style={{ fontFamily: 'Lexend Deca, sans-serif' }}>{listing.quantity} kWh</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-600" style={{ fontFamily: 'Lexend Deca, sans-serif' }}>Price:</span>
+                      <span className="font-medium text-[#163466]" style={{ fontFamily: 'Lexend Deca, sans-serif' }}>Ksh {listing.price}/kWh</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-600" style={{ fontFamily: 'Lexend Deca, sans-serif' }}>Status:</span>
+                      {listing.status === 'active' ? (
+                        <span className="text-green-600 text-xl">✓ Active</span>
+                      ) : (
+                        <span className="text-red-600 text-xl">⊘ Inactive</span>
+                      )}
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-600" style={{ fontFamily: 'Lexend Deca, sans-serif' }}>Location:</span>
+                      <span className="font-medium text-[#163466] text-right" style={{ fontFamily: 'Lexend Deca, sans-serif' }}>{listing.location}</span>
+                    </div>
+                  </div>
+                </div>
               ))}
-            </tbody>
-          </table>
-        </div>
+            </div>
+          </>
         )}
 
         {/* Confirm Delete Dialog */}
