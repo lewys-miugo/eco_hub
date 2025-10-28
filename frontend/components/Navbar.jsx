@@ -80,7 +80,7 @@ export default function Navbar() {
           {/* Logo */}
           <div className="flex items-center">
             <a href="/" className="flex-shrink-0 p-1">
-              <img src="./eco_hub_logo.png" alt="Eco Hub Logo" className="h-10" />
+              <img src="./eco_hub_logo.png" alt="Eco Hub Logo" className="h-25" />
             </a>
           </div>
 
