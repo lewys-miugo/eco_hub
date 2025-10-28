@@ -107,9 +107,9 @@ export default function MarketplacePage() {
   };
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-white -mt-[72px]">
       {/* Map Section */}
-      <section className="relative w-full h-[650px] bg-gray-100">
+      <section className="relative w-full h-[650px] bg-gray-100 pt-[72px]">
         <div className="absolute top-8 left-8 z-10 w-80">
           <input
             type="text"

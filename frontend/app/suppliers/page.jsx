@@ -21,54 +21,7 @@ export default function SuppliersPage() {
       } catch (err) {
         setError('Failed to load listings');
         console.error(err);
-        // Fallback to sample data if API fails
-        setListings([
-    {
-      id: 1,
-      title: 'I have 10KWh to sell daily',
-      energyType: 'Solar',
-      quantity: 500,
-      price: '0.12',
-      status: 'inactive',
-      location: 'Plantinum Sqr Road',
-    },
-    {
-      id: 2,
-      title: 'Solar Energy Surplus',
-      energyType: 'Solar',
-      quantity: 500,
-      price: '0.12',
-      status: 'active',
-      location: 'Tatu city Kiambu',
-    },
-          {
-            id: 3,
-            title: 'Wind Power Available',
-            energyType: 'Wind',
-            quantity: 750,
-            price: '0.15',
-            status: 'active',
-            location: 'Ngong Hills Nairobi',
-          },
-          {
-            id: 4,
-            title: 'Hydroelectric Excess',
-            energyType: 'Hydro',
-            quantity: 1200,
-            price: '0.10',
-            status: 'active',
-            location: 'Tana River Basin',
-          },
-          {
-            id: 5,
-            title: 'Biomass Energy Supply',
-            energyType: 'Biomass',
-            quantity: 300,
-            price: '0.18',
-            status: 'active',
-            location: 'Kakamega County',
-          },
-        ]);
+        setListings([]);
       } finally {
         setLoading(false);
       }
@@ -154,9 +107,9 @@ export default function SuppliersPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-white -mt-[72px]">
       {/* Header Section with Background Image */}
-      <div className="relative w-full h-[267px]">
+      <div className="relative w-full h-[267px] pt-[72px]">
         {/* Background Image */}
         <Image
           src="/images/unsplash_JlhvFEVMwng.jpg"
@@ -171,7 +124,7 @@ export default function SuppliersPage() {
           className="absolute"
           style={{
             left: '46px',
-            top: '118px',
+            top: '160px',
             fontSize: '45px',
             fontFamily: 'Lexend Deca, sans-serif',
             fontWeight: 'normal',
@@ -184,15 +137,13 @@ export default function SuppliersPage() {
 
       {/* Table Section */}
       <div 
-        className="absolute w-full"
+        className="relative w-full"
         style={{
-          left: '0px',
-          top: '212px',
           height: '732px',
         }}
       >
         {/* New Listing Button */}
-        <div className="flex justify-end mb-6 px-8">
+        <div className="flex justify-end mb-2 px-8" style={{ marginTop: '-50px' }}>
           <Link href="/suppliers/new">
             <button
               style={{
@@ -212,7 +163,24 @@ export default function SuppliersPage() {
           </Link>
         </div>
 
+        {/* Error Message */}
+        {error && (
+          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4 mx-8">
+            <p className="font-semibold">Error loading listings</p>
+            <p>{error}</p>
+          </div>
+        )}
+
+        {/* Empty State */}
+        {!error && !loading && listings.length === 0 && (
+          <div className="bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-3 rounded mb-4 mx-8">
+            <p className="font-semibold">No listings found</p>
+            <p>Click "New Listing" to create your first energy listing</p>
+          </div>
+        )}
+
         {/* Table */}
+        {!error && listings.length > 0 && (
         <div 
           className="overflow-hidden shadow-lg w-full"
           style={{
@@ -398,6 +366,7 @@ export default function SuppliersPage() {
             </tbody>
           </table>
         </div>
+        )}
       </div>
     </div>
   );
