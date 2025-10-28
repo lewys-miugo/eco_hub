@@ -34,8 +34,11 @@ export default function LoginForm({ onToggle }) {
       const data = await response.json();
 
       if (response.ok) {
+        localStorage.setItem('access_token', data.access_token);
         localStorage.setItem('user', JSON.stringify(data.user));
-        window.location.href = '/dashboard';
+        // Dispatch event to update navbar immediately
+        window.dispatchEvent(new Event('storage'));
+        window.location.href = '/';
       } else {
         setError(data.error || 'Login failed');
       }
