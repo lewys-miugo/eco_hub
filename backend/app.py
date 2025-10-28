@@ -4,9 +4,12 @@ from flask_migrate import Migrate
 from flask_cors import CORS
 from flask_jwt_extended import JWTManager, create_access_token, jwt_required, get_jwt_identity, get_jwt
 from dotenv import load_dotenv
+import psycopg2
+from psycopg2.extras import RealDictCursor
+
 
 # Import the shared db instance and User model
-from auth_models import db, User
+from models import db, User
 
 # Import API blueprints
 from api.listings import listings_bp
@@ -14,6 +17,8 @@ from api.dashboard import dashboard_bp
 from api.ai import ai_bp
 
 load_dotenv()
+
+DATABASE_URL = os.getenv("DATABASE_URL") 
 
 app = Flask(__name__)
 
@@ -197,13 +202,51 @@ def get_users():
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
+def get_db_connection():
+    """Create a database connection"""
+    try:
+        conn = psycopg2.connect(DATABASE_URL)
+        return conn, None
+    except Exception as e:
+        error_message = f"Database connection error: {e}"
+        print(error_message)
+        return None, error_message
+    
 @app.route('/api/hello', methods=['GET'])
 def hello_world():
     """Hello world endpoint"""
-    return jsonify({
-        'message': 'Hello from Flask!',
-        'status': 'success'
-    }), 200
+    try:
+        conn, error_message = get_db_connection()  # ✅ unpack both values
+
+        if conn is None:
+            return jsonify({
+                'message': 'Hello from Flask!',
+                'database': 'Not connected',
+                'error': error_message,
+                'db_url': DATABASE_URL,
+                'status': 'warning'
+            }), 200
+        
+        cur = conn.cursor(cursor_factory=RealDictCursor)
+        cur.execute('SELECT NOW() as current_time;')
+        result = cur.fetchone()
+        cur.close()
+        conn.close()
+        
+        return jsonify({
+            'message': 'Hello from Flask!',
+            'database': 'Connected',
+            'timestamp': str(result['current_time']),
+            'status': 'success'
+        }), 200
+
+    except Exception as e:
+        return jsonify({
+            'message': 'Hello from Flask!',
+            'error': str(e),
+            'status': 'error'
+        }), 500
+
 
 @app.route('/api/health', methods=['GET'])
 def health_check():
