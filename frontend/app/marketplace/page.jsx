@@ -108,8 +108,8 @@ export default function MarketplacePage() {
 
   return (
     <div className="min-h-screen bg-white -mt-[72px]">
-      {/* Map Section */}
-      <section className="relative w-full h-[650px] bg-gray-100 pt-[72px]">
+      {/* Video Section */}
+      <section className="relative w-full h-[650px] bg-gray-100 pt-[72px] overflow-hidden">
         <div className="absolute top-8 left-8 z-10 w-80">
           <input
             type="text"
@@ -120,17 +120,16 @@ export default function MarketplacePage() {
           />
         </div>
         
-        {/* Map Embed - Google Maps */}
-        <iframe
-          src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d127641.11277277838!2d36.94825730000001!3d-1.130495!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x182f1172d84d49a7%3A0xf7cf0254b297924c!2sNairobi!5e0!3m2!1sen!2ske!4v1234567890"
-          width="100%"
-          height="100%"
-          style={{ border: 0 }}
-          allowFullScreen=""
-          loading="lazy"
-          referrerPolicy="no-referrer-when-downgrade"
-          className="w-full h-full"
-        ></iframe>
+        {/* Background Video */}
+        <video
+          src="/images/backgroundvid.mp4"
+          autoPlay
+          loop
+          muted
+          playsInline
+          className="absolute top-0 left-0 w-full h-full object-cover"
+          style={{ zIndex: 0 }}
+        />
       </section>
 
       {/* Marketplace Section */}
