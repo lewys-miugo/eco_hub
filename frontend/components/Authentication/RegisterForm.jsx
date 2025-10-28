@@ -1,8 +1,10 @@
 'use client';
 
 import { useState } from 'react';
+import { useToast } from '../Toast';
 
 export default function RegisterForm({ onToggle }) {
+  const { showToast } = useToast();
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
@@ -52,7 +54,7 @@ export default function RegisterForm({ onToggle }) {
       const data = await response.json();
 
       if (response.ok) {
-        alert('Registration successful! Please login.');
+        showToast('Registration successful! Please login.', 'success');
         onToggle();
       } else {
         setError(data.error || 'Registration failed');
