@@ -31,6 +31,7 @@ cd backend
 python -m venv venv
 source venv/bin/activate  # macOS/Linux
 pip install -r requirements.txt
+python migrate.py
 cp .env.example .env
 # Edit .env with your database credentials
 ```
