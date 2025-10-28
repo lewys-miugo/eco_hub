@@ -147,7 +147,9 @@ def create_listing():
     Create a new energy listing
     """
     try:
+        logger.info("POST /api/listings endpoint called")
         data = request.get_json()
+        logger.info(f"Received data: {data}")
         
         # Validate required fields
         required_fields = ['title', 'energyType', 'quantity', 'price', 'location', 'sellerAccount']
