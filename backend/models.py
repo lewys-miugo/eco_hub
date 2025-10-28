@@ -1,55 +1,72 @@
 from flask_sqlalchemy import SQLAlchemy
-from datetime import datetime
+from flask_jwt_extended import create_access_token
 from werkzeug.security import generate_password_hash, check_password_hash
+from datetime import datetime
 
 db = SQLAlchemy()
 
 class User(db.Model):
-    """User model for authentication and profile management"""
+    """Unified User model for authentication and profile management"""
     __tablename__ = 'users'
     
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(100), nullable=False)
+    first_name = db.Column(db.String(100), nullable=True)
+    last_name = db.Column(db.String(100), nullable=True)
+    name = db.Column(db.String(100), nullable=True)  # optional combined name
     email = db.Column(db.String(120), unique=True, nullable=False)
     password_hash = db.Column(db.String(255), nullable=False)
     role = db.Column(db.String(20), nullable=False, default='consumer')  # 'supplier' or 'consumer'
+    location = db.Column(db.String(255), nullable=True)
     latitude = db.Column(db.Float, nullable=True)
     longitude = db.Column(db.Float, nullable=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
-    
+
     # Relationships
     listings = db.relationship('Listing', backref='user', lazy=True, cascade='all, delete-orphan')
     ai_interactions = db.relationship('AIInteraction', backref='user', lazy=True, cascade='all, delete-orphan')
-    
+
     def set_password(self, password):
-        """Hash and set password"""
         self.password_hash = generate_password_hash(password)
-    
+
     def check_password(self, password):
-        """Check if provided password matches hash"""
         return check_password_hash(self.password_hash, password)
-    
+
+    def generate_token(self):
+        """Generate JWT token for authentication"""
+        return create_access_token(identity=self.id)
+
     def to_dict(self):
         """Convert user to dictionary for JSON serialization"""
         return {
             'id': self.id,
-            'name': self.name,
+            'first_name': self.first_name,
+            'last_name': self.last_name,
+            'name': self.name or f"{self.first_name or ''} {self.last_name or ''}".strip(),
             'email': self.email,
             'role': self.role,
+            'location': self.location,
             'latitude': self.latitude,
             'longitude': self.longitude,
             'created_at': self.created_at.isoformat() if self.created_at else None,
             'updated_at': self.updated_at.isoformat() if self.updated_at else None
         }
 
+class Category(db.Model):
+    __tablename__ = 'categories'
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100), unique=True, nullable=False)
+
+    def __repr__(self):
+        return f"<Category {self.name}>"
+    
 class Listing(db.Model):
     """Energy listing model for marketplace"""
     __tablename__ = 'listings'
     
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
-    energy_type = db.Column(db.String(50), nullable=False)  # 'solar', 'wind', 'hydro', etc.
+    energy_type = db.Column(db.String(50), nullable=False)  # 'solar', 'wind', etc.
     price_per_kwh = db.Column(db.Float, nullable=False)
     available_kwh = db.Column(db.Float, nullable=False)
     latitude = db.Column(db.Float, nullable=False)
@@ -61,7 +78,6 @@ class Listing(db.Model):
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
     
     def to_dict(self):
-        """Convert listing to dictionary for JSON serialization"""
         return {
             'id': self.id,
             'user_id': self.user_id,
@@ -78,21 +94,21 @@ class Listing(db.Model):
             'user_name': self.user.name if self.user else None
         }
 
+
 class AIInteraction(db.Model):
-    """Model for logging AI queries and responses"""
+    """Logs AI queries and responses"""
     __tablename__ = 'ai_interactions'
     
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
-    interaction_type = db.Column(db.String(50), nullable=False)  # 'advice', 'listing_helper', 'match'
+    interaction_type = db.Column(db.String(50), nullable=False)
     prompt = db.Column(db.Text, nullable=False)
     response = db.Column(db.Text, nullable=False)
-    carbon_savings_estimate = db.Column(db.Float, nullable=True)  # CO2 savings in kg
-    ai_metadata = db.Column(db.JSON, nullable=True)  # Additional data like location, energy_type, etc.
+    carbon_savings_estimate = db.Column(db.Float, nullable=True)
+    ai_metadata = db.Column(db.JSON, nullable=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     
     def to_dict(self):
-        """Convert AI interaction to dictionary for JSON serialization"""
         return {
             'id': self.id,
             'user_id': self.user_id,
@@ -104,8 +120,9 @@ class AIInteraction(db.Model):
             'created_at': self.created_at.isoformat() if self.created_at else None
         }
 
+
 class Transaction(db.Model):
-    """Transaction model for recording buyer-seller trades (optional for MVP+)"""
+    """Buyer-seller transaction records"""
     __tablename__ = 'transactions'
     
     id = db.Column(db.Integer, primary_key=True)
@@ -114,17 +131,15 @@ class Transaction(db.Model):
     listing_id = db.Column(db.Integer, db.ForeignKey('listings.id'), nullable=False)
     kwh_amount = db.Column(db.Float, nullable=False)
     total_price = db.Column(db.Float, nullable=False)
-    status = db.Column(db.String(20), default='pending')  # 'pending', 'completed', 'cancelled'
+    status = db.Column(db.String(20), default='pending')
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     completed_at = db.Column(db.DateTime, nullable=True)
     
-    # Relationships
     buyer = db.relationship('User', foreign_keys=[buyer_id], backref='purchases')
     seller = db.relationship('User', foreign_keys=[seller_id], backref='sales')
     listing = db.relationship('Listing', backref='transactions')
     
     def to_dict(self):
-        """Convert transaction to dictionary for JSON serialization"""
         return {
             'id': self.id,
             'buyer_id': self.buyer_id,
