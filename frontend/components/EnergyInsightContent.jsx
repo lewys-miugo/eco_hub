@@ -2,8 +2,10 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { useToast } from './Toast';
 
 export default function EnergyInsightContent() {
+  const { showToast } = useToast();
   const [selectedProject, setSelectedProject] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const router = useRouter();
@@ -24,7 +26,7 @@ export default function EnergyInsightContent() {
   };
 
   const handleLearnMore = () => {
-    alert('Learn more about this energy solution - Detailed information coming soon!');
+    showToast('Learn more about this energy solution - Detailed information coming soon!', 'success');
   };
 
   const energyProjects = [

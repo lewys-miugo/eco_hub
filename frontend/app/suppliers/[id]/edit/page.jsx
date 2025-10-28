@@ -4,9 +4,11 @@ import Image from 'next/image';
 import { useState, useEffect } from 'react';
 import { fetchListingById, updateListing } from '../../../../lib/api';
 import { useRouter } from 'next/navigation';
+import { useToast } from '../../../../components/Toast';
 
 export default function EditListingPage({ params }) {
   const router = useRouter();
+  const { showToast } = useToast();
   const [loading, setLoading] = useState(true);
   const [formData, setFormData] = useState({
     energyType: '',
@@ -67,10 +69,12 @@ export default function EditListingPage({ params }) {
         location: formData.location,
         status: formData.status
       });
-      alert('Listing updated successfully!');
-      router.push('/suppliers');
+      showToast('Listing updated successfully!', 'success');
+      setTimeout(() => {
+        router.push('/suppliers');
+      }, 500);
     } catch (error) {
-      alert('Failed to update listing: ' + error.message);
+      showToast('Failed to update listing: ' + error.message, 'error');
     }
   };
 
@@ -138,7 +142,7 @@ export default function EditListingPage({ params }) {
             className="mx-auto"
             style={{
               width: '544px',
-              height: '480px',
+              height: '486px',
               border: '2px solid white',
               borderRadius: '8px',
               padding: '20px'

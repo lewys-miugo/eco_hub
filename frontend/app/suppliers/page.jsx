@@ -4,11 +4,16 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { fetchListings, deleteListing as deleteListingAPI } from '../../lib/api.js';
+import { useToast } from '../../components/Toast';
+import ConfirmDialog from '../../components/ConfirmDialog';
 
 export default function SuppliersPage() {
+  const { showToast } = useToast();
   const [listings, setListings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [confirmOpen, setConfirmOpen] = useState(false);
+  const [pendingDeleteId, setPendingDeleteId] = useState(null);
 
   // Fetch listings from API
   useEffect(() => {
@@ -30,18 +35,24 @@ export default function SuppliersPage() {
     loadListings();
   }, []);
 
-  // Handle delete action
-  const handleDelete = async (id) => {
-    if (!confirm('Are you sure you want to delete this listing?')) {
-      return;
-    }
+  // Open confirm before delete
+  const confirmDelete = (id) => {
+    setPendingDeleteId(id);
+    setConfirmOpen(true);
+  };
 
+  // Perform delete after confirmation
+  const handleConfirmDelete = async () => {
+    if (!pendingDeleteId) return;
+    const id = pendingDeleteId;
+    setConfirmOpen(false);
+    setPendingDeleteId(null);
     try {
       await deleteListingAPI(id);
-      // Remove from local state
       setListings(listings.filter(listing => listing.id !== id));
+      showToast('Listing deleted successfully!', 'success');
     } catch (err) {
-      alert('Failed to delete listing');
+      showToast('Failed to delete listing', 'error');
       console.error(err);
     }
   };
@@ -339,7 +350,7 @@ export default function SuppliersPage() {
                         </button>
                       </Link>
                       <button 
-                        onClick={() => handleDelete(listing.id)}
+                        onClick={() => confirmDelete(listing.id)}
                         className="text-red-600 hover:text-red-800 transition-colors"
                         title="Delete"
                       >
@@ -367,6 +378,17 @@ export default function SuppliersPage() {
           </table>
         </div>
         )}
+
+        {/* Confirm Delete Dialog */}
+        <ConfirmDialog
+          open={confirmOpen}
+          title="Delete Listing"
+          description="Are you sure you want to delete this listing? This action cannot be undone."
+          confirmText="Delete"
+          cancelText="Cancel"
+          onConfirm={handleConfirmDelete}
+          onCancel={() => { setConfirmOpen(false); setPendingDeleteId(null); }}
+        />
       </div>
     </div>
   );
