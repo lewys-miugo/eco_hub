@@ -1,13 +1,12 @@
 import os
 from flask import Flask, jsonify, request
-from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_cors import CORS
-import psycopg2
 from flask_jwt_extended import JWTManager, create_access_token, jwt_required, get_jwt_identity, get_jwt
-from psycopg2.extras import RealDictCursor
 from dotenv import load_dotenv
-from auth_models import User
+
+# Import the shared db instance and User model
+from auth_models import db, User
 
 # Import API blueprints
 from api.listings import listings_bp
@@ -17,6 +16,8 @@ from api.ai import ai_bp
 load_dotenv()
 
 app = Flask(__name__)
+
+# CORS configuration
 CORS(app, resources={
     r"/api/*": {
         "origins": ["http://localhost:3000", "http://127.0.0.1:3000"],
@@ -26,74 +27,18 @@ CORS(app, resources={
     }
 })
 
-app.config['JWT_SECRET_KEY'] = os.getenv('JWT_SECRET_KEY', 'your-secret-key')  # set your own secret
-jwt = JWTManager(app)
-
-@app.after_request
-def after_request(response):
-    response.headers.add('Access-Control-Allow-Origin', 'http://localhost:3000')
-    response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
-    response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS')
-    return response
-
-# Register blueprints
-app.register_blueprint(listings_bp)
-app.register_blueprint(dashboard_bp)
-app.register_blueprint(ai_bp)
-
-# Database configuration
-DATABASE_URL = os.getenv('DATABASE_URL', 'postgresql://user:password@localhost:5432/eco_hub')
-
-app.config['SQLALCHEMY_DATABASE_URI'] = DATABASE_URL
+# Configuration
+app.config['JWT_SECRET_KEY'] = os.getenv('JWT_SECRET_KEY', 'your-secret-key')
+app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL', 'postgresql://lewys:43214321@localhost:5432/eco_hub_db')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
-db = SQLAlchemy(app)
+# Initialize extensions with the app
+db.init_app(app)
+with app.app_context():
+    db.create_all()
+    
+jwt = JWTManager(app)
 migrate = Migrate(app, db)
-
-def get_db_connection():
-    """Create a database connection"""
-    try:
-        conn = psycopg2.connect(DATABASE_URL)
-        return conn
-    except Exception as e:
-        print(f"Database connection error: {e}")
-        return None
-
-@app.route('/api/hello', methods=['GET'])
-def hello_world():
-    """Hello world endpoint"""
-    try:
-        conn = get_db_connection()
-        if conn is None:
-            return jsonify({
-                'message': 'Hello from Flask!',
-                'database': 'Not connected',
-                'status': 'warning'
-            }), 200
-        
-        cur = conn.cursor(cursor_factory=RealDictCursor)
-        cur.execute('SELECT NOW() as current_time;')
-        result = cur.fetchone()
-        cur.close()
-        conn.close()
-        
-        return jsonify({
-            'message': 'Hello from Flask!',
-            'database': 'Connected',
-            'timestamp': str(result['current_time']),
-            'status': 'success'
-        }), 200
-    except Exception as e:
-        return jsonify({
-            'message': 'Hello from Flask!',
-            'error': str(e),
-            'status': 'error'
-        }), 500
-
-@app.route('/api/health', methods=['GET'])
-def health_check():
-    """Health check endpoint"""
-    return jsonify({'status': 'healthy'}), 200
 
 # JWT token blacklist (for logout)
 blacklisted_tokens = set()
@@ -102,6 +47,11 @@ blacklisted_tokens = set()
 def check_if_token_revoked(jwt_header, jwt_payload):
     """Check if token is blacklisted"""
     return jwt_payload['jti'] in blacklisted_tokens
+
+# Register blueprints
+app.register_blueprint(listings_bp)
+app.register_blueprint(dashboard_bp)
+app.register_blueprint(ai_bp)
 
 # Authentication Routes
 @app.route('/api/auth/register', methods=['POST'])
@@ -247,6 +197,18 @@ def get_users():
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
+@app.route('/api/hello', methods=['GET'])
+def hello_world():
+    """Hello world endpoint"""
+    return jsonify({
+        'message': 'Hello from Flask!',
+        'status': 'success'
+    }), 200
+
+@app.route('/api/health', methods=['GET'])
+def health_check():
+    """Health check endpoint"""
+    return jsonify({'status': 'healthy'}), 200
 
 @app.route('/api', methods=['GET'])
 def api_info():
@@ -256,6 +218,7 @@ def api_info():
         'version': '1.0.0',
         'description': 'Renewable Energy Marketplace API',
         'endpoints': {
+            'auth': '/api/auth',
             'listings': '/api/listings',
             'dashboard': '/api/dashboard',
             'ai': '/api/ai'
@@ -263,4 +226,6 @@ def api_info():
     }), 200
 
 if __name__ == '__main__':
+    with app.app_context():
+        db.create_all()
     app.run(debug=True, host='0.0.0.0', port=5000)
