@@ -4,9 +4,11 @@ import Image from 'next/image';
 import { useState } from 'react';
 import { createListing } from '../../../lib/api';
 import { useRouter } from 'next/navigation';
+import { useToast } from '../../../components/Toast';
 
 export default function NewListingPage() {
   const router = useRouter();
+  const { showToast } = useToast();
   const [formData, setFormData] = useState({
     energyType: '',
     pricePerKwh: '',
@@ -67,7 +69,7 @@ export default function NewListingPage() {
       // Validate required fields
       if (!formData.energyType || !formData.pricePerKwh || !formData.amount || 
           !formData.sellerAccount || !formData.location) {
-        alert('Please fill in all fields');
+        showToast('Please fill in all fields', 'error');
         return;
       }
 
@@ -84,10 +86,12 @@ export default function NewListingPage() {
         status: formData.status
       });
       
-      alert('Listing created successfully!');
+      showToast('Listing created successfully!', 'success');
+      setTimeout(() => {
       router.push('/suppliers');
+      }, 500);
     } catch (error) {
-      alert('Failed to create listing: ' + error.message);
+      showToast('Failed to create listing: ' + error.message, 'error');
       console.error('Error creating listing:', error);
     }
   };

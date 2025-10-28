@@ -3,8 +3,10 @@
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { fetchListings } from '../../lib/api.js';
+import { useToast } from '../../components/Toast';
 
 export default function MarketplacePage() {
+  const { showToast } = useToast();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedListing, setSelectedListing] = useState(null);
   const [listings, setListings] = useState([]);
@@ -54,7 +56,7 @@ export default function MarketplacePage() {
   const handleContactSubmit = (e) => {
     e.preventDefault();
     // TODO: Send contact form to backend
-    alert('Contact form submitted! We will connect you with the seller soon.');
+    showToast('Contact form submitted! We will connect you with the seller soon.', 'success');
     handleCloseModal();
   };
 
