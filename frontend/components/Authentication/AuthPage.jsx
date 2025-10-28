@@ -20,9 +20,10 @@ export default function AuthPage() {
       {/* Foreground form content */}
       <div className="relative w-full max-w-md backdrop-blur-xs rounded-xl shadow-lg p-2">
         {isLogin ? (
-          <LoginForm onToggle={toggleForm} />
-        ) : (
           <RegisterForm onToggle={toggleForm} />
+          
+        ) : (
+          <LoginForm onToggle={toggleForm} />
         )}
       </div>
     </div>
