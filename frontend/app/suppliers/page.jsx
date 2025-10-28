@@ -1,11 +1,64 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { fetchListings, deleteListing as deleteListingAPI } from '../../lib/api.js';
 
 export default function SuppliersPage() {
-  // Sample listings data
-  const listings = [
+  const [listings, setListings] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  // Fetch listings from API
+  useEffect(() => {
+    async function loadListings() {
+      try {
+        setLoading(true);
+        const data = await fetchListings();
+        setListings(data);
+        setError(null);
+      } catch (err) {
+        setError('Failed to load listings');
+        console.error(err);
+        setListings([]);
+      } finally {
+        setLoading(false);
+      }
+    }
+    
+    loadListings();
+  }, []);
+
+  // Handle delete action
+  const handleDelete = async (id) => {
+    if (!confirm('Are you sure you want to delete this listing?')) {
+      return;
+    }
+
+    try {
+      await deleteListingAPI(id);
+      // Remove from local state
+      setListings(listings.filter(listing => listing.id !== id));
+    } catch (err) {
+      alert('Failed to delete listing');
+      console.error(err);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900 mx-auto"></div>
+          <p className="mt-4 text-gray-600">Loading listings...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Sample listings data (fallback)
+  const fallbackListings = [
     {
       id: 1,
       title: 'I have 10KWh to sell daily',
@@ -53,15 +106,10 @@ export default function SuppliersPage() {
     },
   ];
 
-  const handleDelete = (id) => {
-    console.log('Delete listing:', id);
-    // TODO: Implement delete functionality
-  };
-
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-white -mt-[72px]">
       {/* Header Section with Background Image */}
-      <div className="relative w-full h-[267px]">
+      <div className="relative w-full h-[267px] pt-[72px]">
         {/* Background Image */}
         <Image
           src="/images/unsplash_JlhvFEVMwng.jpg"
@@ -76,7 +124,7 @@ export default function SuppliersPage() {
           className="absolute"
           style={{
             left: '46px',
-            top: '118px',
+            top: '160px',
             fontSize: '45px',
             fontFamily: 'Lexend Deca, sans-serif',
             fontWeight: 'normal',
@@ -89,15 +137,13 @@ export default function SuppliersPage() {
 
       {/* Table Section */}
       <div 
-        className="absolute w-full"
+        className="relative w-full"
         style={{
-          left: '0px',
-          top: '212px',
           height: '732px',
         }}
       >
         {/* New Listing Button */}
-        <div className="flex justify-end mb-6 px-8">
+        <div className="flex justify-end mb-2 px-8" style={{ marginTop: '-50px' }}>
           <Link href="/suppliers/new">
             <button
               style={{
@@ -117,7 +163,24 @@ export default function SuppliersPage() {
           </Link>
         </div>
 
+        {/* Error Message */}
+        {error && (
+          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4 mx-8">
+            <p className="font-semibold">Error loading listings</p>
+            <p>{error}</p>
+          </div>
+        )}
+
+        {/* Empty State */}
+        {!error && !loading && listings.length === 0 && (
+          <div className="bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-3 rounded mb-4 mx-8">
+            <p className="font-semibold">No listings found</p>
+            <p>Click "New Listing" to create your first energy listing</p>
+          </div>
+        )}
+
         {/* Table */}
+        {!error && listings.length > 0 && (
         <div 
           className="overflow-hidden shadow-lg w-full"
           style={{
@@ -303,6 +366,7 @@ export default function SuppliersPage() {
             </tbody>
           </table>
         </div>
+        )}
       </div>
     </div>
   );

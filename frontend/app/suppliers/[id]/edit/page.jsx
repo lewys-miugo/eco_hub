@@ -1,16 +1,48 @@
 'use client';
 
 import Image from 'next/image';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { fetchListingById, updateListing } from '../../../../lib/api';
+import { useRouter } from 'next/navigation';
 
 export default function EditListingPage({ params }) {
+  const router = useRouter();
+  const [loading, setLoading] = useState(true);
   const [formData, setFormData] = useState({
-    energyType: 'Solar',
-    pricePerKwh: '0.12',
-    amount: '500',
-    sellerAccount: 'john.doe@email.com',
-    location: 'Ruaraka Royke Apartments'
+    energyType: '',
+    pricePerKwh: '',
+    amount: '',
+    sellerAccount: '',
+    location: '',
+    status: 'active'
   });
+
+  // Fetch listing data when page loads
+  useEffect(() => {
+    async function loadListing() {
+      try {
+        const listing = await fetchListingById(params.id);
+        if (listing) {
+          setFormData({
+            energyType: listing.energyType || '',
+            pricePerKwh: listing.price || '',
+            amount: listing.quantity || '',
+            sellerAccount: listing.sellerAccount || '',
+            location: listing.location || '',
+            status: listing.status || 'active'
+          });
+        }
+      } catch (error) {
+        console.error('Error loading listing:', error);
+      } finally {
+        setLoading(false);
+      }
+    }
+    
+    if (params.id) {
+      loadListing();
+    }
+  }, [params.id]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -25,9 +57,21 @@ export default function EditListingPage({ params }) {
     window.history.back();
   };
 
-  const handleUpdate = () => {
-    console.log('Updating listing:', formData);
-    // TODO: Implement update functionality
+  const handleUpdate = async () => {
+    try {
+      await updateListing(params.id, {
+        energyType: formData.energyType,
+        quantity: formData.amount,
+        price: formData.pricePerKwh,
+        sellerAccount: formData.sellerAccount,
+        location: formData.location,
+        status: formData.status
+      });
+      alert('Listing updated successfully!');
+      router.push('/suppliers');
+    } catch (error) {
+      alert('Failed to update listing: ' + error.message);
+    }
   };
 
   return (
@@ -46,17 +90,23 @@ export default function EditListingPage({ params }) {
       
       {/* Main Content */}
       <div className="relative z-10 min-h-screen flex items-center justify-center p-8">
-        {/* Main Content Card */}
-        <div 
-          className="mx-auto"
-          style={{
-            width: '636px',
-            height: '582px',
-            backgroundColor: '#163466',
-            borderRadius: '10px',
-            padding: '32px'
-          }}
-        >
+        {loading ? (
+          <div className="text-center text-white">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white mx-auto mb-4"></div>
+            <p>Loading listing data...</p>
+          </div>
+        ) : (
+          /* Main Content Card */
+          <div 
+            className="mx-auto"
+            style={{
+              width: '636px',
+              height: '650px',
+              backgroundColor: '#163466',
+              borderRadius: '10px',
+              padding: '32px'
+            }}
+          >
           {/* Card Header */}
           <div className="mb-4 text-center">
             <h1 
@@ -88,14 +138,14 @@ export default function EditListingPage({ params }) {
             className="mx-auto"
             style={{
               width: '544px',
-              height: '446px',
+              height: '480px',
               border: '2px solid white',
               borderRadius: '8px',
               padding: '20px'
             }}
           >
             {/* Form Fields */}
-            <div className="space-y-2 mb-2">
+            <div className="space-y-3 mb-4">
               {/* Energy Type */}
               <div>
                 <label 
@@ -225,42 +275,76 @@ export default function EditListingPage({ params }) {
                   }}
                 />
               </div>
+
+              {/* Status */}
+              <div>
+                <label 
+                  className="block text-sm font-medium mb-1"
+                  style={{ 
+                    color: 'white',
+                    fontFamily: 'Lexend Deca, sans-serif'
+                  }}
+                >
+                  Status
+                </label>
+                <select
+                  name="status"
+                  value={formData.status}
+                  onChange={handleInputChange}
+                  className="w-full px-3 py-1 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  style={{
+                    backgroundColor: '#041532',
+                    border: '1px solid #374151',
+                    fontFamily: 'Lexend Deca, sans-serif',
+                    color: 'white',
+                    minHeight: '32px'
+                  }}
+                >
+                  <option value="active" style={{ backgroundColor: '#041532' }}>Active (Available)</option>
+                  <option value="inactive" style={{ backgroundColor: '#041532' }}>Inactive (Not Available)</option>
+                </select>
+              </div>
             </div>
 
-            {/* Action Buttons */}
-            <div className="space-y-3">
+            {/* Action Buttons - Inside white frame */}
+            <div className="flex gap-4 justify-center mt-4">
               {/* Cancel Update Button */}
               <button
                 onClick={handleCancel}
-                className="w-full py-1 rounded-md font-medium transition-colors"
+                className="rounded-md font-medium transition-colors"
                 style={{
-                  backgroundColor: 'rgba(47, 170, 91, 0.5)',
+                  width: '150px',
+                  height: '35px',
+                  backgroundColor: '#2FAA5B',
                   color: 'white',
                   fontFamily: 'Lexend Deca, sans-serif'
                 }}
+                onMouseEnter={(e) => e.target.style.backgroundColor = '#15803d'}
+                onMouseLeave={(e) => e.target.style.backgroundColor = '#2FAA5B'}
               >
                 Cancel Update
               </button>
 
               {/* Update Listing Button */}
-              <div className="flex justify-center">
-                <button
-                  onClick={handleUpdate}
-                  className="rounded-md font-medium transition-colors"
-                  style={{
-                    width: '150px',
-                    height: '35px',
-                    backgroundColor: '#2FAA5B',
-                    color: 'white',
-                    fontFamily: 'Lexend Deca, sans-serif'
-                  }}
-                >
-                  Update Listing
-                </button>
-              </div>
+              <button
+                onClick={handleUpdate}
+                className="rounded-md font-medium transition-colors"
+                style={{
+                  width: '150px',
+                  height: '35px',
+                  backgroundColor: '#2FAA5B',
+                  color: 'white',
+                  fontFamily: 'Lexend Deca, sans-serif'
+                }}
+                onMouseEnter={(e) => e.target.style.backgroundColor = '#15803d'}
+                onMouseLeave={(e) => e.target.style.backgroundColor = '#2FAA5B'}
+              >
+                Update Listing
+              </button>
             </div>
           </div>
         </div>
+      )}
       </div>
     </div>
   );

@@ -1,6 +1,34 @@
 'use client';
 
+import { useState, useEffect } from 'react';
+import { fetchDashboardMetrics } from '../../lib/api.js';
+
 export default function DashboardPage() {
+  const [metrics, setMetrics] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function loadMetrics() {
+      try {
+        const data = await fetchDashboardMetrics();
+        console.log('Dashboard metrics loaded:', data);
+        setMetrics(data);
+      } catch (error) {
+        console.error('Error loading dashboard metrics:', error);
+      } finally {
+        setLoading(false);
+      }
+    }
+    
+    loadMetrics();
+  }, []);
+
+  // Get metric values (fallback to default if not loaded)
+  const getMetricValue = (key, defaultValue) => {
+    if (!metrics || loading) return defaultValue;
+    return metrics[key]?.value || defaultValue;
+  };
+
   return (
     <div className="min-h-screen" style={{ backgroundColor: '#163466' }}>
       {/* Header Section */}
@@ -43,7 +71,7 @@ export default function DashboardPage() {
                 fontSize: '32px'
               }}
             >
-              1,500 kg
+              {getMetricValue('co2_savings', '1,500 kg')}
             </p>
           </div>
 
@@ -71,7 +99,7 @@ export default function DashboardPage() {
                 fontSize: '32px'
               }}
             >
-              2,500 kWh
+              {getMetricValue('energy_saved', '2,500 kWh')}
             </p>
           </div>
 
@@ -99,7 +127,7 @@ export default function DashboardPage() {
                 fontSize: '32px'
               }}
             >
-              1,800 kWh
+              {getMetricValue('energy_bought', '1,800 kWh')}
             </p>
           </div>
 
@@ -128,7 +156,7 @@ export default function DashboardPage() {
                 fontSize: '32px'
               }}
             >
-              156
+              {getMetricValue('active_community_members', '156')}
             </p>
           </div>
 
@@ -156,7 +184,7 @@ export default function DashboardPage() {
                 fontSize: '32px'
               }}
             >
-              89
+              {getMetricValue('households_powered', '89')}
             </p>
           </div>
 
@@ -184,7 +212,7 @@ export default function DashboardPage() {
                 fontSize: '32px'
               }}
             >
-              ≈ to Planting 105 trees!
+              {getMetricValue('environmental_impact_trees', '≈ to Planting 105 trees!')}
             </p>
           </div>
         </div>
