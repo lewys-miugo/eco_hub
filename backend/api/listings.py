@@ -272,7 +272,8 @@ def update_listing(listing_id):
             'status': 'status',
             'location': 'location',
             'sellerAccount': 'seller_account',
-            'description': 'description'
+            'description': 'description',
+            'imageUrl': 'image_url'  # Add image URL support
         }
         
         for frontend_field, db_field in field_mapping.items():
