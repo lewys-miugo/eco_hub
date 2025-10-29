@@ -54,6 +54,35 @@ def check_if_token_revoked(jwt_header, jwt_payload):
     """Check if token is blacklisted"""
     return jwt_payload['jti'] in blacklisted_tokens
 
+@jwt.expired_token_loader
+def expired_token_callback(jwt_header, jwt_payload):
+    """Handle expired token"""
+    return jsonify({
+        'status': 'error',
+        'message': 'Token has expired. Please log in again.'
+    }), 401
+
+@jwt.invalid_token_loader
+def invalid_token_callback(error):
+    """Handle invalid token"""
+    import logging
+    logger = logging.getLogger(__name__)
+    logger.warning(f"Invalid token error: {error}")
+    return jsonify({
+        'status': 'error',
+        'message': 'Invalid token. Please log in again.',
+        'error': str(error)
+    }), 422
+
+@jwt.unauthorized_loader
+def missing_token_callback(error):
+    """Handle missing token"""
+    return jsonify({
+        'status': 'error',
+        'message': 'Authorization token is missing. Please log in.',
+        'error': str(error)
+    }), 401
+
 # Register blueprints
 app.register_blueprint(listings_bp)
 app.register_blueprint(dashboard_bp)
@@ -158,7 +187,8 @@ def logout():
 def get_profile():
     """Get current user profile"""
     try:
-        current_user_id = get_jwt_identity()
+        current_user_id_str = get_jwt_identity()
+        current_user_id = int(current_user_id_str) if current_user_id_str else None
         user = User.query.get(current_user_id)
         
         if not user:
@@ -176,7 +206,8 @@ def get_profile():
 def update_profile():
     """Update current user profile"""
     try:
-        current_user_id = get_jwt_identity()
+        current_user_id_str = get_jwt_identity()
+        current_user_id = int(current_user_id_str) if current_user_id_str else None
         user = User.query.get(current_user_id)
         
         if not user:

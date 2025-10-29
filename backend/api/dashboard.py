@@ -34,34 +34,33 @@ def get_dashboard_metrics():
             result = {}
             for metric in metrics:
                 metric_name = metric['metric_name']
-                
-                # Map database metric names to frontend display names
-                display_mapping = {
-                    'co2_savings': 'CO₂ Savings',
-                    'energy_saved': 'Energy Saved',
-                    'energy_bought': 'Energy Bought',
-                    'active_community_members': 'Active Community Members',
-                    'households_powered': 'Households Powered by Clean Energy',
-                    'environmental_impact_trees': 'Environmental Impact'
-                }
-                
-                display_name = display_mapping.get(metric_name, metric_name)
-                
-                # Format values based on metric type
-                if metric_name == 'environmental_impact_trees':
-                    value = f"≈ to Planting {int(metric['metric_value'])} trees!"
-                elif metric_name in ['co2_savings', 'energy_saved', 'energy_bought']:
-                    value = f"{int(metric['metric_value']):,} {metric['metric_unit']}"
-                else:
-                    value = f"{int(metric['metric_value'])}"
-                
                 result[metric_name] = {
-                    'displayName': display_name,
-                    'value': value,
-                    'unit': metric['metric_unit'],
-                    'description': metric['description'],
-                    'updatedAt': metric['updated_at'].isoformat()
+                    'value': metric['metric_value'],
+                    'unit': metric.get('metric_unit'),
+                    'description': metric.get('description'),
+                    'updatedAt': metric.get('updated_at').isoformat() if metric.get('updated_at') else None
                 }
+            
+            # Add live-computed metrics without altering existing ones
+            # Active community members: total registered users
+            try:
+                cur.execute("SELECT COUNT(*) AS count FROM users")
+                row = cur.fetchone()
+                result['active_community_members'] = {
+                    'value': str(row['count'])
+                }
+            except Exception as e:
+                logger.warning(f"Failed to compute active_community_members: {e}")
+            
+            # Households powered: distinct buyers with at least one transaction
+            try:
+                cur.execute("SELECT COUNT(DISTINCT buyer_id) AS count FROM transactions")
+                row = cur.fetchone()
+                result['households_powered'] = {
+                    'value': str(row['count'])
+                }
+            except Exception as e:
+                logger.warning(f"Failed to compute households_powered: {e}")
             
             return jsonify({
                 'status': 'success',
@@ -137,63 +136,23 @@ def get_dashboard_stats():
     """
     try:
         with get_db_cursor() as (cur, conn):
-            # Get listing statistics
             cur.execute("""
                 SELECT 
-                    COUNT(*) as total_listings,
-                    COUNT(CASE WHEN status = 'active' THEN 1 END) as active_listings,
-                    COUNT(CASE WHEN status = 'inactive' THEN 1 END) as inactive_listings,
-                    AVG(price_per_kwh) as avg_price,
-                    SUM(quantity_kwh) as total_capacity
-                FROM energy_listings
+                    stat_name, stat_value, updated_at
+                FROM dashboard_stats
+                ORDER BY stat_name
             """)
-            
-            listing_stats = cur.fetchone()
-            
-            # Get energy type distribution
-            cur.execute("""
-                SELECT 
-                    energy_type,
-                    COUNT(*) as count,
-                    SUM(quantity_kwh) as total_capacity
-                FROM energy_listings
-                WHERE status = 'active'
-                GROUP BY energy_type
-                ORDER BY count DESC
-            """)
-            
-            energy_distribution = cur.fetchall()
-            
-            result = {
-                'listings': {
-                    'total': listing_stats['total_listings'],
-                    'active': listing_stats['active_listings'],
-                    'inactive': listing_stats['inactive_listings'],
-                    'averagePrice': float(listing_stats['avg_price']) if listing_stats['avg_price'] else 0,
-                    'totalCapacity': int(listing_stats['total_capacity']) if listing_stats['total_capacity'] else 0
-                },
-                'energyDistribution': [
-                    {
-                        'type': dist['energy_type'],
-                        'count': dist['count'],
-                        'capacity': int(dist['total_capacity'])
-                    }
-                    for dist in energy_distribution
-                ]
-            }
-            
-            return jsonify({
-                'status': 'success',
-                'data': result
-            }), 200
-            
+            stats = cur.fetchall()
+            result = {}
+            for stat in stats:
+                result[stat['stat_name']] = {
+                    'value': stat['stat_value'],
+                    'updatedAt': stat.get('updated_at').isoformat() if stat.get('updated_at') else None
+                }
+            return jsonify({'status': 'success', 'data': result}), 200
     except Exception as e:
         logger.error(f"Error getting dashboard stats: {str(e)}")
-        return jsonify({
-            'status': 'error',
-            'message': 'Failed to retrieve dashboard statistics',
-            'error': str(e)
-        }), 500
+        return jsonify({'status': 'error', 'message': 'Failed to retrieve stats', 'error': str(e)}), 500
 
 
 
