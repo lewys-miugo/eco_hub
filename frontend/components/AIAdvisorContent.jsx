@@ -45,13 +45,27 @@ export default function AIAdvisorContent() {
     setIsLoading(true);
 
     try {
-      // For now, we'll use a mock response since we need authentication
-      // In a real implementation, you'd call the API here
-      const response = await fetch('http://localhost:5000/api/v1/ai/chat', {
+      // Get authentication token
+      const token = localStorage.getItem('access_token');
+      if (!token) {
+        const errorMessage = {
+          id: Date.now() + 1,
+          type: 'ai',
+          content: "Please log in to use the AI advisor. You can log in from the navigation menu.",
+          icons: ['alert-circle'],
+          timestamp: new Date()
+        };
+        setMessages(prev => [...prev, errorMessage]);
+        setIsLoading(false);
+        return;
+      }
+      
+      // Call AI chat API
+      const response = await fetch('http://localhost:5000/api/ai/chat', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
+          'Authorization': `Bearer ${token}`
         },
         body: JSON.stringify({ message: inputMessage })
       });
@@ -61,37 +75,58 @@ export default function AIAdvisorContent() {
         const aiMessage = {
           id: Date.now() + 1,
           type: 'ai',
-          content: data.response,
+          content: data.response || data.advice || 'I received your message!',
           emojis: data.emojis || [],
           timestamp: new Date()
         };
         setMessages(prev => [...prev, aiMessage]);
       } else {
-        // Fallback mock response for demo
-        const mockResponses = [
-          "Great question! Solar panels can reduce your electricity bill by 50-90% depending on your location and energy usage. The average payback period is 6-8 years. Would you like specific advice for your area?",
-          "Excellent! Wind energy is perfect for your location. I recommend checking our marketplace for local wind energy suppliers. You could save up to $200/month on energy costs!",
-          "That's a fantastic goal! For a 2000 sq ft home, you'd need about 20-25 solar panels. The total cost would be around $15,000-$25,000, but with tax incentives, you could save 30%!",
-          "Absolutely! Our marketplace connects you with local renewable energy suppliers. You can buy clean energy directly from your neighbors and support the community!",
-          "Perfect timing! Summer is ideal for solar installation. The longer days mean more energy generation. I can help you find the best suppliers in your area!"
-        ];
+        // Try to get error message from response
+        let errorMessage = '';
+        let shouldPromptLogin = false;
+        try {
+          const errorData = await response.json();
+          errorMessage = errorData.message || errorData.error || `Error ${response.status}`;
+          
+          // Check if it's an authentication error
+          if (response.status === 401 || response.status === 422) {
+            shouldPromptLogin = true;
+            
+            // Clear invalid token from localStorage
+            if (errorMessage.toLowerCase().includes('token') || response.status === 422) {
+              localStorage.removeItem('access_token');
+              localStorage.removeItem('user');
+              window.dispatchEvent(new Event('storage'));
+            }
+          }
+        } catch (e) {
+          const text = await response.text();
+          errorMessage = text || `Error ${response.status}: Unknown error`;
+          if (response.status === 401 || response.status === 422) {
+            shouldPromptLogin = true;
+          }
+        }
         
-        const randomResponse = mockResponses[Math.floor(Math.random() * mockResponses.length)];
-        const aiMessage = {
+        console.error('API Error:', errorMessage, response.status);
+        
+        // Show appropriate error message
+        const finalErrorMessage = {
           id: Date.now() + 1,
           type: 'ai',
-          content: randomResponse,
-          icons: ['leaf', 'zap', 'globe', 'heart', 'sun'],
+          content: shouldPromptLogin 
+            ? `${errorMessage}. Please log out and log back in to refresh your session.`
+            : `Sorry, I encountered an error: ${errorMessage}. Please try again later.`,
+          icons: ['alert-circle'],
           timestamp: new Date()
         };
-        setMessages(prev => [...prev, aiMessage]);
+        setMessages(prev => [...prev, finalErrorMessage]);
       }
     } catch (error) {
       console.error('Error sending message:', error);
       const errorMessage = {
         id: Date.now() + 1,
         type: 'ai',
-        content: "I'm sorry, I'm having trouble connecting right now. Please try again later!",
+        content: `I'm sorry, I'm having trouble connecting right now. Error: ${error.message}. Please check your connection and try again.`,
         icons: ['alert-circle'],
         timestamp: new Date()
       };

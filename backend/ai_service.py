@@ -244,30 +244,59 @@ class AIService:
     
     def _build_advice_prompt(self, user_input: Dict) -> str:
         """Build the prompt for renewable energy advice with climate action focus"""
-        location = user_input.get('location', 'your area')
-        roof_size = user_input.get('roof_size', 'unknown')
-        energy_usage = user_input.get('energy_usage', 'unknown')
-        budget = user_input.get('budget', 'flexible')
-        
-        return f"""
-        I'm looking for renewable energy advice for my home through EcoPower Hub. Here are my details:
-        - Location: {location}
-        - Roof size: {roof_size}
-        - Current energy usage: {energy_usage} kWh/month
-        - Budget: {budget}
-        
-        Please provide personalized recommendations for:
-        1. Best renewable energy options for my situation (solar, wind, etc.)
-        2. Estimated costs and savings with ROI timeline
-        3. Environmental impact and CO2 reduction potential
-        4. Timeline for implementation
-        5. Any specific considerations for my location
-        6. How to connect with local energy suppliers through our marketplace
-        
-        Focus on climate action (SDG 13) and make the advice engaging with relevant emojis. 
-        Emphasize the environmental benefits and community impact of renewable energy adoption.
-        Keep the advice practical, actionable, and inspiring for climate action.
-        """
+        # Check if this is a chat message or structured advice request
+        if user_input.get('message'):
+            # Chat message - use the user's message directly with context
+            message = user_input.get('message', '')
+            location = user_input.get('location', '')
+            role = user_input.get('role', 'consumer')
+            
+            context_parts = []
+            if location:
+                context_parts.append(f"User location: {location}")
+            context_parts.append(f"User role: {role}")
+            
+            context = " | ".join(context_parts) if context_parts else ""
+            
+            return f"""
+            The user asked: "{message}"
+            {f"Context: {context}" if context else ""}
+            
+            Provide a helpful, conversational response about renewable energy. Include:
+            - Practical advice related to their question
+            - Relevant emojis to make it engaging
+            - Focus on climate action (SDG 13) and environmental benefits
+            - Reference to the EcoPower Hub marketplace if relevant
+            - Keep it conversational and friendly
+            
+            Respond naturally as an AI Renewable Energy Advisor for EcoPower Hub.
+            """
+        else:
+            # Structured advice request
+            location = user_input.get('location', 'your area')
+            roof_size = user_input.get('roof_size', 'unknown')
+            energy_usage = user_input.get('energy_usage', 'unknown')
+            budget = user_input.get('budget', 'flexible')
+            
+            return f"""
+            I'm looking for renewable energy advice for my home through EcoPower Hub. Here are my details:
+            - Location: {location}
+            - Roof size: {roof_size}
+            - Current energy usage: {energy_usage} kWh/month
+            - Budget: {budget}
+            
+            Please provide personalized recommendations for:
+            1. Best renewable energy options for my situation (solar, wind, etc.)
+            2. Estimated costs and savings with ROI timeline
+            3. Environmental impact and CO2 reduction potential
+            4. Timeline for implementation
+            5. Any specific considerations for my location
+            6. How to connect with local energy suppliers through our marketplace
+            
+            Focus on climate action (SDG 13) and make the advice engaging with relevant emojis. 
+            Emphasize the environmental benefits and community impact of renewable energy adoption.
+            Keep the advice practical, actionable, and inspiring for climate action.
+            """
     
     def _build_listing_prompt(self, listing_data: Dict) -> str:
         """Build the prompt for listing generation with climate focus"""
