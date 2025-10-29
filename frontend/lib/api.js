@@ -55,14 +55,30 @@ export async function createListing(listingData) {
       throw new Error('You must be logged in to create a listing. Please log in first.');
     }
     
-    console.log('Creating listing with data:', { ...listingData, imageUrl: listingData.imageUrl ? 'Image present (base64 data)' : 'No image' });
+    // Check if listingData is FormData (file upload) or regular object
+    const isFormData = listingData instanceof FormData;
+    
+    if (isFormData) {
+      console.log('Creating listing with FormData (file upload)');
+      // Don't set Content-Type header - browser will set it automatically with boundary for FormData
+    } else {
+      console.log('Creating listing with JSON data:', { ...listingData, imageUrl: listingData.imageUrl ? 'Image present' : 'No image' });
+    }
+    
+    // Build headers - always include Authorization, conditionally include Content-Type
+    const headers = {
+      'Authorization': `Bearer ${token}`
+    };
+    
+    // Only set Content-Type for JSON, not for FormData (browser sets it automatically with boundary)
+    if (!isFormData) {
+      headers['Content-Type'] = 'application/json';
+    }
+    
     const response = await fetch(`${API_BASE_URL}/listings/`, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`
-      },
-      body: JSON.stringify(listingData),
+      headers: headers,
+      body: isFormData ? listingData : JSON.stringify(listingData),
     });
     
     if (!response.ok) {

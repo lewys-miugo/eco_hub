@@ -62,18 +62,23 @@ class Category(db.Model):
     
 class Listing(db.Model):
     """Energy listing model for marketplace"""
-    __tablename__ = 'listings'
+    __tablename__ = 'energy_listings'
     
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)
     energy_type = db.Column(db.String(50), nullable=False)  # 'solar', 'wind', etc.
     price_per_kwh = db.Column(db.Float, nullable=False)
-    available_kwh = db.Column(db.Float, nullable=False)
-    latitude = db.Column(db.Float, nullable=False)
-    longitude = db.Column(db.Float, nullable=False)
-    title = db.Column(db.String(200), nullable=False)
+    quantity_kwh = db.Column(db.Integer, nullable=True)  # API expects this
+    available_kwh = db.Column(db.Float, nullable=True)  # Keep for backward compatibility
+    latitude = db.Column(db.Float, nullable=True)
+    longitude = db.Column(db.Float, nullable=True)
+    title = db.Column(db.String(255), nullable=False)
     description = db.Column(db.Text, nullable=True)
-    is_active = db.Column(db.Boolean, default=True)
+    status = db.Column(db.String(20), default='active')  # API expects this
+    is_active = db.Column(db.Boolean, default=True)  # Keep for backward compatibility
+    location = db.Column(db.String(255), nullable=True)  # API expects this
+    seller_account = db.Column(db.String(255), nullable=True)  # API expects this
+    image_url = db.Column(db.String(500), nullable=True)  # API expects this
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
     
@@ -128,7 +133,7 @@ class Transaction(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     buyer_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     seller_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
-    listing_id = db.Column(db.Integer, db.ForeignKey('listings.id'), nullable=False)
+    listing_id = db.Column(db.Integer, db.ForeignKey('energy_listings.id'), nullable=False)
     kwh_amount = db.Column(db.Float, nullable=False)
     total_price = db.Column(db.Float, nullable=False)
     status = db.Column(db.String(20), default='pending')

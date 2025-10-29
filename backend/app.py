@@ -1,5 +1,5 @@
 import os
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, send_from_directory
 from flask_migrate import Migrate
 from flask_cors import CORS
 from flask_jwt_extended import JWTManager, create_access_token, jwt_required, get_jwt_identity, get_jwt
@@ -57,6 +57,18 @@ def check_if_token_revoked(jwt_header, jwt_payload):
 app.register_blueprint(listings_bp)
 app.register_blueprint(dashboard_bp)
 app.register_blueprint(ai_bp)
+
+# Serve uploaded files
+UPLOAD_FOLDER = os.path.join(os.path.dirname(__file__), 'uploads')
+
+@app.route('/uploads/listings/<path:filename>')
+def serve_listing_image(filename):
+    """Serve uploaded listing images from the uploads/listings directory"""
+    try:
+        listings_folder = os.path.join(UPLOAD_FOLDER, 'listings')
+        return send_from_directory(listings_folder, filename)
+    except FileNotFoundError:
+        return jsonify({'error': 'File not found'}), 404
 
 # Authentication Routes
 @app.route('/api/auth/register', methods=['POST'])

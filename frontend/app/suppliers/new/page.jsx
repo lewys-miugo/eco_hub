@@ -27,7 +27,6 @@ export default function NewListingPage() {
     energyType: '',
     pricePerKwh: '',
     amount: '',
-    sellerAccount: '',
     location: '',
     status: 'active'
   });
@@ -104,29 +103,31 @@ export default function NewListingPage() {
     }
     
     try {
-      // Validate required fields
+      // Validate required fields (removed sellerAccount as it's no longer required)
       if (!formData.title || !formData.energyType || !formData.pricePerKwh || !formData.amount || 
-          !formData.sellerAccount || !formData.location) {
+          !formData.location) {
         showToast('Please fill in all fields', 'error');
         return;
       }
       
-      // Debug: Log image status
-      console.log('Creating listing - imagePreview exists:', !!imagePreview);
-      console.log('Image preview length:', imagePreview ? imagePreview.length : 0);
+      // Verify selectedImage is a File object
+      console.log('Creating listing - selectedImage:', selectedImage);
+      console.log('selectedImage type:', selectedImage instanceof File ? 'File object ✓' : typeof selectedImage);
       
-      const listingData = {
-        title: formData.title,
-        energyType: formData.energyType,
-        quantity: formData.amount,
-        price: formData.pricePerKwh,
-        sellerAccount: formData.sellerAccount,
-        location: formData.location,
-        status: formData.status,
-        imageUrl: imagePreview || null  // Include uploaded image if available
-      };
+      // Create FormData for file upload
+      const listingData = new FormData();
+      listingData.append('title', formData.title);
+      listingData.append('energyType', formData.energyType);
+      listingData.append('quantity', formData.amount);
+      listingData.append('price', formData.pricePerKwh);
+      listingData.append('location', formData.location);
+      listingData.append('status', formData.status);
       
-      console.log('Sending listing data (imageUrl length):', listingData.imageUrl ? listingData.imageUrl.substring(0, 50) + '...' : 'null');
+      // Only append image if it's a File object
+      if (selectedImage && selectedImage instanceof File) {
+        listingData.append('image', selectedImage);
+        console.log('Added image file to FormData:', selectedImage.name, selectedImage.size, 'bytes');
+      }
       
       await createListing(listingData);
       
@@ -310,32 +311,6 @@ export default function NewListingPage() {
                   value={formData.amount}
                   onChange={handleInputChange}
                   placeholder="500"
-                  className="w-full px-3 py-1 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  style={{
-                    backgroundColor: '#041532',
-                    border: '1px solid #374151',
-                    fontFamily: 'Lexend Deca, sans-serif'
-                  }}
-                />
-              </div>
-
-              {/* Seller Account */}
-              <div>
-                <label 
-                  className="block text-sm font-medium mb-1"
-                  style={{ 
-                    color: 'white',
-                    fontFamily: 'Lexend Deca, sans-serif'
-                  }}
-                >
-                  Seller Account
-                </label>
-                <input
-                  type="email"
-                  name="sellerAccount"
-                  value={formData.sellerAccount}
-                  onChange={handleInputChange}
-                  placeholder="john.doe@email.com"
                   className="w-full px-3 py-1 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
                   style={{
                     backgroundColor: '#041532',

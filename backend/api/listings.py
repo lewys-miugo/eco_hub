@@ -7,6 +7,9 @@ from flask import Blueprint, request, jsonify
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from database.config import get_db_cursor
 import logging
+import os
+import time
+from werkzeug.utils import secure_filename
 
 # Create blueprint for listings API
 listings_bp = Blueprint('listings', __name__, url_prefix='/api/listings')
@@ -30,10 +33,10 @@ def get_all_listings():
         # Build query
         query = """
             SELECT 
-                id, title, energy_type, quantity_kwh, price_per_kwh, 
-                status, location, seller_account, description, image_url,
+                id, title, energy_type, available_kwh, price_per_kwh, 
+                status, location, description, image_url,
                 created_at, updated_at
-            FROM energy_listings
+            FROM listings
         """
         
         conditions = []
@@ -50,7 +53,7 @@ def get_all_listings():
         if conditions:
             query += " WHERE " + " AND ".join(conditions)
         
-        query += " ORDER BY created_at DESC"
+        query += " ORDER BY COALESCE(created_at, '1970-01-01'::timestamp) DESC, id DESC"
         
         if limit:
             query += " LIMIT %s"
@@ -67,15 +70,14 @@ def get_all_listings():
                     'id': listing['id'],
                     'title': listing['title'],
                     'energyType': listing['energy_type'],
-                    'quantity': listing['quantity_kwh'],
+                    'quantity': listing['available_kwh'],
                     'price': str(listing['price_per_kwh']),
                     'status': listing['status'],
                     'location': listing['location'],
-                    'sellerAccount': listing['seller_account'],
                     'description': listing['description'],
                     'imageUrl': listing.get('image_url'),  # Add image URL
-                    'createdAt': listing['created_at'].isoformat(),
-                    'updatedAt': listing['updated_at'].isoformat()
+                    'createdAt': listing['created_at'].isoformat() if listing['created_at'] else None,
+                    'updatedAt': listing['updated_at'].isoformat() if listing['updated_at'] else None
                 })
             
             return jsonify({
@@ -101,10 +103,10 @@ def get_listing_by_id(listing_id):
         with get_db_cursor() as (cur, conn):
             cur.execute("""
                 SELECT 
-                    id, title, energy_type, quantity_kwh, price_per_kwh, 
-                    status, location, seller_account, description, image_url,
+                    id, title, energy_type, available_kwh, price_per_kwh, 
+                    status, location, description, image_url,
                     created_at, updated_at
-                FROM energy_listings 
+                FROM listings 
                 WHERE id = %s
             """, (listing_id,))
             
@@ -120,15 +122,14 @@ def get_listing_by_id(listing_id):
                 'id': listing['id'],
                 'title': listing['title'],
                 'energyType': listing['energy_type'],
-                'quantity': listing['quantity_kwh'],
+                'quantity': listing['available_kwh'],
                 'price': str(listing['price_per_kwh']),
                 'status': listing['status'],
                 'location': listing['location'],
-                'sellerAccount': listing['seller_account'],
                 'description': listing['description'],
                 'imageUrl': listing.get('image_url'),  # Add image URL
-                'createdAt': listing['created_at'].isoformat(),
-                'updatedAt': listing['updated_at'].isoformat()
+                'createdAt': listing['created_at'].isoformat() if listing['created_at'] else None,
+                'updatedAt': listing['updated_at'].isoformat() if listing['updated_at'] else None
             }
             
             return jsonify({
@@ -156,18 +157,56 @@ def create_listing():
         user_id = get_jwt_identity()
         logger.info(f"POST /api/listings endpoint called by user {user_id}")
         
-        data = request.get_json()
-        logger.info(f"Received data keys: {list(data.keys())}")
+        # Check if request is multipart/form-data (file upload) or JSON
+        is_form_data = request.content_type and 'multipart/form-data' in request.content_type
         
-        # Debug: Check imageUrl in received data
-        has_image = data.get('imageUrl') is not None and data.get('imageUrl') != '' and data.get('imageUrl') != 'null'
-        logger.info(f"ImageUrl present in request: {has_image}")
-        if has_image:
-            img_len = len(str(data.get('imageUrl')))
-            logger.info(f"ImageUrl length: {img_len} characters")
+        if is_form_data:
+            # Handle FormData (file upload)
+            data = {}
+            data['title'] = request.form.get('title')
+            data['energyType'] = request.form.get('energyType')
+            data['quantity'] = request.form.get('quantity')
+            data['price'] = request.form.get('price')
+            data['location'] = request.form.get('location')
+            data['status'] = request.form.get('status', 'active')
+            data['description'] = request.form.get('description', '')
+            
+            # Handle image file upload
+            image_file = request.files.get('image')
+            image_url = None
+            
+            if image_file and image_file.filename:
+                # Save file to disk and store only the file path
+                upload_folder = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'uploads', 'listings')
+                os.makedirs(upload_folder, exist_ok=True)  # Create directory if it doesn't exist
+                
+                filename = secure_filename(image_file.filename)
+                # Add timestamp to make filename unique
+                timestamp = int(time.time())
+                unique_filename = f"{timestamp}_{filename}"
+                file_path = os.path.join(upload_folder, unique_filename)
+                
+                image_file.save(file_path)
+                # Store only the relative path, not full path or base64
+                image_url = f"/uploads/listings/{unique_filename}"
+                logger.info(f"Image file saved: {unique_filename}, size: {os.path.getsize(file_path)} bytes, path: {image_url}")
+            
+            logger.info(f"Received FormData with keys: {list(data.keys())}, image present: {image_file is not None}")
+        else:
+            # Handle JSON request (backward compatibility)
+            data = request.get_json()
+            logger.info(f"Received JSON data keys: {list(data.keys())}")
+            
+            # Debug: Check imageUrl in received data
+            has_image = data.get('imageUrl') is not None and data.get('imageUrl') != '' and data.get('imageUrl') != 'null'
+            logger.info(f"ImageUrl present in request: {has_image}")
+            if has_image:
+                img_len = len(str(data.get('imageUrl')))
+                logger.info(f"ImageUrl length: {img_len} characters")
+            image_url = data.get('imageUrl', None)
         
         # Validate required fields
-        required_fields = ['title', 'energyType', 'quantity', 'price', 'location', 'sellerAccount']
+        required_fields = ['title', 'energyType', 'quantity', 'price', 'location']
         for field in required_fields:
             if field not in data or not data[field]:
                 return jsonify({
@@ -208,27 +247,27 @@ def create_listing():
         
         with get_db_cursor() as (cur, conn):
             cur.execute("""
-                INSERT INTO energy_listings 
-                (title, energy_type, quantity_kwh, price_per_kwh, status, location, seller_account, description, image_url)
+                INSERT INTO listings
+                (user_id, title, energy_type, available_kwh, price_per_kwh, location, description, image_url, status)
                 VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
                 RETURNING id, created_at, updated_at
             """, (
+                user_id,
                 data['title'],
                 data['energyType'],
                 quantity,
                 price,
-                data.get('status', 'active'),
                 data['location'],
-                data['sellerAccount'],
                 data.get('description', ''),
-                data.get('imageUrl', None)  # Get imageUrl if provided
+                image_url,  # Use image_url from FormData or JSON
+                data.get('status', 'active')
             ))
             
             result = cur.fetchone()
             conn.commit()
             
             # Debug: Log saved image status
-            if data.get('imageUrl'):
+            if image_url:
                 logger.info(f"Listing {result['id']} created with image_url")
             else:
                 logger.info(f"Listing {result['id']} created without image_url")
@@ -238,8 +277,8 @@ def create_listing():
                 'message': 'Listing created successfully',
                 'data': {
                     'id': result['id'],
-                    'createdAt': result['created_at'].isoformat(),
-                    'updatedAt': result['updated_at'].isoformat()
+                    'createdAt': result['created_at'].isoformat() if result['created_at'] else None,
+                    'updatedAt': result['updated_at'].isoformat() if result['updated_at'] else None
                 }
             }), 201
             
@@ -273,11 +312,10 @@ def update_listing(listing_id):
         field_mapping = {
             'title': 'title',
             'energyType': 'energy_type',
-            'quantity': 'quantity_kwh',
+            'quantity': 'available_kwh',
             'price': 'price_per_kwh',
             'status': 'status',
             'location': 'location',
-            'sellerAccount': 'seller_account',
             'description': 'description',
             'imageUrl': 'image_url'  # Add image URL support
         }
@@ -335,7 +373,7 @@ def update_listing(listing_id):
         
         with get_db_cursor() as (cur, conn):
             # Check if listing exists
-            cur.execute("SELECT id FROM energy_listings WHERE id = %s", (listing_id,))
+            cur.execute("SELECT id FROM listings WHERE id = %s", (listing_id,))
             if not cur.fetchone():
                 return jsonify({
                     'status': 'error',
@@ -344,7 +382,7 @@ def update_listing(listing_id):
             
             # Update the listing
             query = f"""
-                UPDATE energy_listings 
+                UPDATE listings 
                 SET {', '.join(update_fields)}, updated_at = CURRENT_TIMESTAMP
                 WHERE id = %s
                 RETURNING updated_at
@@ -378,7 +416,7 @@ def delete_listing(listing_id):
     try:
         with get_db_cursor() as (cur, conn):
             # Check if listing exists
-            cur.execute("SELECT id FROM energy_listings WHERE id = %s", (listing_id,))
+            cur.execute("SELECT id FROM listings WHERE id = %s", (listing_id,))
             if not cur.fetchone():
                 return jsonify({
                     'status': 'error',
@@ -386,7 +424,7 @@ def delete_listing(listing_id):
                 }), 404
             
             # Delete the listing
-            cur.execute("DELETE FROM energy_listings WHERE id = %s", (listing_id,))
+            cur.execute("DELETE FROM listings WHERE id = %s", (listing_id,))
             conn.commit()
             
             return jsonify({

@@ -246,7 +246,7 @@ export default function MarketplacePage() {
                     <div className="relative w-full h-[304px]">
                       {listing.imageUrl && listing.imageUrl.trim() !== '' && listing.imageUrl !== 'null' ? (
                         <img
-                          src={listing.imageUrl}
+                          src={listing.imageUrl.startsWith('http') ? listing.imageUrl : `${process.env.NEXT_PUBLIC_API_URL?.replace('/api', '') || 'http://localhost:5000'}${listing.imageUrl}`}
                           alt="Energy installation"
                           className="w-full h-full object-cover"
                           style={{ borderRadius: '8px 8px 0 0' }}
