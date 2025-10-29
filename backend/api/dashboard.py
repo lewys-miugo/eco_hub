@@ -62,6 +62,28 @@ def get_dashboard_metrics():
             except Exception as e:
                 logger.warning(f"Failed to compute households_powered: {e}")
             
+            # Energy Bought: total energy bought by all consumers
+            try:
+                cur.execute("SELECT COALESCE(SUM(kwh_amount), 0) AS total FROM transactions")
+                row = cur.fetchone()
+                result['energy_bought'] = {
+                    'value': str(int(row['total'])) if row['total'] else '0',
+                    'unit': 'kWh'
+                }
+            except Exception as e:
+                logger.warning(f"Failed to compute energy_bought: {e}")
+            
+            # Energy Saved: total energy being sold (from all listings, bought or not)
+            try:
+                cur.execute("SELECT COALESCE(SUM(available_kwh), 0) AS total FROM listings WHERE available_kwh IS NOT NULL")
+                row = cur.fetchone()
+                result['energy_saved'] = {
+                    'value': str(int(row['total'])) if row['total'] else '0',
+                    'unit': 'kWh'
+                }
+            except Exception as e:
+                logger.warning(f"Failed to compute energy_saved: {e}")
+            
             return jsonify({
                 'status': 'success',
                 'data': result

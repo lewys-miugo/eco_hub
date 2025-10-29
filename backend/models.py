@@ -34,8 +34,7 @@ class User(db.Model):
 
     def generate_token(self):
         """Generate JWT token for authentication"""
-        # Convert ID to string as Flask-JWT-Extended expects string identity
-        return create_access_token(identity=str(self.id))
+        return create_access_token(identity=self.id)
 
     def to_dict(self):
         """Convert user to dictionary for JSON serialization"""
