@@ -22,6 +22,7 @@ export default function ProfilePage() {
     firstPurchase: '',
     installedCapacity: '0 KWh',
     totalRevenue: 'Kes. 0.00',
+    totalExpenditure: 'Kes. 0.00',
     mrr: 'Kes. 0.00'
   });
 
@@ -77,7 +78,7 @@ export default function ProfilePage() {
   const loadUserMetrics = async () => {
     // TODO: Replace with actual API call
     // For now, use mock data
-    setPurchaseHistory([
+    const mockPurchaseHistory = [
       {
         date: '2 - 03 - 2025',
         location: 'Kahawa West, Nairobi',
@@ -90,13 +91,27 @@ export default function ProfilePage() {
         capacity: '10 KWh @Kes.1.5',
         totalCost: 'Kes. 15,000'
       }
-    ]);
+    ];
+    setPurchaseHistory(mockPurchaseHistory);
+    
+    // Calculate total expenditure from purchase history for consumers
+    const calculateTotalExpenditure = (purchases) => {
+      return purchases.reduce((total, purchase) => {
+        // Extract numeric value from "Kes. 15,000" format
+        const numericValue = parseFloat(purchase.totalCost.replace(/[^0-9.]/g, '')) || 0;
+        return total + numericValue;
+      }, 0);
+    };
+    
+    const totalExpenditureAmount = calculateTotalExpenditure(mockPurchaseHistory);
+    const formattedExpenditure = `Kes. ${totalExpenditureAmount.toLocaleString('en-KE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
     
     setMetrics({
       firstSeen: userData?.created_at ? formatDate(new Date(userData.created_at)) : '1 Mar, 2025',
-      firstPurchase: purchaseHistory.length > 0 ? purchaseHistory[0].date : '1 May, 2025',
+      firstPurchase: mockPurchaseHistory.length > 0 ? mockPurchaseHistory[0].date : '1 May, 2025',
       installedCapacity: '10 KWh',
       totalRevenue: 'Kes. 1,110,000.00',
+      totalExpenditure: formattedExpenditure,
       mrr: 'Kes. 11,573.00'
     });
   };
@@ -267,8 +282,12 @@ export default function ProfilePage() {
                 <p className="font-semibold text-white">{metrics.installedCapacity}</p>
               </div>
               <div className="border-l border-gray-600 pl-8 flex-1 min-w-[120px]">
-                <p className="text-gray-400 text-sm mb-1">Total Revenue</p>
-                <p className="font-semibold text-white">{metrics.totalRevenue}</p>
+                <p className="text-gray-400 text-sm mb-1">
+                  {userData?.role === 'consumer' ? 'Total Expenditure' : 'Total Revenue'}
+                </p>
+                <p className="font-semibold text-white">
+                  {userData?.role === 'consumer' ? metrics.totalExpenditure : metrics.totalRevenue}
+                </p>
               </div>
               <div className="border-l border-gray-600 pl-8 flex-1 min-w-[120px]">
                 <p className="text-gray-400 text-sm mb-1">MRR</p>
