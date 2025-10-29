@@ -51,7 +51,7 @@ export default function LoginForm({ onToggle }) {
 
   return (
     <div className="max-w-md mx-auto bg-[#163466] p-8 rounded-lg shadow-md">
-      <img className='mx-auto' src='./eco_hub_logo.png'/>
+      <img className='mx-auto' src='/eco_hub_logo.png' alt="Eco Hub Logo"/>
       <h2 className="text-2xl font-bold text-center mb-6 text-white">GOOD TO SEE YOU AGAIN!</h2>
       
       {error && (

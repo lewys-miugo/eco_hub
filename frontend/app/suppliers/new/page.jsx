@@ -1,7 +1,7 @@
 'use client';
 
 import Image from 'next/image';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { createListing } from '../../../lib/api';
 import { useRouter } from 'next/navigation';
 import { useToast } from '../../../components/Toast';
@@ -9,6 +9,19 @@ import { useToast } from '../../../components/Toast';
 export default function NewListingPage() {
   const router = useRouter();
   const { showToast } = useToast();
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  
+  // Check authentication on component mount
+  useEffect(() => {
+    const token = localStorage.getItem('access_token');
+    if (!token) {
+      showToast('Please log in to create a listing', 'error');
+      router.push('/auth');
+    } else {
+      setIsAuthenticated(true);
+    }
+  }, [router, showToast]);
+  
   const [formData, setFormData] = useState({
     title: '',
     energyType: '',
@@ -82,6 +95,14 @@ export default function NewListingPage() {
   };
 
   const handleCreate = async () => {
+    // Double check authentication before submitting
+    const token = localStorage.getItem('access_token');
+    if (!token) {
+      showToast('Please log in to create a listing', 'error');
+      router.push('/auth');
+      return;
+    }
+    
     try {
       // Validate required fields
       if (!formData.title || !formData.energyType || !formData.pricePerKwh || !formData.amount || 
@@ -118,6 +139,17 @@ export default function NewListingPage() {
       console.error('Error creating listing:', error);
     }
   };
+
+  // Don't render form if not authenticated
+  if (!isAuthenticated) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-lg text-gray-600">Redirecting to login...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen relative -mt-[72px]">

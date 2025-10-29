@@ -4,6 +4,7 @@ provides CRUD operations for energy listings
 """
 
 from flask import Blueprint, request, jsonify
+from flask_jwt_extended import jwt_required, get_jwt_identity
 from database.config import get_db_cursor
 import logging
 
@@ -144,12 +145,17 @@ def get_listing_by_id(listing_id):
         }), 500
 
 @listings_bp.route('/', methods=['POST'])
+@jwt_required()
 def create_listing():
     """
     Create a new energy listing
+    Requires authentication
     """
     try:
-        logger.info("POST /api/listings endpoint called")
+        # Get authenticated user ID
+        user_id = get_jwt_identity()
+        logger.info(f"POST /api/listings endpoint called by user {user_id}")
+        
         data = request.get_json()
         logger.info(f"Received data keys: {list(data.keys())}")
         
