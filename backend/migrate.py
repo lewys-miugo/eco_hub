@@ -34,6 +34,60 @@ def get_db_connection():
         return None
 
 
+# --- Ensure Core Tables ---
+def ensure_core_tables():
+    """Create essential tables (listings, dashboard_metrics) if they do not exist using SQLAlchemy connection."""
+    try:
+        with app.app_context():
+            # Listings table used by API endpoints
+            db.session.execute(text(
+                """
+                CREATE TABLE IF NOT EXISTS listings (
+                    id SERIAL PRIMARY KEY,
+                    user_id INTEGER,
+                    title VARCHAR(255) NOT NULL,
+                    energy_type VARCHAR(50) NOT NULL,
+                    available_kwh NUMERIC,
+                    price_per_kwh NUMERIC NOT NULL,
+                    status VARCHAR(20) DEFAULT 'active',
+                    location VARCHAR(255) NOT NULL,
+                    description TEXT,
+                    image_url VARCHAR(500),
+                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                );
+                """
+            ))
+            # Helpful indexes
+            db.session.execute(text("CREATE INDEX IF NOT EXISTS idx_listings_status ON listings(status);"))
+            db.session.execute(text("CREATE INDEX IF NOT EXISTS idx_listings_energy_type ON listings(energy_type);"))
+            db.session.execute(text("CREATE INDEX IF NOT EXISTS idx_listings_created_at ON listings(created_at);"))
+
+            # Dashboard metrics table for AI/metrics
+            db.session.execute(text(
+                """
+                CREATE TABLE IF NOT EXISTS dashboard_metrics (
+                    id SERIAL PRIMARY KEY,
+                    metric_name VARCHAR(100) UNIQUE NOT NULL,
+                    metric_value VARCHAR(64) NOT NULL,
+                    metric_unit VARCHAR(20),
+                    description TEXT,
+                    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                );
+                """
+            ))
+            db.session.execute(text("CREATE INDEX IF NOT EXISTS idx_dashboard_metrics_name ON dashboard_metrics(metric_name);"))
+
+            db.session.commit()
+            print("Ensured core tables (listings, dashboard_metrics)")
+            return True
+    except Exception as e:
+        with app.app_context():
+            db.session.rollback()
+        print(f"Failed ensuring core tables: {e}")
+        return False
+
+
 # --- Migration Logic ---
 def run_migrations():
     """Drop existing tables and recreate them"""
@@ -51,6 +105,9 @@ def run_migrations():
             db.create_all()
             db.session.commit()
             print("Database tables created successfully")
+
+            # Ensure tables used by raw SQL API endpoints exist
+            ensure_core_tables()
 
             seed_data()
             return True
@@ -132,6 +189,50 @@ def seed_data():
         print(f"Seeding failed: {e}")
 
 
+# --- Fix Foreign Key Constraints ---
+def fix_transaction_foreign_key():
+    """Fix the transactions.listing_id foreign key to point to listings instead of energy_listings"""
+    conn = get_db_connection()
+    if conn is None:
+        print("Failed to connect to database when fixing foreign key")
+        return False
+    
+    try:
+        with conn.cursor() as cur:
+            # Check if constraint exists and what it references
+            cur.execute("""
+                SELECT constraint_name
+                FROM information_schema.table_constraints
+                WHERE table_name = 'transactions'
+                AND constraint_type = 'FOREIGN KEY'
+                AND constraint_name LIKE '%listing_id%'
+            """)
+            constraints = cur.fetchall()
+            
+            # Drop existing constraint if it points to energy_listings
+            for constraint in constraints:
+                constraint_name = constraint[0]
+                cur.execute(f"ALTER TABLE transactions DROP CONSTRAINT IF EXISTS {constraint_name};")
+                print(f"Dropped old constraint: {constraint_name}")
+            
+            # Create new constraint pointing to listings
+            cur.execute("""
+                ALTER TABLE transactions
+                ADD CONSTRAINT transactions_listing_id_fkey
+                FOREIGN KEY (listing_id) REFERENCES listings(id);
+            """)
+            print("Created new foreign key constraint: transactions_listing_id_fkey -> listings(id)")
+        
+        conn.commit()
+        return True
+    except Exception as e:
+        conn.rollback()
+        print(f"Failed to fix foreign key constraint: {e}")
+        return False
+    finally:
+        conn.close()
+
+
 # --- Verification ---
 def check_database_status():
     """Check if database tables exist and show sample data"""
@@ -175,10 +276,22 @@ if __name__ == '__main__':
 
     if len(sys.argv) > 1 and sys.argv[1] == 'check':
         check_database_status()
+    elif len(sys.argv) > 1 and sys.argv[1] == 'fix-fk':
+        print("Fixing foreign key constraints...")
+        if fix_transaction_foreign_key():
+            print("\nForeign key constraint fixed successfully.")
+        else:
+            print("\nFailed to fix foreign key constraint.")
     else:
         print("Setting up database (drop + recreate)...")
+        # First run ORM migrations (drops and recreates base schema)
+        migrations_ok = run_migrations()
+        # Then layer raw schema tables (e.g., dashboard_metrics, energy_listings)
         schema_ok = run_raw_schema()
-        if run_migrations() and schema_ok:
+        # Fix foreign key constraint after tables are created
+        if migrations_ok:
+            fix_transaction_foreign_key()
+        if migrations_ok and schema_ok:
             print("\nMigration completed successfully.")
         else:
             print("\nMigration failed! Please check your setup and try again.")

@@ -63,7 +63,7 @@ class Category(db.Model):
     
 class Listing(db.Model):
     """Energy listing model for marketplace"""
-    __tablename__ = 'energy_listings'
+    __tablename__ = 'listings'
     
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)
@@ -134,7 +134,7 @@ class Transaction(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     buyer_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     seller_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
-    listing_id = db.Column(db.Integer, db.ForeignKey('energy_listings.id'), nullable=False)
+    listing_id = db.Column(db.Integer, db.ForeignKey('listings.id'), nullable=False)
     kwh_amount = db.Column(db.Float, nullable=False)
     total_price = db.Column(db.Float, nullable=False)
     status = db.Column(db.String(20), default='pending')

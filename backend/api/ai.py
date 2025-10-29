@@ -374,4 +374,3 @@ def generate_market_recommendations(trends):
     return recommendations
 
 
-
