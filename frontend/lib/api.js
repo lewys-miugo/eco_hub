@@ -49,6 +49,7 @@ export async function fetchListingById(id) {
  */
 export async function createListing(listingData) {
   try {
+    console.log('Creating listing with data:', { ...listingData, imageUrl: listingData.imageUrl ? 'Image present (base64 data)' : 'No image' });
     const response = await fetch(`${API_BASE_URL}/listings/`, {
       method: 'POST',
       headers: {

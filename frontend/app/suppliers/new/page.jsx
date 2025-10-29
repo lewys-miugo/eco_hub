@@ -46,12 +46,28 @@ export default function NewListingPage() {
 
   const handleCloseImageModal = () => {
     setShowImageModal(false);
+    // Don't clear imagePreview here - keep it for the form submission
+    // Only clear if user explicitly cancels
+  };
+
+  const handleConfirmImage = () => {
+    // User confirmed they want to use this image
+    setShowImageModal(false);
+    // Keep imagePreview and selectedImage - don't clear them
+  };
+
+  const handleRemoveImage = () => {
+    // User wants to remove the image
     setSelectedImage(null);
     setImagePreview(null);
+    setShowImageModal(true); // Reopen modal to allow new upload
   };
 
   const handleContinueWithoutImage = () => {
     setShowImageModal(false);
+    // Clear image if user chooses to skip
+    setSelectedImage(null);
+    setImagePreview(null);
   };
 
   const handleCapturePhoto = () => {
@@ -74,15 +90,24 @@ export default function NewListingPage() {
         return;
       }
       
-      await createListing({
+      // Debug: Log image status
+      console.log('Creating listing - imagePreview exists:', !!imagePreview);
+      console.log('Image preview length:', imagePreview ? imagePreview.length : 0);
+      
+      const listingData = {
         title: formData.title,
         energyType: formData.energyType,
         quantity: formData.amount,
         price: formData.pricePerKwh,
         sellerAccount: formData.sellerAccount,
         location: formData.location,
-        status: formData.status
-      });
+        status: formData.status,
+        imageUrl: imagePreview || null  // Include uploaded image if available
+      };
+      
+      console.log('Sending listing data (imageUrl length):', listingData.imageUrl ? listingData.imageUrl.substring(0, 50) + '...' : 'null');
+      
+      await createListing(listingData);
       
       showToast('Listing created successfully!', 'success');
       setTimeout(() => {
@@ -362,11 +387,7 @@ export default function NewListingPage() {
                       className="w-full h-full object-cover"
                     />
                     <button
-                      onClick={() => {
-                        setImagePreview(null);
-                        setSelectedImage(null);
-                        setShowImageModal(true);
-                      }}
+                      onClick={handleRemoveImage}
                       className="absolute top-2 right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm"
                     >
                       ×
@@ -446,7 +467,12 @@ export default function NewListingPage() {
       {showImageModal && (
         <div 
           className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center"
-          onClick={handleCloseImageModal}
+          onClick={(e) => {
+            // Only close if clicking the backdrop, not if there's an image preview
+            if (e.target === e.currentTarget && !imagePreview) {
+              handleCloseImageModal();
+            }
+          }}
         >
           <div 
             className="bg-white rounded-lg p-8 max-w-md w-full mx-4"
@@ -478,7 +504,7 @@ export default function NewListingPage() {
                     Change Image
                   </button>
                   <button
-                    onClick={handleCloseImageModal}
+                    onClick={handleConfirmImage}
                     className="flex-1 py-2 px-4 rounded-md font-medium transition-colors"
                     style={{
                       backgroundColor: '#2FAA5B',

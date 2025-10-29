@@ -30,7 +30,7 @@ def get_all_listings():
         query = """
             SELECT 
                 id, title, energy_type, quantity_kwh, price_per_kwh, 
-                status, location, seller_account, description,
+                status, location, seller_account, description, image_url,
                 created_at, updated_at
             FROM energy_listings
         """
@@ -72,6 +72,7 @@ def get_all_listings():
                     'location': listing['location'],
                     'sellerAccount': listing['seller_account'],
                     'description': listing['description'],
+                    'imageUrl': listing.get('image_url'),  # Add image URL
                     'createdAt': listing['created_at'].isoformat(),
                     'updatedAt': listing['updated_at'].isoformat()
                 })
@@ -100,7 +101,7 @@ def get_listing_by_id(listing_id):
             cur.execute("""
                 SELECT 
                     id, title, energy_type, quantity_kwh, price_per_kwh, 
-                    status, location, seller_account, description,
+                    status, location, seller_account, description, image_url,
                     created_at, updated_at
                 FROM energy_listings 
                 WHERE id = %s
@@ -124,6 +125,7 @@ def get_listing_by_id(listing_id):
                 'location': listing['location'],
                 'sellerAccount': listing['seller_account'],
                 'description': listing['description'],
+                'imageUrl': listing.get('image_url'),  # Add image URL
                 'createdAt': listing['created_at'].isoformat(),
                 'updatedAt': listing['updated_at'].isoformat()
             }
@@ -149,7 +151,14 @@ def create_listing():
     try:
         logger.info("POST /api/listings endpoint called")
         data = request.get_json()
-        logger.info(f"Received data: {data}")
+        logger.info(f"Received data keys: {list(data.keys())}")
+        
+        # Debug: Check imageUrl in received data
+        has_image = data.get('imageUrl') is not None and data.get('imageUrl') != '' and data.get('imageUrl') != 'null'
+        logger.info(f"ImageUrl present in request: {has_image}")
+        if has_image:
+            img_len = len(str(data.get('imageUrl')))
+            logger.info(f"ImageUrl length: {img_len} characters")
         
         # Validate required fields
         required_fields = ['title', 'energyType', 'quantity', 'price', 'location', 'sellerAccount']
@@ -194,8 +203,8 @@ def create_listing():
         with get_db_cursor() as (cur, conn):
             cur.execute("""
                 INSERT INTO energy_listings 
-                (title, energy_type, quantity_kwh, price_per_kwh, status, location, seller_account, description)
-                VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+                (title, energy_type, quantity_kwh, price_per_kwh, status, location, seller_account, description, image_url)
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
                 RETURNING id, created_at, updated_at
             """, (
                 data['title'],
@@ -205,11 +214,18 @@ def create_listing():
                 data.get('status', 'active'),
                 data['location'],
                 data['sellerAccount'],
-                data.get('description', '')
+                data.get('description', ''),
+                data.get('imageUrl', None)  # Get imageUrl if provided
             ))
             
             result = cur.fetchone()
             conn.commit()
+            
+            # Debug: Log saved image status
+            if data.get('imageUrl'):
+                logger.info(f"Listing {result['id']} created with image_url")
+            else:
+                logger.info(f"Listing {result['id']} created without image_url")
             
             return jsonify({
                 'status': 'success',
