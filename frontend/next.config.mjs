@@ -1,7 +1,8 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  output: 'export', // Enables static HTML export
-  images: { unoptimized: true }, // optional if using <Image />
+  // Remove these lines for server deployment
+  // output: 'export',
+  // images: { unoptimized: true },
 }
 
 export default nextConfig
