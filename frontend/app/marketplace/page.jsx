@@ -2,22 +2,20 @@
 
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
-import { fetchListings } from '../../lib/api.js';
+import { fetchListings, createPurchase } from '../../lib/api.js';
 import { useToast } from '../../components/Toast';
+import { useRouter } from 'next/navigation';
 
 export default function MarketplacePage() {
   const { showToast } = useToast();
+  const router = useRouter();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedListing, setSelectedListing] = useState(null);
   const [listings, setListings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [contactForm, setContactForm] = useState({
-    name: '',
-    email: '',
-    phone: '',
-    message: ''
-  });
+  const [purchasing, setPurchasing] = useState(false);
+  const [kwhAmount, setKwhAmount] = useState('');
 
   // Filter states
   const [selectedEnergyType, setSelectedEnergyType] = useState('');
@@ -49,26 +47,47 @@ export default function MarketplacePage() {
   }, []);
 
   const handleBuyContact = (listing) => {
+    const token = localStorage.getItem('access_token');
+    if (!token) {
+      showToast('Please log in to purchase energy', 'error');
+      router.push('/auth');
+      return;
+    }
     setSelectedListing(listing);
+    setKwhAmount(Math.min(listing.quantity || 1, 10).toString()); // Default to smaller of available or 10 kWh
   };
 
   const handleCloseModal = () => {
     setSelectedListing(null);
-    setContactForm({ name: '', email: '', phone: '', message: '' });
+    setKwhAmount('');
+    setPurchasing(false);
   };
 
-  const handleContactSubmit = (e) => {
+  const handlePurchaseSubmit = async (e) => {
     e.preventDefault();
-    // TODO: Send contact form to backend
-    showToast('Contact form submitted! We will connect you with the seller soon.', 'success');
-    handleCloseModal();
-  };
+    if (!selectedListing) return;
 
-  const handleInputChange = (e) => {
-    setContactForm({
-      ...contactForm,
-      [e.target.name]: e.target.value
-    });
+    const kwh = parseFloat(kwhAmount);
+    if (!kwh || kwh <= 0) {
+      showToast('Please enter a valid kWh amount', 'error');
+      return;
+    }
+    if (kwh > (selectedListing.quantity || 0)) {
+      showToast(`Cannot purchase more than ${selectedListing.quantity} kWh available`, 'error');
+      return;
+    }
+
+    setPurchasing(true);
+    try {
+      const transaction = await createPurchase(selectedListing.id, kwh);
+      showToast(`Successfully purchased ${kwh} kWh! Your purchase has been recorded.`, 'success');
+      handleCloseModal();
+      // Optionally refresh listings to show updated quantities
+    } catch (error) {
+      showToast(error.message || 'Failed to complete purchase', 'error');
+    } finally {
+      setPurchasing(false);
+    }
   };
 
   // Filter listings based on search query, energy type, and sort
@@ -321,7 +340,7 @@ export default function MarketplacePage() {
         )}
       </section>
 
-      {/* Contact Modal */}
+      {/* Purchase Modal */}
       {selectedListing && (
         <div 
           className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center"
@@ -333,92 +352,62 @@ export default function MarketplacePage() {
             onClick={(e) => e.stopPropagation()}
           >
             <h2 className="text-2xl font-semibold mb-4 text-[#163466]">
-              Contact Seller
+              Purchase Energy
             </h2>
             
-            <div className="mb-4">
-              <p className="text-gray-600">
+            <div className="mb-6">
+              <p className="text-gray-600 mb-2">
                 Energy Type: <span className="font-semibold">{selectedListing.energyType}</span>
               </p>
-              <p className="text-gray-600">
+              <p className="text-gray-600 mb-2">
                 Price: <span className="font-semibold">{selectedListing.price} KSH/kWh</span>
               </p>
+              <p className="text-gray-600 mb-2">
+                Available: <span className="font-semibold">{selectedListing.quantity} kWh</span>
+              </p>
               <p className="text-gray-600">
-                Distance: <span className="font-semibold">{selectedListing.distance} miles</span>
+                Location: <span className="font-semibold">{selectedListing.location}</span>
               </p>
             </div>
 
-            <form onSubmit={handleContactSubmit}>
-              <div className="mb-4">
+            <form onSubmit={handlePurchaseSubmit}>
+              <div className="mb-6">
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Your Name
+                  Amount to Purchase (kWh)
                 </label>
                 <input
-                  type="text"
-                  name="name"
-                  value={contactForm.name}
-                  onChange={handleInputChange}
+                  type="number"
+                  min="0.1"
+                  max={selectedListing.quantity || 0}
+                  step="0.1"
+                  value={kwhAmount}
+                  onChange={(e) => setKwhAmount(e.target.value)}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#163466]"
                   required
                 />
-              </div>
-
-              <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Email
-                </label>
-                <input
-                  type="email"
-                  name="email"
-                  value={contactForm.email}
-                  onChange={handleInputChange}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#163466]"
-                  required
-                />
-              </div>
-
-              <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Phone
-                </label>
-                <input
-                  type="tel"
-                  name="phone"
-                  value={contactForm.phone}
-                  onChange={handleInputChange}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#163466]"
-                  required
-                />
-              </div>
-
-              <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Message
-                </label>
-                <textarea
-                  name="message"
-                  value={contactForm.message}
-                  onChange={handleInputChange}
-                  rows="3"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#163466]"
-                  placeholder="Your message to the seller..."
-                />
+                <p className="text-xs text-gray-500 mt-1">
+                  Total: {kwhAmount && selectedListing.price ? 
+                    `Kes. ${(parseFloat(kwhAmount || 0) * parseFloat(selectedListing.price)).toFixed(2)}` : 
+                    'Kes. 0.00'}
+                </p>
               </div>
 
               <div className="flex gap-3">
                 <button
                   type="button"
                   onClick={handleCloseModal}
-                  className="flex-1 px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 transition-colors"
+                  disabled={purchasing}
+                  className="flex-1 px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 transition-colors disabled:opacity-50"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="flex-1 px-4 py-2 rounded-md text-white transition-colors"
+                  disabled={purchasing}
+                  className="flex-1 px-4 py-2 rounded-md text-white transition-colors disabled:opacity-50"
                   style={{ backgroundColor: '#D2AB17' }}
                 >
-                  Send Message
+                  {purchasing ? 'Processing...' : 'Confirm Purchase'}
                 </button>
               </div>
             </form>

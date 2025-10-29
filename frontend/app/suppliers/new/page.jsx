@@ -10,15 +10,30 @@ export default function NewListingPage() {
   const router = useRouter();
   const { showToast } = useToast();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isSupplier, setIsSupplier] = useState(false);
   
   // Check authentication on component mount
   useEffect(() => {
     const token = localStorage.getItem('access_token');
-    if (!token) {
+    const userStr = localStorage.getItem('user');
+    if (!token || !userStr) {
       showToast('Please log in to create a listing', 'error');
       router.push('/auth');
     } else {
-      setIsAuthenticated(true);
+      try {
+        const user = JSON.parse(userStr);
+        const role = (user?.role || '').trim();
+        const supplier = role === 'supplier';
+        setIsSupplier(supplier);
+        setIsAuthenticated(true);
+        if (!supplier) {
+          showToast('Only suppliers can create listings', 'error');
+          router.push('/');
+        }
+      } catch (e) {
+        showToast('Session error. Please log in again.', 'error');
+        router.push('/auth');
+      }
     }
   }, [router, showToast]);
   
@@ -96,6 +111,12 @@ export default function NewListingPage() {
   const handleCreate = async () => {
     // Double check authentication before submitting
     const token = localStorage.getItem('access_token');
+    const user = JSON.parse(localStorage.getItem('user') || 'null');
+    const role = (user?.role || '').trim();
+    if (role !== 'supplier') {
+      showToast('Only suppliers can create listings', 'error');
+      return;
+    }
     if (!token) {
       showToast('Please log in to create a listing', 'error');
       router.push('/auth');

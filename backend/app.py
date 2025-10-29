@@ -15,6 +15,7 @@ from models import db, User
 from api.listings import listings_bp
 from api.dashboard import dashboard_bp
 from api.ai import ai_bp
+from api.transactions import transactions_bp
 
 load_dotenv()
 
@@ -57,6 +58,7 @@ def check_if_token_revoked(jwt_header, jwt_payload):
 app.register_blueprint(listings_bp)
 app.register_blueprint(dashboard_bp)
 app.register_blueprint(ai_bp)
+app.register_blueprint(transactions_bp)
 
 # Serve uploaded files
 UPLOAD_FOLDER = os.path.join(os.path.dirname(__file__), 'uploads')

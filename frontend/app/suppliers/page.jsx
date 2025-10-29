@@ -14,6 +14,18 @@ export default function SuppliersPage() {
   const [error, setError] = useState(null);
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [pendingDeleteId, setPendingDeleteId] = useState(null);
+  const [isSupplier, setIsSupplier] = useState(false);
+
+  useEffect(() => {
+    const userStr = typeof window !== 'undefined' ? localStorage.getItem('user') : null;
+    try {
+      const user = userStr ? JSON.parse(userStr) : null;
+      const role = (user?.role || '').trim();
+      setIsSupplier(role === 'supplier');
+    } catch (e) {
+      setIsSupplier(false);
+    }
+  }, []);
 
   // Fetch listings from API
   useEffect(() => {
@@ -149,6 +161,7 @@ export default function SuppliersPage() {
       <div className="relative w-full px-4 sm:px-8 py-8">
         {/* New Listing Button */}
         <div className="flex justify-end mb-6">
+          {isSupplier && (
           <Link href="/suppliers/new">
             <button
               className="hover:opacity-90 transition-opacity px-6 py-2 rounded-lg"
@@ -163,6 +176,7 @@ export default function SuppliersPage() {
               New Listing
             </button>
           </Link>
+          )}
         </div>
 
         {/* Error Message */}
@@ -222,6 +236,7 @@ export default function SuppliersPage() {
                             )}
                           </td>
                           <td className="px-4 sm:px-6 py-4">
+                            {isSupplier && (
                             <div className="flex gap-3">
                               <Link href={`/suppliers/${listing.id}/edit`}>
                                 <button className="text-blue-600 hover:text-blue-800 transition-colors" title="Edit">
@@ -238,6 +253,7 @@ export default function SuppliersPage() {
                                 </svg>
                               </button>
                             </div>
+                            )}
                           </td>
                           <td className="px-4 sm:px-6 py-4 text-sm sm:text-base font-light" style={{ color: '#163466', fontFamily: 'Lexend Deca, sans-serif' }}>{listing.location}</td>
                         </tr>
@@ -255,6 +271,8 @@ export default function SuppliersPage() {
                   <div className="flex justify-between items-start mb-3">
                     <h3 className="font-semibold text-[#163466] text-lg" style={{ fontFamily: 'Lexend Deca, sans-serif' }}>{listing.title}</h3>
                     <div className="flex gap-2">
+                      {isSupplier && (
+                        <>
                       <Link href={`/suppliers/${listing.id}/edit`}>
                         <button className="text-blue-600 hover:text-blue-800" title="Edit">
                           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -269,6 +287,8 @@ export default function SuppliersPage() {
                           <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
                         </svg>
                       </button>
+                        </>
+                      )}
                     </div>
                   </div>
                   <div className="space-y-2">

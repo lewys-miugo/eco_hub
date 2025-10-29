@@ -114,10 +114,12 @@ export async function createListing(listingData) {
  */
 export async function updateListing(id, listingData) {
   try {
+    const token = localStorage.getItem('access_token');
     const response = await fetch(`${API_BASE_URL}/listings/${id}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
+        ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
       },
       body: JSON.stringify(listingData),
     });
@@ -216,5 +218,70 @@ export async function fetchPerformancePredictions() {
   } catch (error) {
     console.error('Error fetching predictions:', error);
     return null;
+  }
+}
+
+/**
+ * Fetch the logged-in user's purchase history
+ */
+export async function fetchMyPurchases() {
+  try {
+    const token = localStorage.getItem('access_token');
+    if (!token) throw new Error('Not authenticated');
+    const response = await fetch(`${API_BASE_URL}/transactions/me`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    if (!response.ok) throw new Error('Failed to load purchases');
+    const data = await response.json();
+    return data.data || [];
+  } catch (error) {
+    console.error('Error fetching purchases:', error);
+    return [];
+  }
+}
+
+/**
+ * Fetch aggregate purchase summary for logged-in user
+ */
+export async function fetchMyPurchaseSummary() {
+  try {
+    const token = localStorage.getItem('access_token');
+    if (!token) throw new Error('Not authenticated');
+    const response = await fetch(`${API_BASE_URL}/transactions/me/summary`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    if (!response.ok) throw new Error('Failed to load summary');
+    const data = await response.json();
+    return data.data || { totalKwh: 0, totalExpenditure: 0 };
+  } catch (error) {
+    console.error('Error fetching purchase summary:', error);
+    return { totalKwh: 0, totalExpenditure: 0 };
+  }
+}
+
+/**
+ * Create a purchase transaction
+ */
+export async function createPurchase(listingId, kwh) {
+  try {
+    const token = localStorage.getItem('access_token');
+    if (!token) throw new Error('You must be logged in to purchase energy');
+    const response = await fetch(`${API_BASE_URL}/transactions/`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify({ listingId, kwh })
+    });
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || 'Failed to complete purchase');
+    }
+    const data = await response.json();
+    return data.data;
+  } catch (error) {
+    console.error('Error creating purchase:', error);
+    throw error;
   }
 }

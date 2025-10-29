@@ -291,19 +291,29 @@ def create_listing():
         }), 500
 
 @listings_bp.route('/<int:listing_id>', methods=['PUT'])
+@jwt_required()
 def update_listing(listing_id):
     """
     Update an existing energy listing
     """
     try:
         data = request.get_json()
-        
-        if not data:
-            return jsonify({
-                'status': 'error',
-                'message': 'No data provided'
-            }), 400
-        
+        # Enforce ownership: only the listing owner can update
+        auth_user_id = get_jwt_identity()
+        with get_db_cursor() as (cur, conn):
+            cur.execute("SELECT id, user_id FROM listings WHERE id = %s", (listing_id,))
+            listing_row = cur.fetchone()
+            if not listing_row:
+                return jsonify({
+                    'status': 'error',
+                    'message': 'Listing not found'
+                }), 404
+            if listing_row['user_id'] != auth_user_id:
+                return jsonify({
+                    'status': 'error',
+                    'message': 'You are not allowed to update this listing'
+                }), 403
+
         # Build dynamic update query
         update_fields = []
         params = []
@@ -372,15 +382,7 @@ def update_listing(listing_id):
         params.append(listing_id)
         
         with get_db_cursor() as (cur, conn):
-            # Check if listing exists
-            cur.execute("SELECT id FROM listings WHERE id = %s", (listing_id,))
-            if not cur.fetchone():
-                return jsonify({
-                    'status': 'error',
-                    'message': 'Listing not found'
-                }), 404
-            
-            # Update the listing
+            # Update the listing (ownership already verified above)
             query = f"""
                 UPDATE listings 
                 SET {', '.join(update_fields)}, updated_at = CURRENT_TIMESTAMP
