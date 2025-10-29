@@ -1,0 +1,61 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.db
+*.sqlite3
+
+# Virtual environments
+venv/
+env/
+.venv/
+
+env
+venv
+# Environment variables
+.env
+*.env
+
+# IDE & OS files
+.vscode/
+.idea/
+.DS_Store
+*.log
+# Python virtual environment
+venv/
+.env
+__pycache__/
+*.pyc
+
+# Database and local configs
+*.db
+*.sqlite3
+
+# Logs
+*.log
+
+# OS/system files
+.DS_Store
+
+# Environment or secret files
+.env.*
+secrets.json
+
+# Development/testing files
+setup_backend.py
+start_backend.bat
+start_backend.sh
+test_api.py
+backend/README_SETUP.md
+backend/database/test_connection.py
+
+# Empty component directories
+frontend/components/dashboard/
+frontend/components/marketplace/
+frontend/components/suppliers/
+secrets.json
+
+uploads/**
+uploads/*
+
