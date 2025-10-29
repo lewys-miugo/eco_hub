@@ -25,11 +25,15 @@ export default function MarketplacePage() {
 
   // Fetch listings from API
   useEffect(() => {
-    async function loadListings() {
+      async function loadListings() {
       try {
         setLoading(true);
         const data = await fetchListings({ status: 'active' });
         console.log('Marketplace listings loaded:', data);
+        // Debug: Log each listing's imageUrl
+        data.forEach(listing => {
+          console.log(`Listing ${listing.id} - imageUrl:`, listing.imageUrl);
+        });
         setListings(data);
         setError(null);
       } catch (err) {
@@ -240,12 +244,32 @@ export default function MarketplacePage() {
                   >
                     {/* Image */}
                     <div className="relative w-full h-[304px]">
-                      <Image
-                        src={getImageForEnergyType(listing.energyType)}
-                        alt="Energy installation"
-                        fill
-                        className="object-cover"
-                      />
+                      {listing.imageUrl && listing.imageUrl.trim() !== '' && listing.imageUrl !== 'null' ? (
+                        <img
+                          src={listing.imageUrl.startsWith('http') ? listing.imageUrl : `${process.env.NEXT_PUBLIC_API_URL?.replace('/api', '') || 'http://localhost:5000'}${listing.imageUrl}`}
+                          alt="Energy installation"
+                          className="w-full h-full object-cover"
+                          style={{ borderRadius: '8px 8px 0 0' }}
+                          onError={(e) => {
+                            console.error('Failed to load uploaded image for listing:', listing.id);
+                            // Hide this img and show fallback
+                            const container = e.target.parentElement;
+                            const fallback = container.querySelector('.fallback-image');
+                            if (fallback) {
+                              e.target.style.display = 'none';
+                              fallback.style.display = 'block';
+                            }
+                          }}
+                        />
+                      ) : null}
+                      <div className="fallback-image" style={{ display: listing.imageUrl && listing.imageUrl.trim() !== '' && listing.imageUrl !== 'null' ? 'none' : 'block', width: '100%', height: '100%' }}>
+                        <Image
+                          src={getImageForEnergyType(listing.energyType)}
+                          alt="Energy installation"
+                          fill
+                          className="object-cover"
+                        />
+                      </div>
                     </div>
 
                     {/* Details Section */}

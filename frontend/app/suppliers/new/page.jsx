@@ -1,7 +1,7 @@
 'use client';
 
 import Image from 'next/image';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { createListing } from '../../../lib/api';
 import { useRouter } from 'next/navigation';
 import { useToast } from '../../../components/Toast';
@@ -9,11 +9,24 @@ import { useToast } from '../../../components/Toast';
 export default function NewListingPage() {
   const router = useRouter();
   const { showToast } = useToast();
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  
+  // Check authentication on component mount
+  useEffect(() => {
+    const token = localStorage.getItem('access_token');
+    if (!token) {
+      showToast('Please log in to create a listing', 'error');
+      router.push('/auth');
+    } else {
+      setIsAuthenticated(true);
+    }
+  }, [router, showToast]);
+  
   const [formData, setFormData] = useState({
+    title: '',
     energyType: '',
     pricePerKwh: '',
     amount: '',
-    sellerAccount: '',
     location: '',
     status: 'active'
   });
@@ -45,12 +58,28 @@ export default function NewListingPage() {
 
   const handleCloseImageModal = () => {
     setShowImageModal(false);
+    // Don't clear imagePreview here - keep it for the form submission
+    // Only clear if user explicitly cancels
+  };
+
+  const handleConfirmImage = () => {
+    // User confirmed they want to use this image
+    setShowImageModal(false);
+    // Keep imagePreview and selectedImage - don't clear them
+  };
+
+  const handleRemoveImage = () => {
+    // User wants to remove the image
     setSelectedImage(null);
     setImagePreview(null);
+    setShowImageModal(true); // Reopen modal to allow new upload
   };
 
   const handleContinueWithoutImage = () => {
     setShowImageModal(false);
+    // Clear image if user chooses to skip
+    setSelectedImage(null);
+    setImagePreview(null);
   };
 
   const handleCapturePhoto = () => {
@@ -65,26 +94,42 @@ export default function NewListingPage() {
   };
 
   const handleCreate = async () => {
+    // Double check authentication before submitting
+    const token = localStorage.getItem('access_token');
+    if (!token) {
+      showToast('Please log in to create a listing', 'error');
+      router.push('/auth');
+      return;
+    }
+    
     try {
-      // Validate required fields
-      if (!formData.energyType || !formData.pricePerKwh || !formData.amount || 
-          !formData.sellerAccount || !formData.location) {
+      // Validate required fields (removed sellerAccount as it's no longer required)
+      if (!formData.title || !formData.energyType || !formData.pricePerKwh || !formData.amount || 
+          !formData.location) {
         showToast('Please fill in all fields', 'error');
         return;
       }
-
-      // Create the listing with proper title
-      const title = `${formData.energyType} Energy`;
       
-      await createListing({
-        title: title,
-        energyType: formData.energyType,
-        quantity: formData.amount,
-        price: formData.pricePerKwh,
-        sellerAccount: formData.sellerAccount,
-        location: formData.location,
-        status: formData.status
-      });
+      // Verify selectedImage is a File object
+      console.log('Creating listing - selectedImage:', selectedImage);
+      console.log('selectedImage type:', selectedImage instanceof File ? 'File object ✓' : typeof selectedImage);
+      
+      // Create FormData for file upload
+      const listingData = new FormData();
+      listingData.append('title', formData.title);
+      listingData.append('energyType', formData.energyType);
+      listingData.append('quantity', formData.amount);
+      listingData.append('price', formData.pricePerKwh);
+      listingData.append('location', formData.location);
+      listingData.append('status', formData.status);
+      
+      // Only append image if it's a File object
+      if (selectedImage && selectedImage instanceof File) {
+        listingData.append('image', selectedImage);
+        console.log('Added image file to FormData:', selectedImage.name, selectedImage.size, 'bytes');
+      }
+      
+      await createListing(listingData);
       
       showToast('Listing created successfully!', 'success');
       setTimeout(() => {
@@ -95,6 +140,17 @@ export default function NewListingPage() {
       console.error('Error creating listing:', error);
     }
   };
+
+  // Don't render form if not authenticated
+  if (!isAuthenticated) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-lg text-gray-600">Redirecting to login...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen relative -mt-[72px]">
@@ -111,16 +167,15 @@ export default function NewListingPage() {
       <div className="absolute inset-0 bg-gradient-to-br from-black/60 to-black/40"></div>
       
       {/* Main Content */}
-      <div className="relative z-10 min-h-screen flex items-center justify-center p-8 pt-[80px]">
+      <div className="relative z-10 min-h-screen flex items-center justify-center p-4 sm:p-8 pt-20 sm:pt-[80px]">
         {/* Main Content Card */}
         <div 
-          className="mx-auto"
+          className="mx-auto w-full max-w-2xl"
           style={{
-            width: '636px',
-            height: '650px',
+            minHeight: '650px',
             backgroundColor: '#163466',
             borderRadius: '10px',
-            padding: '32px'
+            padding: '24px',
           }}
         >
           {/* Card Header */}
@@ -151,17 +206,42 @@ export default function NewListingPage() {
 
           {/* White Frame Container */}
           <div 
-            className="mx-auto"
+            className="mx-auto w-full max-w-xl"
             style={{
-              width: '544px',
-              height: '520px',
+              minHeight: '520px',
               border: '2px solid white',
               borderRadius: '8px',
-              padding: '20px'
+              padding: '16px'
             }}
           >
             {/* Form Fields */}
             <div className="space-y-2 mb-2">
+              {/* Listing Title */}
+              <div>
+                <label 
+                  className="block text-sm font-medium mb-1"
+                  style={{ 
+                    color: 'white',
+                    fontFamily: 'Lexend Deca, sans-serif'
+                  }}
+                >
+                  Listing Title
+                </label>
+                <input
+                  type="text"
+                  name="title"
+                  value={formData.title}
+                  onChange={handleInputChange}
+                  placeholder="e.g., Solar Energy Available"
+                  className="w-full px-3 py-1 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  style={{
+                    backgroundColor: '#041532',
+                    border: '1px solid #374151',
+                    fontFamily: 'Lexend Deca, sans-serif'
+                  }}
+                />
+              </div>
+
               {/* Energy Type */}
               <div>
                 <label 
@@ -231,32 +311,6 @@ export default function NewListingPage() {
                   value={formData.amount}
                   onChange={handleInputChange}
                   placeholder="500"
-                  className="w-full px-3 py-1 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  style={{
-                    backgroundColor: '#041532',
-                    border: '1px solid #374151',
-                    fontFamily: 'Lexend Deca, sans-serif'
-                  }}
-                />
-              </div>
-
-              {/* Seller Account */}
-              <div>
-                <label 
-                  className="block text-sm font-medium mb-1"
-                  style={{ 
-                    color: 'white',
-                    fontFamily: 'Lexend Deca, sans-serif'
-                  }}
-                >
-                  Seller Account
-                </label>
-                <input
-                  type="email"
-                  name="sellerAccount"
-                  value={formData.sellerAccount}
-                  onChange={handleInputChange}
-                  placeholder="john.doe@email.com"
                   className="w-full px-3 py-1 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
                   style={{
                     backgroundColor: '#041532',
@@ -340,11 +394,7 @@ export default function NewListingPage() {
                       className="w-full h-full object-cover"
                     />
                     <button
-                      onClick={() => {
-                        setImagePreview(null);
-                        setSelectedImage(null);
-                        setShowImageModal(true);
-                      }}
+                      onClick={handleRemoveImage}
                       className="absolute top-2 right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm"
                     >
                       ×
@@ -376,13 +426,15 @@ export default function NewListingPage() {
               </button>
 
               {/* Cancel and Create Buttons */}
-              <div className="flex gap-4 justify-center">
+              <div className="flex gap-4 justify-center flex-wrap">
                 {/* Cancel Button */}
                 <button
                   onClick={handleCancel}
                   className="rounded-md font-medium transition-colors"
                   style={{
-                    width: '150px',
+                    minWidth: '120px',
+                    width: '100%',
+                    maxWidth: '150px',
                     height: '35px',
                     backgroundColor: '#2FAA5B',
                     color: 'white',
@@ -399,7 +451,9 @@ export default function NewListingPage() {
                   onClick={handleCreate}
                   className="rounded-md font-medium transition-colors"
                   style={{
-                    width: '150px',
+                    minWidth: '120px',
+                    width: '100%',
+                    maxWidth: '150px',
                     height: '35px',
                     backgroundColor: '#2FAA5B',
                     color: 'white',
@@ -420,7 +474,12 @@ export default function NewListingPage() {
       {showImageModal && (
         <div 
           className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center"
-          onClick={handleCloseImageModal}
+          onClick={(e) => {
+            // Only close if clicking the backdrop, not if there's an image preview
+            if (e.target === e.currentTarget && !imagePreview) {
+              handleCloseImageModal();
+            }
+          }}
         >
           <div 
             className="bg-white rounded-lg p-8 max-w-md w-full mx-4"
@@ -452,7 +511,7 @@ export default function NewListingPage() {
                     Change Image
                   </button>
                   <button
-                    onClick={handleCloseImageModal}
+                    onClick={handleConfirmImage}
                     className="flex-1 py-2 px-4 rounded-md font-medium transition-colors"
                     style={{
                       backgroundColor: '#2FAA5B',

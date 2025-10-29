@@ -49,12 +49,36 @@ export async function fetchListingById(id) {
  */
 export async function createListing(listingData) {
   try {
+    // Check for authentication token
+    const token = localStorage.getItem('access_token');
+    if (!token) {
+      throw new Error('You must be logged in to create a listing. Please log in first.');
+    }
+    
+    // Check if listingData is FormData (file upload) or regular object
+    const isFormData = listingData instanceof FormData;
+    
+    if (isFormData) {
+      console.log('Creating listing with FormData (file upload)');
+      // Don't set Content-Type header - browser will set it automatically with boundary for FormData
+    } else {
+      console.log('Creating listing with JSON data:', { ...listingData, imageUrl: listingData.imageUrl ? 'Image present' : 'No image' });
+    }
+    
+    // Build headers - always include Authorization, conditionally include Content-Type
+    const headers = {
+      'Authorization': `Bearer ${token}`
+    };
+    
+    // Only set Content-Type for JSON, not for FormData (browser sets it automatically with boundary)
+    if (!isFormData) {
+      headers['Content-Type'] = 'application/json';
+    }
+    
     const response = await fetch(`${API_BASE_URL}/listings/`, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(listingData),
+      headers: headers,
+      body: isFormData ? listingData : JSON.stringify(listingData),
     });
     
     if (!response.ok) {
@@ -62,6 +86,14 @@ export async function createListing(listingData) {
       try {
         const errorData = await response.json();
         errorMessage = errorData.message || errorData.error || errorMessage;
+        
+        // If authentication error, clear token and redirect
+        if (response.status === 422 || response.status === 401) {
+          localStorage.removeItem('access_token');
+          localStorage.removeItem('user');
+          window.dispatchEvent(new Event('storage'));
+          errorMessage = 'Please log in to create a listing';
+        }
       } catch (e) {
         const errorText = await response.text();
         errorMessage = errorText || errorMessage;
