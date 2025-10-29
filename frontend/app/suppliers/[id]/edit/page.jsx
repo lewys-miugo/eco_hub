@@ -10,6 +10,7 @@ export default function EditListingPage({ params }) {
   const router = useRouter();
   const { showToast } = useToast();
   const [loading, setLoading] = useState(true);
+  const [authorized, setAuthorized] = useState(false);
   const [formData, setFormData] = useState({
     title: '',
     energyType: '',
@@ -28,6 +29,23 @@ export default function EditListingPage({ params }) {
 
   // Fetch listing data when page loads
   useEffect(() => {
+    // Role-based guard
+    const userStr = localStorage.getItem('user');
+    try {
+      const user = userStr ? JSON.parse(userStr) : null;
+      const role = (user?.role || '').trim();
+      if (role !== 'supplier') {
+        showToast('Only suppliers can edit listings', 'error');
+        router.push('/');
+        return;
+      }
+      setAuthorized(true);
+    } catch (e) {
+      showToast('Session error. Please log in again.', 'error');
+      router.push('/auth');
+      return;
+    }
+
     async function loadListing() {
       try {
         const listing = await fetchListingById(params.id);
@@ -54,10 +72,10 @@ export default function EditListingPage({ params }) {
       }
     }
     
-    if (params.id) {
+    if (authorized && params.id) {
       loadListing();
     }
-  }, [params.id]);
+  }, [params.id, authorized, router, showToast]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;

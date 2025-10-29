@@ -114,10 +114,12 @@ export async function createListing(listingData) {
  */
 export async function updateListing(id, listingData) {
   try {
+    const token = localStorage.getItem('access_token');
     const response = await fetch(`${API_BASE_URL}/listings/${id}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
+        ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
       },
       body: JSON.stringify(listingData),
     });
