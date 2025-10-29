@@ -172,7 +172,7 @@ export default function ProfilePage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-cover bg-center flex items-center justify-center" style={{ backgroundImage: "url('/images/unsplash_sWvDK3EO3eo.jpg')" }}>
+      <div className="min-h-screen bg-cover bg-center flex items-center justify-center" style={{ backgroundImage: "url('/solar_bg.jpg')" }}>
         <div className="text-white text-xl">Loading profile...</div>
       </div>
     );
@@ -201,7 +201,7 @@ export default function ProfilePage() {
     <div className="min-h-screen relative">
       {/* Background Image */}
       <Image
-        src="/images/unsplash_sWvDK3EO3eo.jpg"
+        src="/solar_bg.jpg"
         alt="Solar panel farm background"
         fill
         className="object-cover"
@@ -221,14 +221,16 @@ export default function ProfilePage() {
           }}
         >
           {/* Header Section with Banner */}
-          <div className="relative h-48 w-full">
+          <div className="relative h-48 w-full border-4" style={{ borderColor: '#163466' }}>
             {/* Banner Image */}
-            <Image
-              src="/images/unsplash_sWvDK3EO3eo.jpg"
-              alt="Solar panel banner"
-              fill
-              className="object-cover"
-            />
+            <div className="absolute inset-0 pt-1 px-1 overflow-hidden" style={{ borderRadius: '10px' }}>
+              <Image
+                src="/images/profile_header.png"
+                alt="Solar panel banner"
+                fill
+                className="object-cover"
+              />
+            </div>
             {/* Profile Picture */}
             <div className="absolute -bottom-12 left-10 flex items-end">
               <div 
@@ -281,16 +283,24 @@ export default function ProfilePage() {
                 <h2 className="text-white font-semibold mb-4">Purchase History</h2>
                 <div className="space-y-4">
                   {purchaseHistory.map((purchase, idx) => (
-                    <div key={idx} className="text-white">
-                      <p className="text-sm text-gray-400 mb-1">Purchase date</p>
-                      <p className="font-semibold mb-1">{purchase.date}</p>
-                      <p className="text-sm mb-2" style={{ color: '#2FAA5B' }}>
-                        {purchase.location}
-                      </p>
-                      <p className="text-sm mb-1">
-                        <span className="font-semibold">Capacity:</span> {purchase.capacity}
-                      </p>
-                      <p className="font-semibold">Total Cost: {purchase.totalCost}</p>
+                    <div key={idx} className="rounded-lg border border-white/30 p-4">
+                      <div className="flex flex-wrap gap-8">
+                        <div className="flex-1 min-w-[120px]">
+                          <p className="text-gray-400 text-sm mb-1">Purchase date</p>
+                          <p className="font-semibold text-white mb-1">{purchase.date}</p>
+                          <p className="text-sm" style={{ color: '#2FAA5B' }}>
+                            {purchase.location}
+                          </p>
+                        </div>
+                        <div className="border-l border-gray-600 pl-8 flex-1 min-w-[120px]">
+                          <p className="text-gray-400 text-sm mb-1">Capacity</p>
+                          <p className="font-semibold text-white">{purchase.capacity}</p>
+                        </div>
+                        <div className="border-l border-gray-600 pl-8 flex-1 min-w-[120px]">
+                          <p className="text-gray-400 text-sm mb-1">Total Cost</p>
+                          <p className="font-semibold text-white">{purchase.totalCost}</p>
+                        </div>
+                      </div>
                     </div>
                   ))}
                   {purchaseHistory.length === 0 && (

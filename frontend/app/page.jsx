@@ -8,9 +8,9 @@ export default function Home() {
   
   // Hero slider images
   const heroImages = [
-    './images/solar-sky-bg.png',
     './images/solar_flower_farm.png',
-    './images/solar_sunset.png'
+    './images/solar_sunset.png',
+    './images/solar-sky-bg.png'
   ];
 
   // Auto-slide functionality
@@ -142,7 +142,7 @@ export default function Home() {
 
       
       {/* How It Works Section */}
-      <section className="py-20 bg-[#f6fafc]">
+      <section id="how-it-works" className="py-20 bg-[#f6fafc]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-4xl font-medium text-[#163466] mb-4 animate-fade-in-up">
@@ -233,7 +233,7 @@ export default function Home() {
       </section>
 
       {/* FAQ Section */}
-      <section className="py-20 bg-[#f6fafc]">
+      <section id="faq" className="py-20 bg-[#f6fafc]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <p className="text-2xl font-light text-[#D2AB17] mb-2">Have a Question</p>

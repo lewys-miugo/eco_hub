@@ -74,7 +74,7 @@ export default function Navbar() {
   };
 
   return (
-    <nav className="fixed w-full z-50 bg-[#163473] shadow-lg">
+    <nav className="fixed w-full z-50 bg-[#163473] shadow-lg" style={{ fontFamily: 'Lexend Deca, sans-serif' }}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-18">
           {/* Logo */}
@@ -95,13 +95,6 @@ export default function Navbar() {
             {/* ✅ Conditional Auth Button and Profile Icon */}
             {isLoggedIn ? (
               <div className="flex items-center space-x-4">
-                <button
-                  onClick={handleLogout}
-                  disabled={loading}
-                  className="bg-yellow-500 text-white hover:bg-yellow-600 px-4 py-2 rounded-md text-sm font-bold transition-colors cursor-pointer"
-                >
-                  {loading ? "Logging out..." : "Logout"}
-                </button>
                 {/* Profile Icon */}
                 <a
                   href="/profile"
@@ -114,6 +107,13 @@ export default function Navbar() {
                     <circle cx="12" cy="7" r="4" />
                   </svg>
                 </a>
+                <button
+                  onClick={handleLogout}
+                  disabled={loading}
+                  className="bg-yellow-500 text-white hover:bg-yellow-600 px-4 py-2 rounded-md text-sm font-bold transition-colors cursor-pointer"
+                >
+                  {loading ? "Logging out..." : "Logout"}
+                </button>
               </div>
             ) : (
               <a
