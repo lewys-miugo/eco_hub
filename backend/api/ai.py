@@ -4,7 +4,9 @@ This module provides AI-powered auto-fill functionality for forms
 """
 
 from flask import Blueprint, request, jsonify
+from flask_jwt_extended import jwt_required, get_jwt_identity
 from database.config import get_db_cursor
+from ai_service import AIService
 import logging
 import random
 
@@ -14,6 +16,95 @@ ai_bp = Blueprint('ai', __name__, url_prefix='/api/ai')
 # Set up logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+
+# Initialize AI Service
+ai_service = AIService()
+
+@ai_bp.route('/chat', methods=['POST'])
+@jwt_required()
+def ai_chat():
+    """
+    AI Chat endpoint for conversational renewable energy advice
+    """
+    try:
+        user_id_str = get_jwt_identity()
+        # Convert string ID back to integer for database queries
+        user_id = int(user_id_str) if user_id_str else None
+        data = request.get_json()
+        
+        if not data or not data.get('message'):
+            return jsonify({
+                'status': 'error',
+                'message': 'Message is required'
+            }), 400
+        
+        user_message = data['message']
+        logger.info(f"AI chat request from user {user_id}: {user_message[:50]}...")
+        
+        # Get user data for context
+        user_location = ''
+        user_role = 'consumer'
+        try:
+            with get_db_cursor() as (cur, conn):
+                cur.execute("SELECT email, location, role FROM users WHERE id = %s", (user_id,))
+                user = cur.fetchone()
+                if user:
+                    user_location = user.get('location', '') if isinstance(user, dict) else (user[2] if len(user) > 2 else '')
+                    user_role = user.get('role', 'consumer') if isinstance(user, dict) else (user[3] if len(user) > 3 else 'consumer')
+        except Exception as db_error:
+            logger.warning(f"Could not fetch user data: {str(db_error)}")
+        
+        # Prepare user input for AI service
+        user_input = {
+            'message': user_message,
+            'location': user_location,
+            'role': user_role
+        }
+        
+        # Get AI response
+        try:
+            ai_response = ai_service.get_renewable_energy_advice(user_input)
+            
+            # Extract response details
+            response_text = ai_response.get('advice', '')
+            emojis = ai_response.get('emojis', [])
+            
+            # Log interaction to database
+            with get_db_cursor() as (cur, conn):
+                cur.execute("""
+                    INSERT INTO ai_interactions (user_id, interaction_type, prompt, response, carbon_savings_estimate)
+                    VALUES (%s, %s, %s, %s, %s)
+                """, (
+                    user_id,
+                    'chat',
+                    user_message,
+                    response_text,
+                    ai_response.get('carbon_savings_estimate')
+                ))
+                conn.commit()
+            
+            return jsonify({
+                'status': 'success',
+                'response': response_text,
+                'emojis': emojis
+            }), 200
+            
+        except Exception as ai_error:
+            logger.error(f"AI service error: {str(ai_error)}")
+            # Return fallback response if AI service fails
+            return jsonify({
+                'status': 'success',
+                'response': "I'm your AI Renewable Energy Advisor! 🌱⚡ I can help you with solar energy advice, cost savings, and finding local energy suppliers. What would you like to know about renewable energy?",
+                'emojis': ['🌱', '⚡', '🌍']
+            }), 200
+            
+    except Exception as e:
+        logger.error(f"Error in AI chat: {str(e)}")
+        return jsonify({
+            'status': 'error',
+            'message': 'Failed to process chat request',
+            'error': str(e)
+        }), 500
 
 @ai_bp.route('/auto-fill', methods=['POST'])
 def auto_fill_form():
