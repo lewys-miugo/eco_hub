@@ -3,6 +3,41 @@
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { useToast } from '../Toast';
+import { fetchMyPurchases, fetchMyPurchaseSummary } from '../../lib/api';
+
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+
+async function fetchMySales() {
+  try {
+    const token = localStorage.getItem('access_token');
+    if (!token) return [];
+    const response = await fetch(`${API_BASE_URL}/transactions/sales`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    if (!response.ok) return [];
+    const data = await response.json();
+    return data.data || [];
+  } catch (error) {
+    console.error('Error fetching sales:', error);
+    return [];
+  }
+}
+
+async function fetchMySalesSummary() {
+  try {
+    const token = localStorage.getItem('access_token');
+    if (!token) return { totalKwh: 0, totalRevenue: 0 };
+    const response = await fetch(`${API_BASE_URL}/transactions/sales/summary`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    if (!response.ok) return { totalKwh: 0, totalRevenue: 0 };
+    const data = await response.json();
+    return data.data || { totalKwh: 0, totalRevenue: 0 };
+  } catch (error) {
+    console.error('Error fetching sales summary:', error);
+    return { totalKwh: 0, totalRevenue: 0 };
+  }
+}
 
 export default function ProfilePage() {
   const { showToast } = useToast();
@@ -25,8 +60,6 @@ export default function ProfilePage() {
     totalExpenditure: 'Kes. 0.00',
     mrr: 'Kes. 0.00'
   });
-
-  const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
 
   useEffect(() => {
     checkAuthAndLoadData();
@@ -65,55 +98,74 @@ export default function ProfilePage() {
             firstSeen: formatDate(firstSeen)
           }));
         }
+        
+        // Load purchase/sales history and metrics after userData is set
+        loadUserMetrics(user);
       } catch (e) {
         console.error('Error parsing user data:', e);
       }
+    } else {
+      loadUserMetrics();
     }
-
-    // Load purchase history and metrics (mock for now)
-    loadUserMetrics();
     setLoading(false);
   };
 
-  const loadUserMetrics = async () => {
-    // TODO: Replace with actual API call
-    // For now, use mock data
-    const mockPurchaseHistory = [
-      {
-        date: '2 - 03 - 2025',
-        location: 'Kahawa West, Nairobi',
-        capacity: '10 KWh @Kes.1.5',
-        totalCost: 'Kes. 15,000'
-      },
-      {
-        date: '2 - 05 - 2025',
-        location: 'Kahawa West, Nairobi',
-        capacity: '10 KWh @Kes.1.5',
-        totalCost: 'Kes. 15,000'
+  const loadUserMetrics = async (userOverride = null) => {
+    try {
+      const user = userOverride || userData;
+      const role = (user?.role || '').trim();
+      const isSupplier = role === 'supplier';
+
+      if (isSupplier) {
+        // Load sales data for suppliers
+        const sales = await fetchMySales();
+        setPurchaseHistory(
+          (sales || []).map((s) => ({
+            date: s.date ? new Date(s.date).toLocaleDateString('en-KE') : '',
+            location: s.location,
+            capacity: `${s.kwh} KWh @Kes.${(s.totalPrice / (s.kwh || 1)).toFixed(2)}`,
+            totalCost: `Kes. ${Number(s.totalPrice).toLocaleString('en-KE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
+          }))
+        );
+
+        const salesSummary = await fetchMySalesSummary();
+        const formattedRevenue = `Kes. ${Number(salesSummary.totalRevenue || 0).toLocaleString('en-KE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+
+        setMetrics({
+          firstSeen: user?.created_at ? formatDate(new Date(user.created_at)) : '',
+          firstPurchase: sales && sales.length > 0 ? new Date(sales[sales.length - 1].date).toLocaleDateString('en-KE') : '',
+          installedCapacity: `${Number(salesSummary.totalKwh || 0).toLocaleString('en-KE')} KWh`,
+          totalRevenue: formattedRevenue,
+          totalExpenditure: 'Kes. 0.00',
+          mrr: 'Kes. 0.00'
+        });
+      } else {
+        // Load purchase data for consumers
+        const purchases = await fetchMyPurchases();
+        setPurchaseHistory(
+          (purchases || []).map((p) => ({
+            date: p.date ? new Date(p.date).toLocaleDateString('en-KE') : '',
+            location: p.location,
+            capacity: `${p.kwh} KWh @Kes.${(p.totalPrice / (p.kwh || 1)).toFixed(2)}`,
+            totalCost: `Kes. ${Number(p.totalPrice).toLocaleString('en-KE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
+          }))
+        );
+
+        const summary = await fetchMyPurchaseSummary();
+        const formattedExpenditure = `Kes. ${Number(summary.totalExpenditure || 0).toLocaleString('en-KE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+
+        setMetrics({
+          firstSeen: user?.created_at ? formatDate(new Date(user.created_at)) : '',
+          firstPurchase: purchases && purchases.length > 0 ? new Date(purchases[purchases.length - 1].date).toLocaleDateString('en-KE') : '',
+          installedCapacity: `${Number(summary.totalKwh || 0).toLocaleString('en-KE')} KWh`,
+          totalRevenue: 'Kes. 0.00',
+          totalExpenditure: formattedExpenditure,
+          mrr: 'Kes. 0.00'
+        });
       }
-    ];
-    setPurchaseHistory(mockPurchaseHistory);
-    
-    // Calculate total expenditure from purchase history for consumers
-    const calculateTotalExpenditure = (purchases) => {
-      return purchases.reduce((total, purchase) => {
-        // Extract numeric value from "Kes. 15,000" format
-        const numericValue = parseFloat(purchase.totalCost.replace(/[^0-9.]/g, '')) || 0;
-        return total + numericValue;
-      }, 0);
-    };
-    
-    const totalExpenditureAmount = calculateTotalExpenditure(mockPurchaseHistory);
-    const formattedExpenditure = `Kes. ${totalExpenditureAmount.toLocaleString('en-KE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
-    
-    setMetrics({
-      firstSeen: userData?.created_at ? formatDate(new Date(userData.created_at)) : '1 Mar, 2025',
-      firstPurchase: mockPurchaseHistory.length > 0 ? mockPurchaseHistory[0].date : '1 May, 2025',
-      installedCapacity: '10 KWh',
-      totalRevenue: 'Kes. 1,110,000.00',
-      totalExpenditure: formattedExpenditure,
-      mrr: 'Kes. 11,573.00'
-    });
+    } catch (e) {
+      console.error('Error loading user metrics:', e);
+    }
   };
 
   const formatDate = (date) => {
