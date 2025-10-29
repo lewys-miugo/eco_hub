@@ -75,7 +75,7 @@ export default function RegisterForm({ onToggle }) {
 
   return (
     <div className="max-w-md mx-auto bg-[#163466] p-8 rounded-lg shadow-md">
-      <img className='mx-auto' src='./eco_hub_logo.png'/>
+      <img className='mx-auto' src='/eco_hub_logo.png' alt="Eco Hub Logo"/>
       <h2 className="text-2xl font-bold text-center mb-6">Sign Up</h2>
       
       {error && (
@@ -96,7 +96,7 @@ export default function RegisterForm({ onToggle }) {
               placeholder='e.g Ochieng'
               value={formData.firstName}
               onChange={handleChange}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-green-500 placeholder-gray-500"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-green-500 placeholder:opacity-40 placeholder:text-white"
               required
             />
           </div>
@@ -110,7 +110,7 @@ export default function RegisterForm({ onToggle }) {
               value={formData.lastName}
               placeholder='e.g Kamau'
               onChange={handleChange}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-green-500 placeholder-gray-500 placeholder-gray-500"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-green-500 placeholder:opacity-40 placeholder:text-white"
               required
             />
           </div>
@@ -126,7 +126,7 @@ export default function RegisterForm({ onToggle }) {
             value={formData.email}
             placeholder='e.g ochiengkamau.gmail.com'
             onChange={handleChange}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-green-500 placeholder-gray-500"
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-green-500 placeholder:opacity-40 placeholder:text-white"
             required
           />
         </div>
@@ -141,7 +141,7 @@ export default function RegisterForm({ onToggle }) {
               placeholder='e.g Riara springs, Nairobi'
             value={formData.location}
             onChange={handleChange}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-green-500 placeholder-gray-500"
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-green-500 placeholder:opacity-40 placeholder:text-white"
             required
           />
         </div>
@@ -172,7 +172,7 @@ export default function RegisterForm({ onToggle }) {
             value={formData.password}
             placeholder='e.g ochiengkamau!1234'
             onChange={handleChange}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-green-500 placeholder-gray-500"
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-green-500 placeholder:opacity-40 placeholder:text-white"
             required
           />
         </div>
@@ -187,7 +187,7 @@ export default function RegisterForm({ onToggle }) {
             value={formData.confirmPassword}
             placeholder='e.g ochiengkamau!1234'
             onChange={handleChange}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-green-500 placeholder-gray-500"
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-green-500 placeholder:opacity-40 placeholder:text-white"
             required
           />
         </div>

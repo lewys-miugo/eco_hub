@@ -49,11 +49,18 @@ export async function fetchListingById(id) {
  */
 export async function createListing(listingData) {
   try {
+    // Check for authentication token
+    const token = localStorage.getItem('access_token');
+    if (!token) {
+      throw new Error('You must be logged in to create a listing. Please log in first.');
+    }
+    
     console.log('Creating listing with data:', { ...listingData, imageUrl: listingData.imageUrl ? 'Image present (base64 data)' : 'No image' });
     const response = await fetch(`${API_BASE_URL}/listings/`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
       },
       body: JSON.stringify(listingData),
     });
@@ -63,6 +70,14 @@ export async function createListing(listingData) {
       try {
         const errorData = await response.json();
         errorMessage = errorData.message || errorData.error || errorMessage;
+        
+        // If authentication error, clear token and redirect
+        if (response.status === 422 || response.status === 401) {
+          localStorage.removeItem('access_token');
+          localStorage.removeItem('user');
+          window.dispatchEvent(new Event('storage'));
+          errorMessage = 'Please log in to create a listing';
+        }
       } catch (e) {
         const errorText = await response.text();
         errorMessage = errorText || errorMessage;
