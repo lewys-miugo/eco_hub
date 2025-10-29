@@ -92,15 +92,29 @@ export default function Navbar() {
             <a href="/advisor" className="text-white hover:text-indigo-400 px-3 py-2 text-sm font-medium">Advisor</a>
             <a href="/suppliers" className="text-white hover:text-indigo-400 px-3 py-2 text-sm font-medium">Listings</a>
 
-            {/* ✅ Conditional Auth Button */}
+            {/* ✅ Conditional Auth Button and Profile Icon */}
             {isLoggedIn ? (
-              <button
-                onClick={handleLogout}
-                disabled={loading}
-                className="bg-yellow-500 text-white hover:bg-yellow-600 px-4 py-2 rounded-md text-sm font-bold transition-colors cursor-pointer"
-              >
-                {loading ? "Logging out..." : "Logout"}
-              </button>
+              <div className="flex items-center space-x-4">
+                <button
+                  onClick={handleLogout}
+                  disabled={loading}
+                  className="bg-yellow-500 text-white hover:bg-yellow-600 px-4 py-2 rounded-md text-sm font-bold transition-colors cursor-pointer"
+                >
+                  {loading ? "Logging out..." : "Logout"}
+                </button>
+                {/* Profile Icon */}
+                <a
+                  href="/profile"
+                  className="w-10 h-10 rounded-full border-2 border-white flex items-center justify-center text-white hover:bg-white/20 transition-colors"
+                  style={{ backgroundColor: '#FF5733' }}
+                  title="View Profile"
+                >
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                    <circle cx="12" cy="7" r="4" />
+                  </svg>
+                </a>
+              </div>
             ) : (
               <a
                 href="/auth"
@@ -142,13 +156,25 @@ export default function Navbar() {
             <a href="/suppliers" className="text-gray-200 hover:text-indigo-400 block py-2 text-base font-medium">Suppliers</a>
 
             {isLoggedIn ? (
-              <button
-                onClick={handleLogout}
-                disabled={loading}
-                className="w-full bg-yellow-500 text-white hover:bg-yellow-600 px-4 py-2 rounded-md text-base font-bold transition-colors"
-              >
-                {loading ? "Logging out..." : "Logout"}
-              </button>
+              <>
+                <a 
+                  href="/profile" 
+                  className="text-gray-200 hover:text-indigo-400 flex items-center gap-2 py-2 text-base font-medium"
+                >
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                    <circle cx="12" cy="7" r="4" />
+                  </svg>
+                  Profile
+                </a>
+                <button
+                  onClick={handleLogout}
+                  disabled={loading}
+                  className="w-full bg-yellow-500 text-white hover:bg-yellow-600 px-4 py-2 rounded-md text-base font-bold transition-colors"
+                >
+                  {loading ? "Logging out..." : "Logout"}
+                </button>
+              </>
             ) : (
               <a
                 href="/auth"

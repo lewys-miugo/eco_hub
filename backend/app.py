@@ -76,9 +76,12 @@ def register():
             return jsonify({'error': 'User with this email already exists'}), 400
         
         # Create new user
+        # Combine first_name and last_name for the name field (required by database)
+        full_name = f"{data['firstName']} {data['lastName']}".strip()
         user = User(
             first_name=data['firstName'],
             last_name=data['lastName'],
+            name=full_name,  # Set name from first_name + last_name
             email=data['email'],
             role=data['role'],
             location=data.get('location', '')
