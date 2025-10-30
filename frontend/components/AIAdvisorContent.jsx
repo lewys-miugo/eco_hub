@@ -61,7 +61,8 @@ export default function AIAdvisorContent() {
       }
       
       // Call AI chat API
-      const response = await fetch('http://localhost:5000/api/ai/chat', {
+      const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://eco-hub-backend.onrender.com';
+      const response = await fetch(`${API_URL}/api/ai/chat`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
