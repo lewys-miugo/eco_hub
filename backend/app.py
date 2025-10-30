@@ -40,6 +40,7 @@ CORS(app, resources={
 
 # Configuration
 app.config['JWT_SECRET_KEY'] = os.getenv('JWT_SECRET_KEY', 'your-secret-key')
+app.config['JWT_ACCESS_TOKEN_EXPIRES'] = int(os.getenv('JWT_ACCESS_TOKEN_EXPIRES', 3600))  # Default: 1 hour (3600 seconds)
 app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL', 'postgresql://lewys:43214321@localhost:5432/eco_hub_db')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
@@ -58,6 +59,43 @@ blacklisted_tokens = set()
 def check_if_token_revoked(jwt_header, jwt_payload):
     """Check if token is blacklisted"""
     return jwt_payload['jti'] in blacklisted_tokens
+
+# JWT Error Handlers
+@jwt.expired_token_loader
+def expired_token_callback(jwt_header, jwt_payload):
+    """Handle expired token errors"""
+    return jsonify({
+        'status': 'error',
+        'message': 'Token has expired. Please log in again.',
+        'error': 'token_expired'
+    }), 401
+
+@jwt.invalid_token_loader
+def invalid_token_callback(error):
+    """Handle invalid token errors"""
+    return jsonify({
+        'status': 'error',
+        'message': 'Invalid token. Please log in again.',
+        'error': 'invalid_token'
+    }), 401
+
+@jwt.unauthorized_loader
+def missing_token_callback(error):
+    """Handle missing token errors"""
+    return jsonify({
+        'status': 'error',
+        'message': 'Authorization token is required. Please log in.',
+        'error': 'missing_token'
+    }), 401
+
+@jwt.needs_fresh_token_loader
+def token_not_fresh_callback(jwt_header, jwt_payload):
+    """Handle non-fresh token errors"""
+    return jsonify({
+        'status': 'error',
+        'message': 'Fresh token required. Please log in again.',
+        'error': 'token_not_fresh'
+    }), 401
 
 # Register blueprints
 app.register_blueprint(listings_bp)
