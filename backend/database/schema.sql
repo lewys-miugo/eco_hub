@@ -97,4 +97,3 @@ CREATE TRIGGER update_dashboard_metrics_updated_at
 -- GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO your_app_user;
 
 
-
