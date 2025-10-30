@@ -49,8 +49,11 @@ export async function fetchListingById(id) {
  */
 export async function createListing(listingData) {
   try {
-    // Check for authentication token
-    const token = localStorage.getItem('access_token');
+    // Check for authentication token and trim whitespace/quotes
+    let token = localStorage.getItem('access_token');
+    if (token) {
+      token = token.trim().replace(/^["']|["']$/g, '');
+    }
     if (!token) {
       throw new Error('You must be logged in to create a listing. Please log in first.');
     }
