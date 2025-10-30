@@ -73,10 +73,18 @@ def expired_token_callback(jwt_header, jwt_payload):
 @jwt.invalid_token_loader
 def invalid_token_callback(error):
     """Handle invalid token errors"""
+    import logging
+    logger = logging.getLogger(__name__)
+    error_msg = str(error) if error else 'Unknown error'
+    logger.error(f"Invalid token error: {error_msg}")
+    # Log Authorization header if present (masked for security)
+    auth_header = request.headers.get('Authorization', 'Not provided')
+    logger.error(f"Authorization header present: {bool(auth_header and auth_header != 'Not provided')}")
     return jsonify({
         'status': 'error',
         'message': 'Invalid token. Please log in again.',
-        'error': 'invalid_token'
+        'error': 'invalid_token',
+        'details': error_msg
     }), 401
 
 @jwt.unauthorized_loader
