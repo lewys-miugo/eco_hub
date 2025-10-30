@@ -6,7 +6,6 @@ This script sets up the database schema and initial data
 
 import os
 import sys
-import psycopg as psycopg2
 from psycopg2.extras import RealDictCursor
 from dotenv import load_dotenv
 
