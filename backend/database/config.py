@@ -4,7 +4,8 @@ This module provides database connection and utility functions
 """
 
 import os
-import psycopg2
+import psycopg as psycopg2
+from psycopg.rows import dict_row
 from psycopg2.extras import RealDictCursor
 from dotenv import load_dotenv
 from contextlib import contextmanager

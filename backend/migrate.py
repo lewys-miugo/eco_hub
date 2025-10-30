@@ -8,7 +8,7 @@ and inserts test data.
 
 import os
 import sys
-import psycopg2
+import psycopg as psycopg2
 from psycopg2.extras import RealDictCursor
 from dotenv import load_dotenv
 from sqlalchemy import text
