@@ -143,6 +143,7 @@ export default function NewListingPage() {
       listingData.append('price', formData.pricePerKwh);
       listingData.append('location', formData.location);
       listingData.append('status', formData.status);
+      listingData.append('description', formData.description || '');
       
       // Only append image if it's a File object
       if (selectedImage && selectedImage instanceof File) {
