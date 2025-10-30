@@ -172,8 +172,15 @@ http://localhost:3000
 
 The application is deployed on Render:
 
+- **Live Website**: [https://eco-hub-trvd.onrender.com/](https://eco-hub-trvd.onrender.com/)
 - **Backend API**: https://eco-hub-backend.onrender.com/
-- **Frontend**: https://eco-hub-trvd.onrender.com/
+
+### Health Check Endpoints
+
+Backend health check endpoints:
+
+- **Health Check**: [https://eco-hub-backend.onrender.com/api/hello](https://eco-hub-backend.onrender.com/api/hello)
+- **API Health**: [https://eco-hub-backend.onrender.com/api/health](https://eco-hub-backend.onrender.com/api/health)
 
 ### Environment Variables
 
@@ -330,7 +337,11 @@ eco_hub/
 
 ## Authors
 
-[Add author names and contact information here]
+This project was developed by:
+
+- **Grace Eileen** - [@Grace-Eileen7](https://github.com/Grace-Eileen7)
+- **Nicholas Obonyo** - [@duffymelancholic](https://github.com/duffymelancholic)
+- **Lewis Wambugu** - [@lewys-miugo](https://github.com/lewys-miugo)
 
 ## License
 
