@@ -35,7 +35,9 @@ export default function LoginForm({ onToggle }) {
       const data = await response.json();
 
       if (response.ok) {
-        localStorage.setItem('access_token', data.access_token);
+        // Ensure token is a string and trim any whitespace/quotes
+        const token = String(data.access_token || '').trim().replace(/^["']|["']$/g, '');
+        localStorage.setItem('access_token', token);
         localStorage.setItem('user', JSON.stringify(data.user));
         // Dispatch event to update navbar immediately
         window.dispatchEvent(new Event('storage'));

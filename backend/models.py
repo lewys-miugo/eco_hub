@@ -34,7 +34,8 @@ class User(db.Model):
 
     def generate_token(self):
         """Generate JWT token for authentication"""
-        return create_access_token(identity=self.id)
+        # Convert ID to string for consistent token handling
+        return create_access_token(identity=str(self.id))
 
     def to_dict(self):
         """Convert user to dictionary for JSON serialization"""

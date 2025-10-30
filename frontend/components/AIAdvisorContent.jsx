@@ -45,8 +45,8 @@ export default function AIAdvisorContent() {
     setIsLoading(true);
 
     try {
-      // Get authentication token
-      const token = localStorage.getItem('access_token');
+      // Get authentication token and trim whitespace
+      const token = localStorage.getItem('access_token')?.trim();
       if (!token) {
         const errorMessage = {
           id: Date.now() + 1,

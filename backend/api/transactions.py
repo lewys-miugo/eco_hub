@@ -24,7 +24,9 @@ def create_transaction():
     """
     try:
         data = request.get_json() or {}
-        buyer_id = get_jwt_identity()
+        buyer_id_str = get_jwt_identity()
+        # Convert string ID to integer for database queries
+        buyer_id = int(buyer_id_str) if buyer_id_str else None
         listing_id = data.get('listingId')
         kwh_amount = data.get('kwh')
 
@@ -85,7 +87,9 @@ def get_my_transactions():
     Get purchase history for the authenticated consumer (as buyer)
     """
     try:
-        buyer_id = get_jwt_identity()
+        buyer_id_str = get_jwt_identity()
+        # Convert string ID to integer for database queries
+        buyer_id = int(buyer_id_str) if buyer_id_str else None
         with get_db_cursor() as (cur, conn):
             cur.execute(
                 """
@@ -123,7 +127,9 @@ def get_my_summary():
     Returns: { totalKwh, totalExpenditure }
     """
     try:
-        buyer_id = get_jwt_identity()
+        buyer_id_str = get_jwt_identity()
+        # Convert string ID to integer for database queries
+        buyer_id = int(buyer_id_str) if buyer_id_str else None
         with get_db_cursor() as (cur, conn):
             cur.execute(
                 """
@@ -154,7 +160,9 @@ def get_my_sales():
     Get sales history for the authenticated supplier (as seller)
     """
     try:
-        seller_id = get_jwt_identity()
+        seller_id_str = get_jwt_identity()
+        # Convert string ID to integer for database queries
+        seller_id = int(seller_id_str) if seller_id_str else None
         with get_db_cursor() as (cur, conn):
             cur.execute(
                 """
@@ -194,7 +202,9 @@ def get_my_sales_summary():
     Returns: { totalKwh, totalRevenue }
     """
     try:
-        seller_id = get_jwt_identity()
+        seller_id_str = get_jwt_identity()
+        # Convert string ID to integer for database queries
+        seller_id = int(seller_id_str) if seller_id_str else None
         with get_db_cursor() as (cur, conn):
             cur.execute(
                 """

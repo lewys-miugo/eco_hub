@@ -156,7 +156,9 @@ def create_listing():
     """
     try:
         # Get authenticated user ID
-        user_id = get_jwt_identity()
+        user_id_str = get_jwt_identity()
+        # Convert string ID to integer for database queries
+        user_id = int(user_id_str) if user_id_str else None
         logger.info(f"POST /api/listings endpoint called by user {user_id}")
         
         # Check if request is multipart/form-data (file upload) or JSON
@@ -301,7 +303,9 @@ def update_listing(listing_id):
     try:
         data = request.get_json()
         # Enforce ownership: only the listing owner can update
-        auth_user_id = get_jwt_identity()
+        auth_user_id_str = get_jwt_identity()
+        # Convert string ID to integer for database queries
+        auth_user_id = int(auth_user_id_str) if auth_user_id_str else None
         with get_db_cursor() as (cur, conn):
             cur.execute("SELECT id, user_id FROM listings WHERE id = %s", (listing_id,))
             listing_row = cur.fetchone()
