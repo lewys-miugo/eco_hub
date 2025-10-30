@@ -6,7 +6,6 @@ This module provides database connection and utility functions
 import os
 import psycopg as psycopg2
 from psycopg.rows import dict_row
-from psycopg2.extras import RealDictCursor
 from dotenv import load_dotenv
 from contextlib import contextmanager
 
@@ -50,7 +49,7 @@ def get_db_cursor():
     try:
         config = DatabaseConfig()
         conn = psycopg2.connect(config.DATABASE_URL)
-        cur = conn.cursor(cursor_factory=RealDictCursor)
+        cur = conn.cursor(row_factory=dict_row)
         yield cur, conn
     except Exception as e:
         if conn:
@@ -66,14 +65,14 @@ def test_connection():
     """Test database connection"""
     try:
         with get_db_connection() as conn:
-            cur = conn.cursor()
+            cur = conn.cursor(row_factory=dict_row)
             cur.execute('SELECT NOW() as current_time;')
             result = cur.fetchone()
             cur.close()
             return {
                 'status': 'success',
                 'message': 'Database connected successfully',
-                'timestamp': str(result[0])
+                'timestamp': str(result['current_time'])
             }
     except Exception as e:
         return {
