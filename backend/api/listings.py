@@ -9,6 +9,8 @@ from database.config import get_db_cursor
 import logging
 import os
 import time
+import psycopg2
+import psycopg2.extras
 from werkzeug.utils import secure_filename
 
 # Create blueprint for listings API
