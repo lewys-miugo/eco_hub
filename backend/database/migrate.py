@@ -6,7 +6,6 @@ This script sets up the database schema and initial data
 
 import os
 import sys
-from psycopg2.extras import RealDictCursor
 from dotenv import load_dotenv
 
 # Add the backend directory to the Python path

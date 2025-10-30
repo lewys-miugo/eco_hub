@@ -8,7 +8,6 @@ and inserts test data.
 
 import os
 import sys
-from psycopg2.extras import RealDictCursor
 from dotenv import load_dotenv
 from sqlalchemy import text
 
