@@ -166,6 +166,124 @@ Open your browser and navigate to:
 http://localhost:3000
 ```
 
+## Deployment
+
+### Production URLs
+
+The application is deployed on Render:
+
+- **Backend API**: https://eco-hub-backend.onrender.com/
+- **Frontend**: https://eco-hub-trvd.onrender.com/
+
+### Environment Variables
+
+#### Frontend (.env.local or Render Environment Variables)
+
+Set the following in your frontend deployment:
+
+```env
+NEXT_PUBLIC_API_URL=https://eco-hub-backend.onrender.com/api
+```
+
+Or for local development:
+```env
+NEXT_PUBLIC_API_URL=http://localhost:5000/api
+```
+
+#### Backend Environment Variables (Render)
+
+Set these in your Render backend service:
+
+```env
+DATABASE_URL=your_postgresql_connection_string
+JWT_SECRET_KEY=your_jwt_secret_key_here
+FLASK_SECRET_KEY=your_flask_secret_key_here
+OPENAI_API_KEY=your_openai_api_key (optional)
+CARBON_INTERFACE_API_KEY=your_carbon_interface_key (optional)
+PORT=10000 (Render sets this automatically)
+```
+
+### CORS Configuration
+
+The backend CORS is configured to allow requests from:
+- `http://localhost:3000` (local development)
+- `http://127.0.0.1:3000` (local development)
+- `https://eco-hub-trvd.onrender.com` (production frontend)
+
+### Backend Deployment (Render)
+
+#### Build Command
+```bash
+cd backend && pip install -r requirements.txt
+```
+
+#### Start Command
+```bash
+cd backend && gunicorn --bind 0.0.0.0:$PORT app:app
+```
+
+#### Requirements
+- Python 3.x
+- PostgreSQL database
+- All packages from `requirements.txt`
+
+### Frontend Deployment (Render)
+
+#### Build Command
+```bash
+cd frontend && npm install && npm run build
+```
+
+#### Start Command
+```bash
+cd frontend && npm start
+```
+
+#### Environment Variable
+- Set `NEXT_PUBLIC_API_URL=https://eco-hub-backend.onrender.com/api` in Render environment variables
+
+### Database Setup on Render
+
+1. Create a PostgreSQL database on Render
+2. Set the `DATABASE_URL` environment variable in your backend service
+3. Run the schema setup:
+
+```bash
+psql $DATABASE_URL -f backend/database/schema.sql
+```
+
+Or use the setup script:
+```bash
+cd backend && python setup_database.py
+```
+
+### API Endpoints
+
+All API endpoints are prefixed with `/api`:
+
+- `https://eco-hub-backend.onrender.com/api/auth/login`
+- `https://eco-hub-backend.onrender.com/api/auth/register`
+- `https://eco-hub-backend.onrender.com/api/listings/`
+- `https://eco-hub-backend.onrender.com/api/dashboard/`
+- `https://eco-hub-backend.onrender.com/api/ai/chat`
+
+### Troubleshooting
+
+#### CORS Errors
+If you see CORS errors, ensure:
+1. Frontend URL is added to backend CORS origins
+2. Backend is deployed and accessible
+3. API URLs are correctly configured
+
+#### Database Connection Issues
+- Verify `DATABASE_URL` is set correctly
+- Ensure PostgreSQL service is running
+- Check database credentials
+
+#### Image Loading Issues
+- Images are stored as base64 data URLs in the database
+- Ensure `image_url` column exists in `energy_listings` table
+
 ## Project Structure
 
 ```

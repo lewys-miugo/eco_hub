@@ -5,7 +5,7 @@ import Image from 'next/image';
 import { useToast } from '../Toast';
 import { fetchMyPurchases, fetchMyPurchaseSummary } from '../../lib/api';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://eco-hub-backend.onrender.com/api';
 
 async function fetchMySales() {
   try {
