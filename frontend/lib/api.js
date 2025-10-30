@@ -194,11 +194,22 @@ export async function fetchDashboardMetrics() {
     const response = await fetch(`${API_BASE_URL}/dashboard/metrics`);
     
     if (!response.ok) {
-      throw new Error(`API error: ${response.status}`);
+      console.error(`Dashboard API error: ${response.status}`);
+      // Return null so frontend can use fallback values
+      return null;
     }
     
     const data = await response.json();
-    return data.data;
+    console.log('Dashboard metrics API response:', data);
+    
+    // Return data if status is success, otherwise return null
+    if (data.status === 'success' && data.data) {
+      return data.data;
+    } else {
+      console.warn('Dashboard API returned error status:', data);
+      // Return data even if status is error (backend provides fallback data)
+      return data.data || null;
+    }
   } catch (error) {
     console.error('Error fetching dashboard metrics:', error);
     return null;

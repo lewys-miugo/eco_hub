@@ -10,11 +10,18 @@ export default function DashboardPage() {
   useEffect(() => {
     async function loadMetrics() {
       try {
+        setLoading(true);
         const data = await fetchDashboardMetrics();
         console.log('Dashboard metrics loaded:', data);
-        setMetrics(data);
+        if (data) {
+          setMetrics(data);
+        } else {
+          console.warn('No dashboard metrics received from API, will use fallback values');
+          setMetrics(null);
+        }
       } catch (error) {
         console.error('Error loading dashboard metrics:', error);
+        setMetrics(null);
       } finally {
         setLoading(false);
       }
@@ -25,8 +32,13 @@ export default function DashboardPage() {
 
   // Get metric values (fallback to default if not loaded)
   const getMetricValue = (key, defaultValue) => {
-    if (!metrics || loading) return defaultValue;
-    return metrics[key]?.value || defaultValue;
+    if (loading) return defaultValue;
+    if (!metrics) return defaultValue;
+    // Check if the metric exists and has a value
+    if (metrics[key] && metrics[key].value !== undefined && metrics[key].value !== null) {
+      return metrics[key].value;
+    }
+    return defaultValue;
   };
 
   return (
